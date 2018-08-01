@@ -1,9 +1,11 @@
 object Form1: TForm1
   Left = 211
   Top = 125
-  Width = 997
-  Height = 68
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
   Caption = #1054#1090#1095#1077#1090#1099' '#1082' Tronix v1.69(b)'
+  ClientHeight = 10
+  ClientWidth = 981
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,6 +14,7 @@ object Form1: TForm1
   Font.Style = []
   Menu = MainMenu1
   OldCreateOrder = False
+  Position = poScreenCenter
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13

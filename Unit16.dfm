@@ -11,7 +11,11 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
   OnShow = FormShow
+  DesignSize = (
+    975
+    640)
   PixelsPerInch = 96
   TextHeight = 13
   object DBGridEh1: TDBGridEh
@@ -19,6 +23,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     Top = 6
     Width = 953
     Height = 609
+    Anchors = [akLeft, akTop, akRight, akBottom]
     DataSource = OraDataSource1
     Flat = False
     FooterColor = clWindow
@@ -125,6 +130,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     Top = 616
     Width = 75
     Height = 17
+    Anchors = [akLeft, akBottom]
     Caption = 'Exel'
     TabOrder = 1
     OnClick = Button1Click
