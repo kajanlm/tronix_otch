@@ -1,6 +1,6 @@
 object DIF_OTCH_FORM: TDIF_OTCH_FORM
-  Left = 688
-  Top = 299
+  Left = 437
+  Top = 248
   Width = 991
   Height = 678
   Caption = #1054#1090#1095#1077#1090' '#1087#1086' '#1076#1080#1092#1092#1080#1094#1080#1090#1091
