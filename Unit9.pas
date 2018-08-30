@@ -39,7 +39,7 @@ var
 
 implementation
 
-uses Unit10, Unit15, Unit20, Unit21, Unit22, Unit23, Unit25, Unit26,
+uses Unit10, Unit15, Unit16, Unit20, Unit21, Unit22, Unit23, Unit25, Unit26,
   Unit27, Unit35, Unit36, Unit37, Unit38, Unit43, Unit45, Unit46, Unit34,
   Unit47, Unit49, Unit50;
 
@@ -54,8 +54,13 @@ Form10.Caption:='Отчет по нарядам';
 Form10.ShowModal();
 end;
 if form9.caption='Дефицит по номенклатуре' then
-Form15.ShowModal();
-
+begin
+//Form15.ShowModal();
+Application.CreateForm(TDIF_OTCH_FORM, DIF_OTCH_FORM);
+DIF_OTCH_FORM.ShowModal();
+DIF_OTCH_FORM.Free;
+exit;
+end;
 
 if form9.caption='Отчет по трудоемкости (Новый)' then
 begin

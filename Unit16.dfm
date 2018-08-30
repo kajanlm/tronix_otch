@@ -1,8 +1,8 @@
 object DIF_OTCH_FORM: TDIF_OTCH_FORM
-  Left = 437
-  Top = 248
-  Width = 991
-  Height = 678
+  Left = 234
+  Top = 66
+  Width = 1350
+  Height = 898
   Caption = #1054#1090#1095#1077#1090' '#1087#1086' '#1076#1080#1092#1092#1080#1094#1080#1090#1091
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -14,17 +14,61 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
   Position = poScreenCenter
   OnShow = FormShow
   DesignSize = (
-    975
-    640)
+    1334
+    860)
   PixelsPerInch = 96
   TextHeight = 13
+  object Label1: TLabel
+    Left = 46
+    Top = 18
+    Width = 179
+    Height = 20
+    Caption = #1058#1080#1087' '#1087#1086#1076#1088#1072#1079#1076#1077#1083#1077#1085#1080#1103
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Label2: TLabel
+    Left = 454
+    Top = 18
+    Width = 147
+    Height = 20
+    Anchors = [akTop]
+    Caption = #1055#1086#1076#1088#1072#1079#1076#1077#1083#1077#1085#1080#1077
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Button1: TButton
+    Left = 1149
+    Top = 4
+    Width = 171
+    Height = 37
+    Anchors = [akTop, akRight]
+    Caption = #1042#1099#1074#1077#1089#1090#1080' '#1074' EXCEL'
+    Enabled = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 0
+    OnClick = Button1Click
+  end
   object DBGridEh1: TDBGridEh
     Left = 8
-    Top = 6
-    Width = 953
-    Height = 609
+    Top = 48
+    Width = 1318
+    Height = 800
     Anchors = [akLeft, akTop, akRight, akBottom]
-    DataSource = OraDataSource1
+    DataSource = DataSource
     Flat = False
     FooterColor = clWindow
     FooterFont.Charset = DEFAULT_CHARSET
@@ -33,179 +77,408 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     FooterFont.Name = 'MS Sans Serif'
     FooterFont.Style = []
     ReadOnly = True
-    TabOrder = 0
+    RowHeight = 35
+    TabOrder = 1
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
     TitleFont.Name = 'MS Sans Serif'
     TitleFont.Style = []
+    UseMultiTitle = True
+    OnGetCellParams = DBGridEh1GetCellParams
     Columns = <
       item
         EditButtons = <>
-        FieldName = 'tnomer'
-        Footers = <>
-        Title.Caption = #1058#1050
-        Width = 120
-      end
-      item
-        EditButtons = <>
-        FieldName = 'tname'
-        Footers = <>
-        Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1058#1050
-        Width = 380
-      end
-      item
-        EditButtons = <>
-        FieldName = 'skod'
+        FieldName = 'KOD'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
         Footers = <>
         Title.Caption = #1050#1054#1044
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 119
       end
       item
         EditButtons = <>
-        FieldName = 'spname'
+        FieldName = 'MTR_NAME'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
         Footers = <>
-        Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-        Width = 380
+        Title.Caption = #1053#1040#1048#1052#1045#1053#1054#1042#1040#1053#1048#1045
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 355
       end
       item
+        Alignment = taCenter
         EditButtons = <>
-        FieldName = 'psname'
+        FieldName = 'POTR'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -15
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
         Footers = <>
-        Title.Caption = #1063#1077#1088#1090#1077#1078
-        Width = 380
+        Title.Caption = #1055#1054#1058#1056#1045#1041#1053#1054#1057#1058#1068'|'#1047#1072#1082#1091#1087#1086#1095#1085'. '#1077#1076#1080#1085#1080#1094#1099
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 84
       end
       item
+        Alignment = taCenter
         EditButtons = <>
-        FieldName = 'summ_nado'
+        FieldName = 'ED'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
         Footers = <>
-        Title.Caption = #1055#1086#1090#1088#1077#1073#1085#1086#1089#1090#1100
+        Title.Caption = #1055#1054#1058#1056#1045#1041#1053#1054#1057#1058#1068'|#1'
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -15
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 21
       end
       item
+        Alignment = taCenter
         EditButtons = <>
-        FieldName = 'koded_e'
+        FieldName = 'POTR_UCHET'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -15
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
         Footers = <>
-        Title.Caption = #1045#1076#1077#1085#1080#1094#1072' '#1080#1079' '#1087#1086#1090#1088#1077#1073#1085#1086#1089#1090#1080
-        Width = 32
+        Title.Caption = #1055#1054#1058#1056#1045#1041#1053#1054#1057#1058#1068'|'#1058#1077#1093#1085#1086#1083#1086#1075'. '#1077#1076#1080#1085#1080#1094#1099
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 77
       end
       item
+        Alignment = taCenter
         EditButtons = <>
-        FieldName = 'summ_zavod'
+        FieldName = 'ED_UCHET'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
         Footers = <>
-        Title.Caption = #1053#1072' '#1079#1072#1074#1086#1076#1077
+        Title.Caption = #1055#1054#1058#1056#1045#1041#1053#1054#1057#1058#1068'|#2'
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -15
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 22
       end
       item
+        Alignment = taCenter
         EditButtons = <>
-        FieldName = 'summ_vcexe'
+        FieldName = 'ZAPAS_POST'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -15
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
         Footers = <>
-        Title.Caption = #1042' '#1062#1077#1093#1077
+        Title.Caption = #1054#1041#1045#1057#1055#1045#1063#1045#1053#1048#1045'|'#1047#1072#1082#1091#1087#1086#1095#1085'. '#1077#1076#1080#1085#1080#1094#1099
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 81
       end
       item
+        Alignment = taCenter
         EditButtons = <>
-        FieldName = 'summ_vidano'
+        FieldName = 'ZAPAS_POST_UCHET'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -15
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
         Footers = <>
-        Title.Caption = #1042#1099#1076#1072#1085#1086' '#1094#1077#1093#1091
+        Title.Caption = #1054#1041#1045#1057#1055#1045#1063#1045#1053#1048#1045'|'#1058#1077#1093#1085#1086#1083#1086#1075'. '#1077#1076#1080#1085#1080#1094#1099
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 79
       end
       item
+        Alignment = taCenter
         EditButtons = <>
-        FieldName = 'date_start'
+        FieldName = 'ZAPAS_POST_SUB'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -15
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
         Footers = <>
-        Title.Caption = #1044#1072#1090#1072' '#1085#1072#1095#1072#1083#1072
+        Title.Caption = #1055#1045#1056#1045#1044#1040#1058#1068'|'#1047#1072#1082#1091#1087#1086#1095#1085'. '#1077#1076#1080#1085#1080#1094#1099
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 82
       end
       item
+        Alignment = taCenter
         EditButtons = <>
-        FieldName = 'TNA'
+        FieldName = 'ZAPAS_POST_SUB_UCHET'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -15
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
         Footers = <>
-        Title.Caption = #1058#1077#1093#1085#1072#1088#1103#1076
-        Width = 250
+        Title.Caption = #1055#1045#1056#1045#1044#1040#1058#1068'|'#1058#1077#1093#1085#1086#1083#1086#1075'. '#1077#1076#1080#1085#1080#1094#1099
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 79
       end
       item
+        Alignment = taCenter
         EditButtons = <>
-        FieldName = 'dep_nomer'
+        FieldName = 'DEFICIT'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -15
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
         Footers = <>
-        Title.Caption = #1062#1045#1061
+        Title.Caption = #1044#1045#1060#1048#1062#1048#1058'|'#1047#1072#1082#1091#1087#1086#1095#1085'. '#1077#1076#1080#1085#1080#1094#1099
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 81
+      end
+      item
+        Alignment = taCenter
+        EditButtons = <>
+        FieldName = 'DEFICIT_UCHET'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -15
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        Footers = <>
+        Title.Caption = #1044#1045#1060#1048#1062#1048#1058'|'#1058#1077#1093#1085#1086#1083#1086#1075'. '#1077#1076#1080#1085#1080#1094#1099
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 81
+      end
+      item
+        Alignment = taCenter
+        EditButtons = <>
+        FieldName = 'DATE_DEFICIT0'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
+        Footers = <>
+        Title.Caption = #1053#1040#1063#1040#1051#1054' '#1044#1045#1060#1048#1062#1048#1058#1040
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -11
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 101
       end>
   end
-  object Button1: TButton
+  object LOCK_BOX: TPanel
     Left = 8
-    Top = 616
-    Width = 75
-    Height = 17
-    Anchors = [akLeft, akBottom]
-    Caption = 'Exel'
-    TabOrder = 1
-    OnClick = Button1Click
+    Top = 48
+    Width = 1318
+    Height = 803
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Caption = #1047#1072#1076#1072#1081#1090#1077' '#1087#1072#1088#1072#1084#1077#1090#1088#1099' '#1086#1090#1073#1086#1088#1072' '#1080' '#1085#1072#1078#1084#1080#1090#1077' '#1079#1076#1077#1089#1100
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -33
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 2
+    OnClick = CalcDeficit
   end
-  object OraQuery1: TOraQuery
-    Session = Form1.OraSession1
+  object cb_typepodr: TComboBox
+    Left = 234
+    Top = 16
+    Width = 167
+    Height = 22
+    Style = csOwnerDrawFixed
+    ItemHeight = 16
+    TabOrder = 3
+  end
+  object cb_podr: TComboBox
+    Left = 610
+    Top = 16
+    Width = 69
+    Height = 22
+    Style = csOwnerDrawFixed
+    Anchors = [akTop]
+    Enabled = False
+    ItemHeight = 16
+    TabOrder = 4
+  end
+  object Edit1: TEdit
+    Left = 695
+    Top = 16
+    Width = 245
+    Height = 21
+    Anchors = [akTop]
     ReadOnly = True
-    Left = 936
-    Top = 8
-    object OraQuery1tnomer: TStringField
-      FieldName = 'tnomer'
-    end
-    object OraQuery1tname: TStringField
-      FieldName = 'tname'
-    end
-    object OraQuery1skod: TStringField
-      FieldName = 'skod'
-    end
-    object OraQuery1spname: TStringField
-      FieldName = 'spname'
-    end
-    object OraQuery1psname: TStringField
-      FieldName = 'psname'
-    end
-    object OraQuery1summ_nado: TFloatField
-      FieldName = 'summ_nado'
-    end
-    object OraQuery1summ_zavod: TFloatField
-      FieldName = 'summ_zavod'
-    end
-    object OraQuery1summ_vcexe: TFloatField
-      FieldName = 'summ_vcexe'
-    end
-    object OraQuery1summ_vidano: TFloatField
-      FieldName = 'summ_vidano'
-    end
-    object OraQuery1date_start: TStringField
-      FieldName = 'date_start'
-    end
-    object OraQuery1TNA: TStringField
-      FieldName = 'TNA'
-    end
-    object OraQuery1dep_nomer: TStringField
-      FieldName = 'dep_nomer'
-    end
-    object OraQuery1koded_e: TStringField
-      FieldName = 'koded_e'
-    end
+    TabOrder = 5
   end
-  object OraDataSource1: TOraDataSource
-    DataSet = OraQuery1
-    Left = 904
-    Top = 8
+  object cb_typeelms: TComboBox
+    Left = 983
+    Top = 16
+    Width = 138
+    Height = 22
+    Style = csOwnerDrawFixed
+    Anchors = [akTop, akRight]
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ItemHeight = 16
+    ItemIndex = 3
+    ParentFont = False
+    TabOrder = 6
+    Text = #1042#1089#1077
+    Items.Strings = (
+      #1052#1072#1090#1077#1088#1080#1072#1083#1099
+      #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
+      #1052#1057#1063
+      #1042#1089#1077)
+  end
+  object Panel1: TPanel
+    Left = -32
+    Top = 42
+    Width = 1600
+    Height = 4
+    Anchors = [akLeft, akTop, akRight]
+    Color = clActiveCaption
+    TabOrder = 7
   end
   object SaveDialog1: TSaveDialog
-    Left = 896
-    Top = 72
+    Left = 568
+    Top = 936
   end
   object ExcelApplication1: TExcelApplication
     AutoConnect = False
     ConnectKind = ckRunningOrNew
     AutoQuit = False
-    Left = 816
-    Top = 16
+    Left = 600
+    Top = 936
   end
   object ExcelWorksheet1: TExcelWorksheet
     AutoConnect = False
     ConnectKind = ckRunningOrNew
-    Left = 848
-    Top = 24
+    Left = 632
+    Top = 936
   end
   object ExcelWorkbook1: TExcelWorkbook
     AutoConnect = False
     ConnectKind = ckRunningOrNew
-    Left = 888
-    Top = 24
+    Left = 664
+    Top = 936
+  end
+  object DataSource: TOraDataSource
+    DataSet = OraQuery
+    Left = 864
+    Top = 936
+  end
+  object OraQuery: TOraQuery
+    Session = Form1.OraSession1
+    ReadOnly = True
+    Left = 896
+    Top = 936
+    object OraQueryKOD: TStringField
+      FieldName = 'KOD'
+      ReadOnly = True
+      Size = 255
+    end
+    object OraQueryMTR_NAME: TStringField
+      FieldName = 'MTR_NAME'
+      ReadOnly = True
+      Size = 255
+    end
+    object OraQueryPOTR: TFloatField
+      FieldName = 'POTR'
+      ReadOnly = True
+    end
+    object OraQueryED: TStringField
+      FieldName = 'ED'
+      ReadOnly = True
+    end
+    object OraQueryPOTR_UCHET: TFloatField
+      FieldName = 'POTR_UCHET'
+      ReadOnly = True
+    end
+    object OraQueryED_UCHET: TStringField
+      FieldName = 'ED_UCHET'
+      ReadOnly = True
+    end
+    object OraQueryZAPAS_POST: TFloatField
+      FieldName = 'ZAPAS_POST'
+    end
+    object OraQueryZAPAS_POST_UCHET: TFloatField
+      FieldName = 'ZAPAS_POST_UCHET'
+    end
+    object OraQueryZAPAS_POST_SUB: TFloatField
+      FieldName = 'ZAPAS_POST_SUB'
+    end
+    object OraQueryZAPAS_POST_SUB_UCHET: TFloatField
+      FieldName = 'ZAPAS_POST_SUB_UCHET'
+    end
+    object OraQueryDEFICIT: TFloatField
+      FieldName = 'DEFICIT'
+      ReadOnly = True
+    end
+    object OraQueryDEFICIT_UCHET: TFloatField
+      FieldName = 'DEFICIT_UCHET'
+      ReadOnly = True
+    end
+    object OraQueryDATE_DEFICIT0: TStringField
+      FieldName = 'DATE_DEFICIT0'
+      ReadOnly = True
+    end
   end
 end

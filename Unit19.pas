@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Grids, DBGridEh, DB, MemDS, DBAccess, Ora;
+  Dialogs, StdCtrls, Grids, DBGridEh, DB, MemDS, DBAccess, Ora, GridsEh;
 
 type
   TForm19 = class(TForm)

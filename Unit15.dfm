@@ -107,7 +107,7 @@ object Form15: TForm15
     Top = 8
     Width = 191
     Height = 154
-    Date = 41393.551068518520000000
+    Date = 41393.455676076390000000
     TabOrder = 3
     Visible = False
     OnDblClick = MonthCalendar1DblClick
@@ -133,10 +133,10 @@ object Form15: TForm15
     Left = 120
     Top = 112
     Width = 145
-    Height = 21
+    Height = 19
+    Style = csOwnerDrawFixed
     ItemHeight = 13
     TabOrder = 6
-    Text = #1055#1086' '#1074#1089#1077#1084
   end
   object CheckBox1: TCheckBox
     Left = 152
@@ -146,6 +146,7 @@ object Form15: TForm15
     Hint = #1044#1086#1073#1072#1074#1080#1090' '#1074' '#1086#1090#1095#1077#1090' '#1074#1089#1077' '#1087#1086' '#1079#1080#1094#1080#1080' '#1089' '#1087#1086#1090#1088#1077#1073#1085#1086#1089#1090#1100#1102
     Caption = #1057' '#1087#1086#1090#1088#1077#1073#1085#1086#1089#1090#1100#1102
     TabOrder = 7
+    Visible = False
   end
   object OraQuery1: TOraQuery
     Session = Form1.OraSession1

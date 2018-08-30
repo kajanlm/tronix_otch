@@ -141,7 +141,6 @@ object Form9: TForm9
       'where date_end is null'
       'order by zavn')
     ReadOnly = True
-    Active = True
     Left = 384
   end
   object OraDataSource1: TOraDataSource
@@ -159,7 +158,6 @@ object Form9: TForm9
     MasterFields = 'PROJECT_ID'
     DetailFields = 'ID_PROJECT'
     ReadOnly = True
-    Active = True
     Left = 320
     ParamData = <
       item

@@ -29,6 +29,7 @@ object Form19: TForm19
     Width = 753
     Height = 441
     DataSource = OraDataSource1
+    Flat = False
     FooterColor = clWindow
     FooterFont.Charset = DEFAULT_CHARSET
     FooterFont.Color = clWindowText

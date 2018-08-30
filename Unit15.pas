@@ -52,6 +52,9 @@ Edit1.Text:=DateToStr(ENDOfTheMonth(now));
 ComboBox1.Items.Add('Материалы');
 ComboBox1.Items.Add('Оборудование');
 ComboBox1.Items.Add('МСЧ');
+ComboBox1.Items.Add('По всем');
+
+Combobox1.ItemIndex := 3;
 
 end;
 
@@ -85,8 +88,9 @@ begin
   edit5.Text:='15';
   Edit3.Text:='';
   Edit2.Text:='Выбери ТН или ГРУППУ';
-   ComboBox1.Clear;
-   ComboBox1.Text:='По всем';
+
+  ComboBox1.Clear;
+  //ComboBox1.Text:='По всем';
 end;
 
 end.

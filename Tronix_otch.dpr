@@ -74,7 +74,7 @@ begin
   Application.CreateForm(TForm13, Form13);
   Application.CreateForm(TForm14, Form14);
   Application.CreateForm(TForm15, Form15);
-  Application.CreateForm(TDIF_OTCH_FORM, DIF_OTCH_FORM);
+  //Application.CreateForm(TDIF_OTCH_FORM, DIF_OTCH_FORM);
   Application.CreateForm(TForm17, Form17);
   Application.CreateForm(TForm18, Form18);
   Application.CreateForm(TForm19, Form19);

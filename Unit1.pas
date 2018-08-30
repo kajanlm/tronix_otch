@@ -127,7 +127,7 @@ end;
 
 procedure TForm1.N6Click(Sender: TObject);
 begin
-   form9.Caption:='Дефицит по номенклатуре';
+  form9.Caption:='Дефицит по номенклатуре';
   form9.ShowModal();
 end;
 
