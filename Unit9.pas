@@ -55,7 +55,6 @@ Form10.ShowModal();
 end;
 if form9.caption='Дефицит по номенклатуре' then
 begin
-//Form15.ShowModal();
 Application.CreateForm(TDIF_OTCH_FORM, DIF_OTCH_FORM);
 DIF_OTCH_FORM.ShowModal();
 DIF_OTCH_FORM.Free;

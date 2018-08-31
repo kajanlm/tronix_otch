@@ -38,13 +38,28 @@ type
     Edit1: TEdit;
     cb_typeelms: TComboBox;
     Panel1: TPanel;
+    DBGrid1: TDBGrid;
+    OraDataSource1: TOraDataSource;
+    OraQueryS: TOraQuery;
+    Edit2: TEdit;
+    Button2: TButton;
+    Button3: TButton;
+    cb_invi_typepodr: TComboBox;
+    cb_invi_podr: TComboBox;
+    cb_invi_podr_name: TComboBox;
     procedure Button1Click(Sender: TObject);
     procedure DBGridEh1GetCellParams(Sender: TObject; Column: TColumnEh;
       AFont: TFont; var Background: TColor; State: TGridDrawState);
     procedure CalcDeficit(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure cb_typepodrChange(Sender: TObject);
+    procedure cb_podrChange(Sender: TObject);
+    procedure cb_typeelmsChange(Sender: TObject);
   private
     { Private declarations }
+    procedure Execute_SQL(SQL: string);
   public
     { Public declarations }
   end;
@@ -63,6 +78,7 @@ var
 
 SQL,
 ELEM_DEP,
+ELEM_DEP_TYPE,
 ELEM_TYPE
 : string;
 
@@ -78,30 +94,41 @@ Reset(f);
 readln(f, SQL);
 closefile(f);
 
-(*
-if Form15.Edit5.text = '%' then
-  ELEM_DEP := '1'
+if cb_typepodr.ItemIndex = 0 then
+begin
+  ELEM_DEP := '1';
+  ELEM_DEP_TYPE := '1 = 1';
+end
 else
-  ELEM_DEP := '(SELECT DISTINCT DEP_ID FROM KADRY_DEP WHERE NOMER = '+#39+Form15.Edit5.Text+#39+')';
-*)
+begin
+
+  if cb_podr.ItemIndex = -1 then
+    ELEM_DEP := '1'
+  else
+    ELEM_DEP := cb_invi_podr.Items[cb_podr.ItemIndex];
+
+  ELEM_DEP_TYPE := 'TYPE_DEP_TYPE_DEP_ID = ' + cb_invi_typepodr.Items[cb_typepodr.ItemIndex];
+end;
+
 
 case cb_TypeElms.ItemIndex of
   0 : ELEM_TYPE := 'tronix_select_mat(TRONIX_SPRAV.tree_tree_id, ''01'' ) = 0 AND NVL(TRONIX_SPRAV.CAN_DO_SELF, 0) <> 1';
   1 : ELEM_TYPE := 'tronix_select_mat(TRONIX_SPRAV.tree_tree_id, ''01'' ) = 1 AND NVL(TRONIX_SPRAV.CAN_DO_SELF, 0) <> 1';
   2 : ELEM_TYPE := 'NVL(TRONIX_SPRAV.CAN_DO_SELF, 0) = 1';
-  3 : ELEM_TYPE := '1=1';
+  3 : ELEM_TYPE := '1 = 1';
 else
-  ELEM_TYPE := '1=1';
+  ELEM_TYPE := '1 = 1';
 end;
 
 SQL := StringReplace(SQL, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
 SQL := StringReplace(SQL, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCase]);
-SQL := StringReplace(SQL, '<SQL_FOR_TYPE_ELEMS>', ELEM_TYPE, [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<TYPE_ELEMS>', ELEM_TYPE, [rfReplaceAll, rfIgnoreCase]);
 
 //!!«¿Ã≈Õ€ ¬ Œ¡≈ —“Œ–ŒÕ€ («¿Ã≈Õ»À» Õ¿, «¿Ã≈Õ»ÀŒ ÃÕŒﬁ “Œ “Œ...)!!
+//œ–Œ¬≈–»“‹ ‘»À‹“–¿÷»ﬁ œŒ “»œ” (Ã—◊, Œ¡Œ–”ƒ. » “.ƒ.)!!!
 
 showmessage(SQL);
-//edit2.Text := SQL;
 
 OraQuery.Close;
 OraQuery.SQL.Text := SQL;
@@ -109,9 +136,11 @@ OraQuery.ExecSQL;
 
 LOCK_BOX.Visible := false;
 
-Button1.Enabled := true;
-
-//DataSet.Delta := OraQuery.Delta;
+DBGridEh1.Enabled := true;
+if OraQuery.RecordCount <> 0 then
+  Button1.Enabled := true
+else
+  DBGridEh1.Enabled := false;
 
 (*
 OraQuery.First;
@@ -137,7 +166,7 @@ begin
 end;
 *)
 
-end;   //36840-4789, 2 = 32050     12800 - 1495 =  11305 ( + 19200)
+end;
 
 procedure TDIF_OTCH_FORM.Button1Click(Sender: TObject);
 var
@@ -179,9 +208,116 @@ begin
 
 end;
 
+procedure TDIF_OTCH_FORM.Execute_SQL(SQL: string);
+begin
+LOCK_BOX.Visible := true;
+
+edit1.Text := SQL;
+
+OraQueryS.Close;
+OraQueryS.SQL.Text := SQL;
+OraQueryS.Open;
+end;
+
+procedure TDIF_OTCH_FORM.Button3Click(Sender: TObject);
+begin
+OraQueryS.Close;
+OraQueryS.SQL.Text := Edit2.Text;
+OraQueryS.Open;
+end;
+
+procedure TDIF_OTCH_FORM.Button2Click(Sender: TObject);
+begin
+edit2.text := '';
+end;
+
 procedure TDIF_OTCH_FORM.FormShow(Sender: TObject);
 begin
-(* *)
+cb_typepodr.Clear;
+cb_podr.Clear;
+
+cb_invi_typepodr.Clear;
+cb_invi_podr.Clear;
+
+Execute_SQL('SELECT * FROM KADRY_TYPE_DEP WHERE KOD in (''01'', ''02'', ''04'', ''05'', ''07'', ''08'') ORDER BY NAME ASC');
+
+cb_typepodr.Items.Add('«‡‚Ó‰');
+cb_invi_typepodr.Items.Add('ZAVOD');
+
+OraQueryS.First;
+while not OraQueryS.Eof do
+begin
+  cb_typepodr.Items.Add(OraQueryS.FieldByName('NAME').asString);
+  cb_invi_typepodr.Items.Add(OraQueryS.FieldByName('type_dep_id').asString);
+
+  OraQueryS.Next;
+end;
+
+cb_typepodr.ItemIndex := 0;
+cb_podr.Items.Add('ﬂ—«');
+cb_podr.ItemIndex := 0;
+edit1.Text := 'ﬂÓÒÎ‡‚ÒÍËÈ ÒÛ‰ÓÒÚÓËÚÂÎ¸Ì˚È Á‡‚Ó‰';
+
+end;
+
+procedure TDIF_OTCH_FORM.cb_typepodrChange(Sender: TObject);
+begin
+
+LOCK_BOX.Visible := true;
+Button1.Enabled := false;
+
+if cb_typepodr.ItemIndex = -1 then
+  exit;
+
+cb_podr.Clear;
+cb_invi_podr.Clear;
+cb_invi_podr_name.Clear;
+
+if cb_typepodr.ItemIndex <> 0 then
+begin
+  Execute_SQL('SELECT * FROM KADRY_DEP WHERE TYPE_DEP_TYPE_DEP_ID = ' + cb_invi_typepodr.Items[cb_typepodr.ItemIndex]);
+
+  OraQueryS.First;
+  while not OraQueryS.Eof do
+  begin
+    cb_podr.Items.Add(OraQueryS.FieldByName('NOMER').asString);
+    cb_invi_podr.Items.Add(OraQueryS.FieldByName('DEP_ID').asString);
+    cb_invi_podr_name.Items.Add(OraQueryS.FieldByName('NAME').asString);
+
+    OraQueryS.Next;
+  end;
+
+cb_podr.ItemIndex := -1;
+cb_podr.Enabled := true;
+edit1.text := '';
+
+end
+else
+begin
+  cb_podr.Enabled := false;
+  cb_podr.Items.Add('ﬂ—«');
+  cb_podr.ItemIndex := 0;
+  edit1.Text := 'ﬂÓÒÎ‡‚ÒÍËÈ ÒÛ‰ÓÒÚÓËÚÂÎ¸Ì˚È Á‡‚Ó‰';
+end;
+
+end;
+
+procedure TDIF_OTCH_FORM.cb_podrChange(Sender: TObject);
+begin
+
+LOCK_BOX.Visible := true;
+Button1.Enabled := false;
+
+if cb_podr.ItemIndex = -1 then
+  exit;
+
+Edit1.Text := cb_invi_podr_name.Items[cb_podr.ItemIndex];
+end;
+
+procedure TDIF_OTCH_FORM.cb_typeelmsChange(Sender: TObject);
+begin
+LOCK_BOX.Visible := true;
+Button1.Enabled := false;
 end;
 
 end.

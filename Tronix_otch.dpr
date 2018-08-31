@@ -59,6 +59,7 @@ uses
 
 begin
   Application.Initialize;
+  Application.Title := 'TRONIX ־עקועû';
   Application.CreateForm(TForm1, Form1);
   Application.CreateForm(TForm2, Form2);
   Application.CreateForm(TForm3, Form3);
@@ -74,7 +75,6 @@ begin
   Application.CreateForm(TForm13, Form13);
   Application.CreateForm(TForm14, Form14);
   Application.CreateForm(TForm15, Form15);
-  //Application.CreateForm(TDIF_OTCH_FORM, DIF_OTCH_FORM);
   Application.CreateForm(TForm17, Form17);
   Application.CreateForm(TForm18, Form18);
   Application.CreateForm(TForm19, Form19);
