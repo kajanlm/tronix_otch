@@ -197,8 +197,9 @@ tx:=tx+' group by nomer_tk,name, spkod,spr_id,sprname,sprkod,summ_vidano,up_texk
 
 tx:=tx+' order by name)';
 
-if Form27.CheckBox2.Checked=true then
-tx:=tx+' where  potr-cex>0';
+//if Form27.CheckBox2.Checked=true then
+//tx:=tx+' where  potr-cex>0';
+
 ////if    (Form27.CheckBox5.Checked=true) and (Form27.CheckBox2.Checked=true) then
 ////tx:=tx+' and  INSTR(UPPER(name),''“–”¡¿'',1)!=0'
 ////else if (Form27.CheckBox5.Checked=true) and (Form27.CheckBox2.Checked=false) then

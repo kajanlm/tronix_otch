@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Grids, DBGridEh, DB, DBAccess, Ora, MemDS, ExcelXP, OleServer,
-  StdCtrls,DBGridEhImpExp, GridsEh, DBGrids, DBClient, ExtCtrls;
+  StdCtrls,DBGridEhImpExp, GridsEh, DBGrids, DBClient, ExtCtrls, CheckLst,
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP;
 
 type
   TDIF_OTCH_FORM = class(TForm)
@@ -25,7 +26,6 @@ type
     OraQueryED_UCHET: TStringField;
     OraQueryDEFICIT: TFloatField;
     OraQueryDEFICIT_UCHET: TFloatField;
-    OraQueryDATE_DEFICIT0: TStringField;
     OraQueryZAPAS_POST: TFloatField;
     OraQueryZAPAS_POST_UCHET: TFloatField;
     OraQueryZAPAS_POST_SUB: TFloatField;
@@ -36,7 +36,6 @@ type
     Label2: TLabel;
     cb_podr: TComboBox;
     Edit1: TEdit;
-    cb_typeelms: TComboBox;
     Panel1: TPanel;
     DBGrid1: TDBGrid;
     OraDataSource1: TOraDataSource;
@@ -47,6 +46,11 @@ type
     cb_invi_typepodr: TComboBox;
     cb_invi_podr: TComboBox;
     cb_invi_podr_name: TComboBox;
+    filter_type: TCheckListBox;
+    ComboBox1: TComboBox;
+    IdHTTP1: TIdHTTP;
+    OraQuerySPRAV_ID: TFloatField;
+    OraQueryZAM_FLAG: TStringField;
     procedure Button1Click(Sender: TObject);
     procedure DBGridEh1GetCellParams(Sender: TObject; Column: TColumnEh;
       AFont: TFont; var Background: TColor; State: TGridDrawState);
@@ -57,42 +61,80 @@ type
     procedure cb_typepodrChange(Sender: TObject);
     procedure cb_podrChange(Sender: TObject);
     procedure cb_typeelmsChange(Sender: TObject);
+    procedure filter_typeClick(Sender: TObject);
+    procedure filter_typeClickCheck(Sender: TObject);
+    procedure FormClick(Sender: TObject);
+    procedure ComboBox1Click(Sender: TObject);
+    procedure ComboBox1DropDown(Sender: TObject);
+    procedure LOCK_BOXMouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
+    procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
+    procedure DBGridEh1DblClick(Sender: TObject);
+    procedure DBGridEh1MouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
   private
     { Private declarations }
     procedure Execute_SQL(SQL: string);
+    function ServerRequest(s : string) : string;
   public
+    function SCAlive : boolean;
     { Public declarations }
   end;
 
+const
+SERVER_ADDR = 'http://192.168.10.15:7777/server/tronix_otch/';
+SERVER_FILE_PART = '.sql';
+
 var
   DIF_OTCH_FORM: TDIF_OTCH_FORM;
+  ELEM_DEP,
+  ELEM_DEP_TYPE,
+  ELEM_TYPE
+  : string;
 
 implementation
 
-uses Unit15, Unit5, Unit9;
+uses Unit15, Unit5, Unit9, addzams;
 
 {$R *.dfm}
+
+function TDIF_OTCH_FORM.SCAlive : boolean;
+begin
+
+try
+  idhttp1.Get(SERVER_ADDR + 'dummy');
+except
+  showmessage('Œ¯Ë·Í‡ ÒÓÂ‰ËÌÂÌËˇ Ò ÒÂ‚ÂÓÏ!');
+  SCAlive := false;
+  exit;
+end;
+
+SCAlive := true;
+end;
+
+function TDIF_OTCH_FORM.ServerRequest(s : string) : string;
+begin
+try
+  ServerRequest := idhttp1.Get(SERVER_ADDR + s + SERVER_FILE_PART);
+except
+  showmessage('ERROR');
+  Application.Terminate;
+end;
+end;
 
 procedure TDIF_OTCH_FORM.CalcDeficit(Sender: TObject);
 var
 
-SQL,
-ELEM_DEP,
-ELEM_DEP_TYPE,
-ELEM_TYPE
+SQL
 : string;
-
-f
-: textfile;
 
 begin
 
-//exit;
-
-AssignFile(f, 'c:\SQL_FROM_MTR_EX.sql');
-Reset(f);
-readln(f, SQL);
-closefile(f);
+if SCAlive then
+  SQL := ServerRequest('DEFICIT')
+else
+  exit;
 
 if cb_typepodr.ItemIndex = 0 then
 begin
@@ -110,7 +152,7 @@ begin
   ELEM_DEP_TYPE := 'TYPE_DEP_TYPE_DEP_ID = ' + cb_invi_typepodr.Items[cb_typepodr.ItemIndex];
 end;
 
-
+(*
 case cb_TypeElms.ItemIndex of
   0 : ELEM_TYPE := 'tronix_select_mat(TRONIX_SPRAV.tree_tree_id, ''01'' ) = 0 AND NVL(TRONIX_SPRAV.CAN_DO_SELF, 0) <> 1';
   1 : ELEM_TYPE := 'tronix_select_mat(TRONIX_SPRAV.tree_tree_id, ''01'' ) = 1 AND NVL(TRONIX_SPRAV.CAN_DO_SELF, 0) <> 1';
@@ -119,6 +161,29 @@ case cb_TypeElms.ItemIndex of
 else
   ELEM_TYPE := '1 = 1';
 end;
+*)
+
+ELEM_TYPE := '(';
+
+if filter_type.Checked[0] then
+  ELEM_TYPE := ELEM_TYPE + '(tronix_select_mat(TRONIX_SPRAV.tree_tree_id, ''01'' ) = 1 AND NVL(TRONIX_SPRAV.CAN_DO_SELF, 0) <> 1) or ';
+
+if filter_type.Checked[1] then
+  ELEM_TYPE := ELEM_TYPE + '(tronix_select_mat(TRONIX_SPRAV.tree_tree_id, ''01'' ) = 0 AND NVL(TRONIX_SPRAV.CAN_DO_SELF, 0) <> 1) or '
+else
+  ELEM_TYPE := ELEM_TYPE + '(1 = 2) or ';
+
+if filter_type.Checked[2] then
+  ELEM_TYPE := ELEM_TYPE + '(NVL(TRONIX_SPRAV.CAN_DO_SELF, 0) = 1) or '
+else
+  ELEM_TYPE := ELEM_TYPE + '(1 = 2) or ';
+
+if filter_type.Checked[3] then
+  ELEM_TYPE := ELEM_TYPE + '(1 = 1)'
+else
+  ELEM_TYPE := ELEM_TYPE + '(1 = 2)';
+
+ELEM_TYPE := ELEM_TYPE + ')';
 
 SQL := StringReplace(SQL, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
 SQL := StringReplace(SQL, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCase]);
@@ -126,7 +191,6 @@ SQL := StringReplace(SQL, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnor
 SQL := StringReplace(SQL, '<TYPE_ELEMS>', ELEM_TYPE, [rfReplaceAll, rfIgnoreCase]);
 
 //!!«¿Ã≈Õ€ ¬ Œ¡≈ —“Œ–ŒÕ€ («¿Ã≈Õ»À» Õ¿, «¿Ã≈Õ»ÀŒ ÃÕŒﬁ “Œ “Œ...)!!
-//œ–Œ¬≈–»“‹ ‘»À‹“–¿÷»ﬁ œŒ “»œ” (Ã—◊, Œ¡Œ–”ƒ. » “.ƒ.)!!!
 
 showmessage(SQL);
 
@@ -141,30 +205,6 @@ if OraQuery.RecordCount <> 0 then
   Button1.Enabled := true
 else
   DBGridEh1.Enabled := false;
-
-(*
-OraQuery.First;
-DataSet.Insert;
-while OraQuery.Eof do
-begin
-  DataSet.FieldByName('KOD').Value :=                  OraQuery.FieldByName('KOD').Value;
-  DataSet.FieldByName('MTR_NAME').Value :=             OraQuery.FieldByName('MTR_NAME').Value;
-  DataSet.FieldByName('POTR').Value :=                 OraQuery.FieldByName('POTR').Value;
-  DataSet.FieldByName('ED').Value :=                   OraQuery.FieldByName('ED').Value;
-  DataSet.FieldByName('POTR_UCHET').Value :=           OraQuery.FieldByName('POTR_UCHET').Value;
-  DataSet.FieldByName('ED_UCHET').Value :=             OraQuery.FieldByName('ED_UCHET').Value;
-  DataSet.FieldByName('ZAPAS_POST').Value :=           OraQuery.FieldByName('ZAPAS_POST').Value;
-  DataSet.FieldByName('ZAPAS_POST_UCHET').Value :=     OraQuery.FieldByName('ZAPAS_POST_UCHET').Value;
-  DataSet.FieldByName('ZAPAS_POST_SUB').Value :=       OraQuery.FieldByName('ZAPAS_POST_SUB').Value;
-  DataSet.FieldByName('ZAPAS_POST_SUB_UCHET').Value := OraQuery.FieldByName('ZAPAS_POST_SUB_UCHET').Value;
-  DataSet.FieldByName('DEFICIT').Value :=              OraQuery.FieldByName('DEFICIT').Value;
-  DataSet.FieldByName('DEFICIT_UCHET').Value :=        OraQuery.FieldByName('DEFICIT_UCHET').Value;
-  DataSet.FieldByName('DATE_DEFICIT0').Value :=        OraQuery.FieldByName('DATE_DEFICIT0').Value;
-
-  OraQuery.Next;
-  DataSet.Append;
-end;
-*)
 
 end;
 
@@ -233,6 +273,7 @@ end;
 
 procedure TDIF_OTCH_FORM.FormShow(Sender: TObject);
 begin
+
 cb_typepodr.Clear;
 cb_podr.Clear;
 
@@ -258,6 +299,8 @@ cb_podr.Items.Add('ﬂ—«');
 cb_podr.ItemIndex := 0;
 edit1.Text := 'ﬂÓÒÎ‡‚ÒÍËÈ ÒÛ‰ÓÒÚÓËÚÂÎ¸Ì˚È Á‡‚Ó‰';
 
+filter_type.Checked[3] := true;
+
 end;
 
 procedure TDIF_OTCH_FORM.cb_typepodrChange(Sender: TObject);
@@ -275,7 +318,7 @@ cb_invi_podr_name.Clear;
 
 if cb_typepodr.ItemIndex <> 0 then
 begin
-  Execute_SQL('SELECT * FROM KADRY_DEP WHERE TYPE_DEP_TYPE_DEP_ID = ' + cb_invi_typepodr.Items[cb_typepodr.ItemIndex]);
+  Execute_SQL('SELECT * FROM KADRY_DEP WHERE TYPE_DEP_TYPE_DEP_ID = ' + cb_invi_typepodr.Items[cb_typepodr.ItemIndex] + ' ORDER BY NOMER ASC');
 
   OraQueryS.First;
   while not OraQueryS.Eof do
@@ -318,6 +361,129 @@ procedure TDIF_OTCH_FORM.cb_typeelmsChange(Sender: TObject);
 begin
 LOCK_BOX.Visible := true;
 Button1.Enabled := false;
+end;
+
+procedure TDIF_OTCH_FORM.filter_typeClick(Sender: TObject);
+begin
+if ((not filter_type.Checked[0]) and (not filter_type.Checked[1]) and (not filter_type.Checked[2])) then
+  filter_type.Checked[3] := true;
+
+if ((filter_type.Checked[0]) or (filter_type.Checked[1]) or (filter_type.Checked[2])) then
+  filter_type.Checked[3] := false;
+  
+LOCK_BOX.Visible := true;
+end;
+
+procedure TDIF_OTCH_FORM.filter_typeClickCheck(Sender: TObject);
+begin
+if ((not filter_type.Checked[0]) and (not filter_type.Checked[1]) and (not filter_type.Checked[2])) then
+  filter_type.Checked[3] := true;
+
+if ((filter_type.Checked[0]) or (filter_type.Checked[1]) or (filter_type.Checked[2])) then
+  filter_type.Checked[3] := false;
+
+LOCK_BOX.Visible := true;
+end;
+
+procedure TDIF_OTCH_FORM.FormClick(Sender: TObject);
+begin
+filter_type.Visible := false;
+combobox1.Visible := true;
+end;
+
+procedure TDIF_OTCH_FORM.ComboBox1Click(Sender: TObject);
+begin
+combobox1.Visible := false;
+filter_type.Visible := true;
+end;
+
+procedure TDIF_OTCH_FORM.ComboBox1DropDown(Sender: TObject);
+begin
+combobox1.Visible := false;
+filter_type.Visible := true;
+end;
+
+procedure TDIF_OTCH_FORM.LOCK_BOXMouseMove(Sender: TObject;
+  Shift: TShiftState; X, Y: Integer);
+begin
+filter_type.Visible := false;
+combobox1.Visible := true;
+end;
+
+procedure TDIF_OTCH_FORM.FormMouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: Integer);
+begin
+filter_type.Visible := false;
+combobox1.Visible := true;
+end;
+
+procedure TDIF_OTCH_FORM.DBGridEh1DblClick(Sender: TObject);
+
+var
+
+SQL,
+SQL_Zam,
+ELEM_DEP_STYPE
+: string;
+
+begin
+
+if SCAlive then
+  SQL := ServerRequest('_ZAMENY') //_ZAMENY
+else
+  exit;
+
+//showmessage('FLAGS [Deficit = ' + dbgrideh1.DataSource.DataSet.FieldByName('FLAG_DEFICIT0').asString + ', Zam = ' + dbgrideh1.DataSource.DataSet.FieldByName('ZAM_FLAG').asString + ']');
+
+if ELEM_DEP_TYPE = '1 = 1' then
+  ELEM_DEP_STYPE := 'TYPE_DEP_TYPE_DEP_ID is not null or (1 = 1)'
+else
+  ELEM_DEP_STYPE := ELEM_DEP_TYPE;
+
+SQL := StringReplace(SQL, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<STYPE_DEP_ID>', ELEM_DEP_STYPE, [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<SPRAV_ID>', dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString, [rfReplaceAll, rfIgnoreCase]);
+
+showmessage(SQL);
+
+if SCAlive then
+  SQL_Zam := ServerRequest('ZAMENY_')
+else
+  exit;
+
+SQL_Zam := StringReplace(SQL_Zam, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
+SQL_Zam := StringReplace(SQL_Zam, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCase]);
+SQL_Zam := StringReplace(SQL_Zam, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
+SQL_Zam := StringReplace(SQL_Zam, '<STYPE_DEP_ID>', ELEM_DEP_STYPE, [rfReplaceAll, rfIgnoreCase]);
+SQL_Zam := StringReplace(SQL_Zam, '<SPRAV_ID>', dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString, [rfReplaceAll, rfIgnoreCase]);
+
+//œ≈–≈¬Œƒ ¬Õ”“–» SQL'‡ — —Œ’–¿Õ≈Õ»≈Ã  Œƒ»–Œ¬ » –”—— »’ —»Ã¬ŒÀŒ¬ (œŒ¬“Œ–Õ€… œ≈–≈’¬¿“)
+
+showmessage(SQL_Zam);
+
+Application.CreateForm(Tzams, zams);
+
+//  08628212000 <- 08628606000
+
+zams.OraQuery.Close;
+zams.OraQuery.SQL.Text := SQL;
+zams.ZAM_FLAG := dbgrideh1.DataSource.DataSet.FieldByName('ZAM_FLAG').asString;
+
+zams.OraQueryZams.Close;
+zams.OraQueryZams.SQL.Text := SQL_Zam;
+
+zams.ShowModal();
+zams.Free;
+
+end;
+
+procedure TDIF_OTCH_FORM.DBGridEh1MouseMove(Sender: TObject;
+  Shift: TShiftState; X, Y: Integer);
+begin
+filter_type.Visible := false;
+combobox1.Visible := true;
 end;
 
 end.

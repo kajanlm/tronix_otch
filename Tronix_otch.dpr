@@ -53,7 +53,8 @@ uses
   Unit48 in 'Unit48.pas' {Form48},
   Unit49 in 'Unit49.pas' {Form49},
   Unit50 in 'Unit50.pas' {Form50},
-  Unit51 in 'Unit51.pas' {Form51};
+  Unit51 in 'Unit51.pas' {Form51},
+  addzams in 'addzams.pas' {zams};
 
 {$R *.res}
 
