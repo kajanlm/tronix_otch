@@ -73,6 +73,8 @@ type
     procedure DBGridEh1DblClick(Sender: TObject);
     procedure DBGridEh1MouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
+    procedure OraQueryBeforeOpen(DataSet: TDataSet);
+    procedure OraQueryAfterOpen(DataSet: TDataSet);
   private
     { Private declarations }
     procedure Execute_SQL(SQL: string);
@@ -92,6 +94,8 @@ var
   ELEM_DEP_TYPE,
   ELEM_TYPE
   : string;
+  
+  vCursor: TCursor;
 
 implementation
 
@@ -421,6 +425,7 @@ procedure TDIF_OTCH_FORM.DBGridEh1DblClick(Sender: TObject);
 
 var
 
+SQL_Tx,
 SQL,
 SQL_Zam,
 ELEM_DEP_STYPE
@@ -429,16 +434,25 @@ ELEM_DEP_STYPE
 begin
 
 if SCAlive then
-  SQL := ServerRequest('_ZAMENY') //_ZAMENY
+begin
+  SQL_Tx := ServerRequest('TEXKOMPL_FROM_POTR');
+  SQL := ServerRequest('_ZAMENY'); //_ZAMENY
+  SQL_Zam := ServerRequest('ZAMENY_');
+end
 else
   exit;
-
-//showmessage('FLAGS [Deficit = ' + dbgrideh1.DataSource.DataSet.FieldByName('FLAG_DEFICIT0').asString + ', Zam = ' + dbgrideh1.DataSource.DataSet.FieldByName('ZAM_FLAG').asString + ']');
 
 if ELEM_DEP_TYPE = '1 = 1' then
   ELEM_DEP_STYPE := 'TYPE_DEP_TYPE_DEP_ID is not null or (1 = 1)'
 else
   ELEM_DEP_STYPE := ELEM_DEP_TYPE;
+
+SQL_Tx := StringReplace(SQL_Tx, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
+SQL_Tx := StringReplace(SQL_Tx, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCase]);
+SQL_Tx := StringReplace(SQL_Tx, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
+SQL_Tx := StringReplace(SQL_Tx, '<SP_ID>', dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString, [rfReplaceAll, rfIgnoreCase]);
+
+showmessage(SQL_Tx);
 
 SQL := StringReplace(SQL, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
 SQL := StringReplace(SQL, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCase]);
@@ -448,18 +462,14 @@ SQL := StringReplace(SQL, '<SPRAV_ID>', dbgrideh1.DataSource.DataSet.FieldByName
 
 showmessage(SQL);
 
-if SCAlive then
-  SQL_Zam := ServerRequest('ZAMENY_')
-else
-  exit;
-
 SQL_Zam := StringReplace(SQL_Zam, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
-SQL_Zam := StringReplace(SQL_Zam, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCase]);
-SQL_Zam := StringReplace(SQL_Zam, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
-SQL_Zam := StringReplace(SQL_Zam, '<STYPE_DEP_ID>', ELEM_DEP_STYPE, [rfReplaceAll, rfIgnoreCase]);
+//SQL_Zam := StringReplace(SQL_Zam, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCase]);
+//SQL_Zam := StringReplace(SQL_Zam, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
+//SQL_Zam := StringReplace(SQL_Zam, '<STYPE_DEP_ID>', ELEM_DEP_STYPE, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zam := StringReplace(SQL_Zam, '<SPRAV_ID>', dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString, [rfReplaceAll, rfIgnoreCase]);
 
 //œ≈–≈¬Œƒ ¬Õ”“–» SQL'‡ — —Œ’–¿Õ≈Õ»≈Ã  Œƒ»–Œ¬ » –”—— »’ —»Ã¬ŒÀŒ¬ (œŒ¬“Œ–Õ€… œ≈–≈’¬¿“)
+//«¿Ã≈Õ€, !!«¿Ã≈Õﬂ≈ÃŒ≈!! “ŒÀ‹ Œ ƒÀﬂ ¬€¡–¿ÕÕŒ√Œ «¿ ¿«¿ »À» œŒ ¬—≈Ã” «¿¬Œƒ”????
 
 showmessage(SQL_Zam);
 
@@ -467,12 +477,17 @@ Application.CreateForm(Tzams, zams);
 
 //  08628212000 <- 08628606000
 
+zams.OraQueryTX.Close;
+zams.OraQueryTX.SQL.Text := SQL_Tx;
+
 zams.OraQuery.Close;
 zams.OraQuery.SQL.Text := SQL;
 zams.ZAM_FLAG := dbgrideh1.DataSource.DataSet.FieldByName('ZAM_FLAG').asString;
 
 zams.OraQueryZams.Close;
 zams.OraQueryZams.SQL.Text := SQL_Zam;
+
+zams.Caption := '“Âı. ÍÓÏÔÎÂÍÚ/œÓÁËˆËË/«‡ÏÂÌ˚/«‡ÏÂÌËÎË ÔÓ: ' + dbgrideh1.DataSource.DataSet.FieldByName('KOD').asString;
 
 zams.ShowModal();
 zams.Free;
@@ -484,6 +499,18 @@ procedure TDIF_OTCH_FORM.DBGridEh1MouseMove(Sender: TObject;
 begin
 filter_type.Visible := false;
 combobox1.Visible := true;
+end;
+
+procedure TDIF_OTCH_FORM.OraQueryBeforeOpen(DataSet: TDataSet);
+begin
+Screen.Cursor := crHourGlass;
+self.Cursor := Screen.Cursor;
+end;
+
+procedure TDIF_OTCH_FORM.OraQueryAfterOpen(DataSet: TDataSet);
+begin
+self.Cursor := crDefault;
+Screen.Cursor := crDefault;
 end;
 
 end.

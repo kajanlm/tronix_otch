@@ -59,6 +59,7 @@ Application.CreateForm(TDIF_OTCH_FORM, DIF_OTCH_FORM);
 
 if DIF_OTCH_FORM.SCAlive then
 begin
+  DIF_OTCH_FORM.Caption := form9.Caption + ' ' + dbgrideh2.DataSource.DataSet.FieldByName('ZAK').asString;
   DIF_OTCH_FORM.ShowModal();
   DIF_OTCH_FORM.Free;
 end;

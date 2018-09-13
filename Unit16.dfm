@@ -80,7 +80,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     FooterFont.Style = []
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit]
     ReadOnly = True
-    RowHeight = 35
+    RowHeight = 40
     TabOrder = 1
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
@@ -473,11 +473,11 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     ItemIndex = 0
     ParentFont = False
     TabOrder = 15
-    Text = '   ['#1058#1048#1055' '#1052#1040#1058#1045#1056#1048#1040#1051#1054#1042']'
+    Text = '['#1058#1048#1055' '#1053#1054#1052#1045#1053#1050#1051#1040#1058#1059#1056#1067']'
     OnClick = ComboBox1Click
     OnDropDown = ComboBox1DropDown
     Items.Strings = (
-      '   ['#1058#1048#1055' '#1052#1040#1058#1045#1056#1048#1040#1051#1054#1042']')
+      '['#1058#1048#1055' '#1053#1054#1052#1045#1053#1050#1051#1040#1058#1059#1056#1067']')
   end
   object filter_type: TCheckListBox
     Left = 968
@@ -533,6 +533,8 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
   object OraQuery: TOraQuery
     Session = Form1.OraSession1
     ReadOnly = True
+    BeforeOpen = OraQueryBeforeOpen
+    AfterOpen = OraQueryAfterOpen
     Left = 896
     Top = 936
     object OraQueryKOD: TStringField

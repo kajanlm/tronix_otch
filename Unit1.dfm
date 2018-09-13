@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 267
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = #1054#1090#1095#1077#1090#1099' '#1082' Tronix v1.69(b)'
+  Caption = #1054#1090#1095#1077#1090#1099' '#1082' Tronix v1.9.2'
   ClientHeight = 2
   ClientWidth = 984
   Color = clBtnFace
@@ -19,9 +19,6 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object OraSession1: TOraSession
-    Username = '84013'
-    Password = '4427'
-    Server = 'troya'
     ConnectDialog = ConnectDialog1
     Left = 720
   end
