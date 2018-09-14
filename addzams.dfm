@@ -1,11 +1,11 @@
 object zams: Tzams
-  Left = 500
-  Top = 44
+  Left = 472
+  Top = 11
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1047#1072#1084#1077#1085#1099
-  ClientHeight = 896
-  ClientWidth = 719
+  ClientHeight = 882
+  ClientWidth = 721
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,8 +16,8 @@ object zams: Tzams
   Position = poMainFormCenter
   OnShow = FormShow
   DesignSize = (
-    719
-    896)
+    721
+    882)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -377,7 +377,7 @@ object zams: Tzams
   object Panel1: TPanel
     Left = -482
     Top = 394
-    Width = 1225
+    Width = 1227
     Height = 4
     Anchors = [akLeft, akTop, akRight]
     Color = clActiveCaption
@@ -386,7 +386,7 @@ object zams: Tzams
   object Panel2: TPanel
     Left = -466
     Top = 642
-    Width = 1225
+    Width = 1227
     Height = 4
     Anchors = [akLeft, akTop, akRight]
     Color = clActiveCaption
@@ -411,7 +411,7 @@ object zams: Tzams
   object Panel3: TPanel
     Left = -506
     Top = 2
-    Width = 1225
+    Width = 1227
     Height = 4
     Anchors = [akLeft, akTop, akRight]
     Color = clActiveCaption
@@ -420,7 +420,7 @@ object zams: Tzams
   object Panel4: TPanel
     Left = -474
     Top = 258
-    Width = 1225
+    Width = 1227
     Height = 4
     Anchors = [akLeft, akTop, akRight]
     Color = clActiveCaption
@@ -525,6 +525,102 @@ object zams: Tzams
     ParentFont = False
     TabOrder = 9
   end
+  object Panel5: TPanel
+    Left = 8
+    Top = 296
+    Width = 705
+    Height = 97
+    BorderWidth = 5
+    BorderStyle = bsSingle
+    Color = clHighlightText
+    TabOrder = 10
+    object Label11: TLabel
+      Left = 16
+      Top = 19
+      Width = 38
+      Height = 26
+      Caption = #1048#1079':'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -23
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object Label12: TLabel
+      Left = 16
+      Top = 51
+      Width = 53
+      Height = 26
+      Caption = #1044#1083#1103':'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -23
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object Label13: TLabel
+      Left = 72
+      Top = 19
+      Width = 441
+      Height = 26
+      Alignment = taCenter
+      AutoSize = False
+      Caption = #1057#1055#1045#1062#1048#1060#1048#1050#1040#1062#1048#1071': N/A'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clTeal
+      Font.Height = -23
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Label14: TLabel
+      Left = 72
+      Top = 51
+      Width = 441
+      Height = 26
+      Alignment = taCenter
+      AutoSize = False
+      Caption = #1057#1055#1045#1062#1048#1060#1048#1050#1040#1062#1048#1071': N/A'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clNavy
+      Font.Height = -23
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Label15: TLabel
+      Left = 512
+      Top = 19
+      Width = 169
+      Height = 26
+      Alignment = taCenter
+      AutoSize = False
+      Caption = #1055#1086#1079#1080#1094#1080#1103': N/A'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clTeal
+      Font.Height = -23
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Label16: TLabel
+      Left = 512
+      Top = 51
+      Width = 169
+      Height = 26
+      Alignment = taCenter
+      AutoSize = False
+      Caption = #1055#1086#1079#1080#1094#1080#1103': N/A'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clNavy
+      Font.Height = -23
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+    end
+  end
   object OraDataSource: TOraDataSource
     DataSet = OraQuery
     Left = 128
@@ -595,6 +691,7 @@ object zams: Tzams
   object OraQueryTX: TOraQuery
     Session = Form1.OraSession1
     ReadOnly = True
+    AfterScroll = OraQueryTXAfterScroll
     Left = 56
     Top = 912
     object OraQueryTXTX_NOMER: TStringField
@@ -608,11 +705,21 @@ object zams: Tzams
     object OraQueryTXPOTR: TFloatField
       FieldName = 'POTR'
     end
-    object OraQueryTXFSP: TFloatField
-      FieldName = 'FSP'
+    object OraQueryTXFPOZ: TStringField
+      FieldName = 'FPOZ'
+      Size = 255
     end
-    object OraQueryTXRSP: TFloatField
-      FieldName = 'RSP'
+    object OraQueryTXRPOZ: TStringField
+      FieldName = 'RPOZ'
+      Size = 255
+    end
+    object OraQueryTXfIDENT: TStringField
+      FieldName = 'fIDENT'
+      Size = 255
+    end
+    object OraQueryTXrIDENT: TStringField
+      FieldName = 'rIDENT'
+      Size = 255
     end
   end
 end

@@ -533,8 +533,6 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
   object OraQuery: TOraQuery
     Session = Form1.OraSession1
     ReadOnly = True
-    BeforeOpen = OraQueryBeforeOpen
-    AfterOpen = OraQueryAfterOpen
     Left = 896
     Top = 936
     object OraQueryKOD: TStringField

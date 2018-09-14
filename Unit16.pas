@@ -73,8 +73,6 @@ type
     procedure DBGridEh1DblClick(Sender: TObject);
     procedure DBGridEh1MouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
-    procedure OraQueryBeforeOpen(DataSet: TDataSet);
-    procedure OraQueryAfterOpen(DataSet: TDataSet);
   private
     { Private declarations }
     procedure Execute_SQL(SQL: string);
@@ -426,8 +424,8 @@ procedure TDIF_OTCH_FORM.DBGridEh1DblClick(Sender: TObject);
 var
 
 SQL_Tx,
-SQL,
 SQL_Zam,
+SQL_Zams,
 ELEM_DEP_STYPE
 : string;
 
@@ -435,9 +433,9 @@ begin
 
 if SCAlive then
 begin
-  SQL_Tx := ServerRequest('TEXKOMPL_FROM_POTR');
-  SQL := ServerRequest('_ZAMENY'); //_ZAMENY
-  SQL_Zam := ServerRequest('ZAMENY_');
+  SQL_Tx := ServerRequest('TXKOMPL_POS_FROM_POTR');
+  SQL_Zam := ServerRequest('_ZAMENY'); //_ZAMENY
+  SQL_Zams := ServerRequest('ZAMENY_');
 end
 else
   exit;
@@ -454,43 +452,41 @@ SQL_Tx := StringReplace(SQL_Tx, '<SP_ID>', dbgrideh1.DataSource.DataSet.FieldByN
 
 showmessage(SQL_Tx);
 
-SQL := StringReplace(SQL, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
-SQL := StringReplace(SQL, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCase]);
-SQL := StringReplace(SQL, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
-SQL := StringReplace(SQL, '<STYPE_DEP_ID>', ELEM_DEP_STYPE, [rfReplaceAll, rfIgnoreCase]);
-SQL := StringReplace(SQL, '<SPRAV_ID>', dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString, [rfReplaceAll, rfIgnoreCase]);
-
-showmessage(SQL);
-
 SQL_Zam := StringReplace(SQL_Zam, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
-//SQL_Zam := StringReplace(SQL_Zam, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCase]);
-//SQL_Zam := StringReplace(SQL_Zam, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
-//SQL_Zam := StringReplace(SQL_Zam, '<STYPE_DEP_ID>', ELEM_DEP_STYPE, [rfReplaceAll, rfIgnoreCase]);
+SQL_Zam := StringReplace(SQL_Zam, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCase]);
+SQL_Zam := StringReplace(SQL_Zam, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
+SQL_Zam := StringReplace(SQL_Zam, '<STYPE_DEP_ID>', ELEM_DEP_STYPE, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zam := StringReplace(SQL_Zam, '<SPRAV_ID>', dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString, [rfReplaceAll, rfIgnoreCase]);
-
-//œ≈–≈¬Œƒ ¬Õ”“–» SQL'‡ — —Œ’–¿Õ≈Õ»≈Ã  Œƒ»–Œ¬ » –”—— »’ —»Ã¬ŒÀŒ¬ (œŒ¬“Œ–Õ€… œ≈–≈’¬¿“)
-//«¿Ã≈Õ€, !!«¿Ã≈Õﬂ≈ÃŒ≈!! “ŒÀ‹ Œ ƒÀﬂ ¬€¡–¿ÕÕŒ√Œ «¿ ¿«¿ »À» œŒ ¬—≈Ã” «¿¬Œƒ”????
 
 showmessage(SQL_Zam);
 
-Application.CreateForm(Tzams, zams);
+SQL_Zams := StringReplace(SQL_Zams, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
+SQL_Zams := StringReplace(SQL_Zams, '<SPRAV_ID>', dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString, [rfReplaceAll, rfIgnoreCase]);
 
-//  08628212000 <- 08628606000
+showmessage(SQL_Zams);
+
+Application.CreateForm(Tzams, zams);
 
 zams.OraQueryTX.Close;
 zams.OraQueryTX.SQL.Text := SQL_Tx;
 
 zams.OraQuery.Close;
-zams.OraQuery.SQL.Text := SQL;
+zams.OraQuery.SQL.Text := SQL_Zam;
 zams.ZAM_FLAG := dbgrideh1.DataSource.DataSet.FieldByName('ZAM_FLAG').asString;
 
 zams.OraQueryZams.Close;
-zams.OraQueryZams.SQL.Text := SQL_Zam;
+zams.OraQueryZams.SQL.Text := SQL_Zams;
 
 zams.Caption := '“Âı. ÍÓÏÔÎÂÍÚ/œÓÁËˆËË/«‡ÏÂÌ˚/«‡ÏÂÌËÎË ÔÓ: ' + dbgrideh1.DataSource.DataSet.FieldByName('KOD').asString;
 
 zams.ShowModal();
 zams.Free;
+
+//  08628212000 <- 08628606000
+//œ≈–≈¬Œƒ ¬Õ”“–» SQL'‡  (TRANSLATE...)  — —Œ’–¿Õ≈Õ»≈Ã  Œƒ»–Œ¬ » –”—— »’ —»Ã¬ŒÀŒ¬ (œŒ¬“Œ–Õ€… œ≈–≈’¬¿“)
+//¬€–¿¬Õﬂ“‹ ›À≈Ã≈Õ“€ ‘»À‹“–¿÷»» (À≈¡À€    ŒÃ¡Œ¡Œ —¿Ã - –¿«Ã≈– »À»  ŒÕ“”– ++)
+//”ƒ¿À»“‹ »À» —œ–ﬂ“¿“‹ “≈’Õ»◊≈— »≈ ›À≈Ã≈Õ“€,  ŒÃÃ≈Õ“¿–»»
+//—ƒ≈À¿“‹ “≈ ”Ÿ»… ¬¿–»¿Õ“ ƒ≈‘»÷»“¿ Œ—ÕŒ¬Õ€Ã, ƒŒ¡¿¬»“‹ —“¿–€… ¬¿–»¿Õ“ ƒ≈‘»÷»“¿ œŒ ¬€¡Œ–”!!!!
 
 end;
 
@@ -499,18 +495,6 @@ procedure TDIF_OTCH_FORM.DBGridEh1MouseMove(Sender: TObject;
 begin
 filter_type.Visible := false;
 combobox1.Visible := true;
-end;
-
-procedure TDIF_OTCH_FORM.OraQueryBeforeOpen(DataSet: TDataSet);
-begin
-Screen.Cursor := crHourGlass;
-self.Cursor := Screen.Cursor;
-end;
-
-procedure TDIF_OTCH_FORM.OraQueryAfterOpen(DataSet: TDataSet);
-begin
-self.Cursor := crDefault;
-Screen.Cursor := crDefault;
 end;
 
 end.
