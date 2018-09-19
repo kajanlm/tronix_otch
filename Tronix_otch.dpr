@@ -3,7 +3,7 @@ program Tronix_otch;
 uses
   Forms,
   Unit1 in 'Unit1.pas' {Form1},
-  ConnectForm in '..\..\DevArt ODAC_v6.90.0.55_FS\Source\ConnectForm.pas' {ConnectForm},
+  ConnectForm in 'DevArt ODAC_v6.90.0.55_FS\Source\ConnectForm.pas' {ConnectForm},
   Unit2 in 'Unit2.pas' {Form2},
   Unit3 in 'Unit3.pas' {Form3},
   Unit4 in 'Unit4.pas' {Form4},
@@ -54,7 +54,8 @@ uses
   Unit49 in 'Unit49.pas' {Form49},
   Unit50 in 'Unit50.pas' {Form50},
   Unit51 in 'Unit51.pas' {Form51},
-  addzams in 'addzams.pas' {zams};
+  addzams in 'addzams.pas' {zams},
+  Unit99 in 'Unit99.pas' {DIF_OTCH_OLD};
 
 {$R *.res}
 

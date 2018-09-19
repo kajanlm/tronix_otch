@@ -40,7 +40,7 @@ var
 
 implementation
 
-uses Unit10, Unit16;
+uses Unit10, Unit16, Unit99;
 
 {$R *.dfm}
 
@@ -80,7 +80,9 @@ end;
 
 procedure TForm15.Button1Click(Sender: TObject);
 begin
-  DIF_OTCH_FORM.ShowModal();
+  Application.CreateForm(TDIF_OTCH_OLD, DIF_OTCH_OLD);
+  DIF_OTCH_OLD.ShowModal();
+  DIF_OTCH_OLD.Free;
 end;
 
 procedure TForm15.FormClose(Sender: TObject; var Action: TCloseAction);

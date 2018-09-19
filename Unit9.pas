@@ -55,16 +55,23 @@ Form10.ShowModal();
 end;
 if form9.caption='Дефицит по номенклатуре' then
 begin
-Application.CreateForm(TDIF_OTCH_FORM, DIF_OTCH_FORM);
 
-if DIF_OTCH_FORM.SCAlive then
+if MessageDlg('Запуститить модуль дефицита в новом варианте? Да - запустить. Нет - запустить старую версию модуля', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
 begin
-  DIF_OTCH_FORM.Caption := form9.Caption + ' ' + dbgrideh2.DataSource.DataSet.FieldByName('ZAK').asString;
-  DIF_OTCH_FORM.ShowModal();
-  DIF_OTCH_FORM.Free;
-end;
+  Application.CreateForm(TDIF_OTCH_FORM, DIF_OTCH_FORM);
 
-exit;
+  if DIF_OTCH_FORM.SCAlive then
+  begin
+    DIF_OTCH_FORM.Caption := form9.Caption + ' ' + dbgrideh2.DataSource.DataSet.FieldByName('ZAK').asString;
+    DIF_OTCH_FORM.ShowModal();
+  end;
+  DIF_OTCH_FORM.Free;
+
+  end
+  else
+    Form15.ShowModal();
+
+  exit;
 end;
 
 if form9.caption='Отчет по трудоемкости (Новый)' then

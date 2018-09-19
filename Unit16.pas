@@ -52,8 +52,6 @@ type
     OraQuerySPRAV_ID: TFloatField;
     OraQueryZAM_FLAG: TStringField;
     procedure Button1Click(Sender: TObject);
-    procedure DBGridEh1GetCellParams(Sender: TObject; Column: TColumnEh;
-      AFont: TFont; var Background: TColor; State: TGridDrawState);
     procedure CalcDeficit(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -154,17 +152,6 @@ begin
   ELEM_DEP_TYPE := 'TYPE_DEP_TYPE_DEP_ID = ' + cb_invi_typepodr.Items[cb_typepodr.ItemIndex];
 end;
 
-(*
-case cb_TypeElms.ItemIndex of
-  0 : ELEM_TYPE := 'tronix_select_mat(TRONIX_SPRAV.tree_tree_id, ''01'' ) = 0 AND NVL(TRONIX_SPRAV.CAN_DO_SELF, 0) <> 1';
-  1 : ELEM_TYPE := 'tronix_select_mat(TRONIX_SPRAV.tree_tree_id, ''01'' ) = 1 AND NVL(TRONIX_SPRAV.CAN_DO_SELF, 0) <> 1';
-  2 : ELEM_TYPE := 'NVL(TRONIX_SPRAV.CAN_DO_SELF, 0) = 1';
-  3 : ELEM_TYPE := '1 = 1';
-else
-  ELEM_TYPE := '1 = 1';
-end;
-*)
-
 ELEM_TYPE := '(';
 
 if filter_type.Checked[0] then
@@ -191,10 +178,6 @@ SQL := StringReplace(SQL, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIg
 SQL := StringReplace(SQL, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCase]);
 SQL := StringReplace(SQL, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
 SQL := StringReplace(SQL, '<TYPE_ELEMS>', ELEM_TYPE, [rfReplaceAll, rfIgnoreCase]);
-
-//!!«¿Ã≈Õ€ ¬ Œ¡≈ —“Œ–ŒÕ€ («¿Ã≈Õ»À» Õ¿, «¿Ã≈Õ»ÀŒ ÃÕŒﬁ “Œ “Œ...)!!
-
-showmessage(SQL);
 
 OraQuery.Close;
 OraQuery.SQL.Text := SQL;
@@ -236,25 +219,11 @@ begin
   end;
 end;
 
-procedure TDIF_OTCH_FORM.DBGridEh1GetCellParams(Sender: TObject;
-  Column: TColumnEh; AFont: TFont; var Background: TColor;
-  State: TGridDrawState);
-begin
-  if Column.FieldName = 'DATE_DEFICIT0' then
-  begin
-    if Column.Field.Dataset.FieldByName('DATE_DEFICIT0').AsString = '' then
-      background := clYellow
-    else
-      background := clRed;
-  end;
-
-end;
-
 procedure TDIF_OTCH_FORM.Execute_SQL(SQL: string);
 begin
 LOCK_BOX.Visible := true;
 
-edit1.Text := SQL;
+(* edit2.Text := SQL; *)
 
 OraQueryS.Close;
 OraQueryS.SQL.Text := SQL;
@@ -434,7 +403,7 @@ begin
 if SCAlive then
 begin
   SQL_Tx := ServerRequest('TXKOMPL_POS_FROM_POTR');
-  SQL_Zam := ServerRequest('_ZAMENY'); //_ZAMENY
+  SQL_Zam := ServerRequest('_ZAMENY');
   SQL_Zams := ServerRequest('ZAMENY_');
 end
 else
@@ -450,20 +419,14 @@ SQL_Tx := StringReplace(SQL_Tx, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCas
 SQL_Tx := StringReplace(SQL_Tx, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
 SQL_Tx := StringReplace(SQL_Tx, '<SP_ID>', dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString, [rfReplaceAll, rfIgnoreCase]);
 
-showmessage(SQL_Tx);
-
 SQL_Zam := StringReplace(SQL_Zam, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zam := StringReplace(SQL_Zam, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zam := StringReplace(SQL_Zam, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zam := StringReplace(SQL_Zam, '<STYPE_DEP_ID>', ELEM_DEP_STYPE, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zam := StringReplace(SQL_Zam, '<SPRAV_ID>', dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString, [rfReplaceAll, rfIgnoreCase]);
 
-showmessage(SQL_Zam);
-
 SQL_Zams := StringReplace(SQL_Zams, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zams := StringReplace(SQL_Zams, '<SPRAV_ID>', dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString, [rfReplaceAll, rfIgnoreCase]);
-
-showmessage(SQL_Zams);
 
 Application.CreateForm(Tzams, zams);
 
@@ -481,12 +444,6 @@ zams.Caption := '“Âı. ÍÓÏÔÎÂÍÚ/œÓÁËˆËË/«‡ÏÂÌ˚/«‡ÏÂÌËÎË ÔÓ: ' + dbgrideh1.DataSou
 
 zams.ShowModal();
 zams.Free;
-
-//  08628212000 <- 08628606000
-//œ≈–≈¬Œƒ ¬Õ”“–» SQL'‡  (TRANSLATE...)  — —Œ’–¿Õ≈Õ»≈Ã  Œƒ»–Œ¬ » –”—— »’ —»Ã¬ŒÀŒ¬ (œŒ¬“Œ–Õ€… œ≈–≈’¬¿“)
-//¬€–¿¬Õﬂ“‹ ›À≈Ã≈Õ“€ ‘»À‹“–¿÷»» (À≈¡À€    ŒÃ¡Œ¡Œ —¿Ã - –¿«Ã≈– »À»  ŒÕ“”– ++)
-//”ƒ¿À»“‹ »À» —œ–ﬂ“¿“‹ “≈’Õ»◊≈— »≈ ›À≈Ã≈Õ“€,  ŒÃÃ≈Õ“¿–»»
-//—ƒ≈À¿“‹ “≈ ”Ÿ»… ¬¿–»¿Õ“ ƒ≈‘»÷»“¿ Œ—ÕŒ¬Õ€Ã, ƒŒ¡¿¬»“‹ —“¿–€… ¬¿–»¿Õ“ ƒ≈‘»÷»“¿ œŒ ¬€¡Œ–”!!!!
 
 end;
 

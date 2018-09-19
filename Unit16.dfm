@@ -22,9 +22,9 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
   TextHeight = 13
   object Label1: TLabel
     Left = 46
-    Top = 18
+    Top = 16
     Width = 170
-    Height = 20
+    Height = 22
     Caption = #1058#1080#1087' '#1087#1086#1076#1088#1072#1079#1076#1077#1083#1077#1085#1080#1103
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -35,9 +35,9 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
   end
   object Label2: TLabel
     Left = 454
-    Top = 18
+    Top = 16
     Width = 138
-    Height = 20
+    Height = 22
     Anchors = [akTop]
     Caption = #1055#1086#1076#1088#1072#1079#1076#1077#1083#1077#1085#1080#1077
     Font.Charset = DEFAULT_CHARSET
@@ -89,7 +89,6 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     TitleFont.Style = []
     UseMultiTitle = True
     OnDblClick = DBGridEh1DblClick
-    OnGetCellParams = DBGridEh1GetCellParams
     OnMouseMove = DBGridEh1MouseMove
     Columns = <
       item
@@ -401,6 +400,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     TitleFont.Height = -11
     TitleFont.Name = 'MS Sans Serif'
     TitleFont.Style = []
+    Visible = False
   end
   object Edit2: TEdit
     Left = 208
@@ -408,6 +408,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     Width = 633
     Height = 21
     TabOrder = 8
+    Visible = False
   end
   object Button2: TButton
     Left = 168
@@ -416,6 +417,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     Height = 25
     Caption = 'X'
     TabOrder = 9
+    Visible = False
     OnClick = Button2Click
   end
   object Button3: TButton
@@ -425,6 +427,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     Height = 25
     Caption = 'SQL'
     TabOrder = 10
+    Visible = False
     OnClick = Button3Click
   end
   object cb_invi_typepodr: TComboBox

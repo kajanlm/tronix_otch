@@ -1,11 +1,11 @@
 object zams: Tzams
-  Left = 472
-  Top = 11
+  Left = 458
+  Top = 119
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1047#1072#1084#1077#1085#1099
-  ClientHeight = 882
-  ClientWidth = 721
+  ClientHeight = 775
+  ClientWidth = 718
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,13 +16,13 @@ object zams: Tzams
   Position = poMainFormCenter
   OnShow = FormShow
   DesignSize = (
-    721
-    882)
+    718
+    775)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
     Left = 8
-    Top = 400
+    Top = 336
     Width = 705
     Height = 29
     Alignment = taCenter
@@ -37,7 +37,7 @@ object zams: Tzams
   end
   object Label2: TLabel
     Left = 8
-    Top = 648
+    Top = 552
     Width = 705
     Height = 29
     Alignment = taCenter
@@ -67,7 +67,7 @@ object zams: Tzams
   end
   object Label4: TLabel
     Left = 6
-    Top = 264
+    Top = 232
     Width = 705
     Height = 29
     Alignment = taCenter
@@ -82,9 +82,9 @@ object zams: Tzams
   end
   object DBGridEh1: TDBGridEh
     Left = 8
-    Top = 432
+    Top = 368
     Width = 705
-    Height = 209
+    Height = 177
     DataSource = OraDataSource
     Flat = False
     FooterColor = clWindow
@@ -221,9 +221,9 @@ object zams: Tzams
   end
   object LOCK_BOX_ZAM: TPanel
     Left = 8
-    Top = 432
+    Top = 368
     Width = 705
-    Height = 209
+    Height = 177
     BorderWidth = 5
     BorderStyle = bsSingle
     Caption = #1047#1072#1084#1077#1085' '#1085#1077#1090
@@ -237,9 +237,9 @@ object zams: Tzams
   end
   object DBGridEh2: TDBGridEh
     Left = 8
-    Top = 680
+    Top = 584
     Width = 705
-    Height = 209
+    Height = 185
     DataSource = OraDataSourceZams
     Flat = False
     FooterColor = clWindow
@@ -376,17 +376,17 @@ object zams: Tzams
   end
   object Panel1: TPanel
     Left = -482
-    Top = 394
-    Width = 1227
+    Top = 330
+    Width = 1224
     Height = 4
     Anchors = [akLeft, akTop, akRight]
     Color = clActiveCaption
     TabOrder = 3
   end
   object Panel2: TPanel
-    Left = -466
-    Top = 642
-    Width = 1227
+    Left = -474
+    Top = 546
+    Width = 1224
     Height = 4
     Anchors = [akLeft, akTop, akRight]
     Color = clActiveCaption
@@ -394,9 +394,9 @@ object zams: Tzams
   end
   object LOCK_BOX_ZAMS: TPanel
     Left = 8
-    Top = 680
+    Top = 584
     Width = 705
-    Height = 209
+    Height = 185
     BorderWidth = 5
     BorderStyle = bsSingle
     Caption = #1053#1077' '#1079#1072#1084#1077#1085#1103#1083#1080
@@ -409,18 +409,18 @@ object zams: Tzams
     TabOrder = 5
   end
   object Panel3: TPanel
-    Left = -506
+    Left = -498
     Top = 2
-    Width = 1227
+    Width = 1224
     Height = 4
     Anchors = [akLeft, akTop, akRight]
     Color = clActiveCaption
     TabOrder = 6
   end
   object Panel4: TPanel
-    Left = -474
-    Top = 258
-    Width = 1227
+    Left = -482
+    Top = 226
+    Width = 1224
     Height = 4
     Anchors = [akLeft, akTop, akRight]
     Color = clActiveCaption
@@ -430,7 +430,7 @@ object zams: Tzams
     Left = 8
     Top = 40
     Width = 703
-    Height = 209
+    Height = 185
     DataSource = OraDataSourceTX
     Flat = False
     FooterColor = clWindow
@@ -513,7 +513,7 @@ object zams: Tzams
     Left = 6
     Top = 40
     Width = 707
-    Height = 217
+    Height = 185
     BorderWidth = 5
     BorderStyle = bsSingle
     Caption = #1053#1077#1090' '#1087#1088#1080#1074#1103#1079#1086#1082' '#1082' '#1090#1077#1093'. '#1082#1086#1084#1087#1083#1077#1082#1090#1072#1084
@@ -527,16 +527,16 @@ object zams: Tzams
   end
   object Panel5: TPanel
     Left = 8
-    Top = 296
+    Top = 264
     Width = 705
-    Height = 97
+    Height = 65
     BorderWidth = 5
     BorderStyle = bsSingle
     Color = clHighlightText
     TabOrder = 10
     object Label11: TLabel
       Left = 16
-      Top = 19
+      Top = 3
       Width = 38
       Height = 26
       Caption = #1048#1079':'
@@ -549,7 +549,7 @@ object zams: Tzams
     end
     object Label12: TLabel
       Left = 16
-      Top = 51
+      Top = 35
       Width = 53
       Height = 26
       Caption = #1044#1083#1103':'
@@ -562,7 +562,7 @@ object zams: Tzams
     end
     object Label13: TLabel
       Left = 72
-      Top = 19
+      Top = 3
       Width = 441
       Height = 26
       Alignment = taCenter
@@ -577,7 +577,7 @@ object zams: Tzams
     end
     object Label14: TLabel
       Left = 72
-      Top = 51
+      Top = 35
       Width = 441
       Height = 26
       Alignment = taCenter
@@ -592,7 +592,7 @@ object zams: Tzams
     end
     object Label15: TLabel
       Left = 512
-      Top = 19
+      Top = 3
       Width = 169
       Height = 26
       Alignment = taCenter
@@ -607,7 +607,7 @@ object zams: Tzams
     end
     object Label16: TLabel
       Left = 512
-      Top = 51
+      Top = 35
       Width = 169
       Height = 26
       Alignment = taCenter
