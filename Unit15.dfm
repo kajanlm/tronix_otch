@@ -107,7 +107,7 @@ object Form15: TForm15
     Top = 8
     Width = 191
     Height = 154
-    Date = 41393.455676076390000000
+    Date = 41393.458416736110000000
     TabOrder = 3
     Visible = False
     OnDblClick = MonthCalendar1DblClick

@@ -71,10 +71,12 @@ type
     procedure DBGridEh1DblClick(Sender: TObject);
     procedure DBGridEh1MouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
+    procedure DBGridEh1TitleClick(Column: TColumnEh);
   private
     { Private declarations }
     procedure Execute_SQL(SQL: string);
     function ServerRequest(s : string) : string;
+    procedure CalcTypeText;
   public
     function SCAlive : boolean;
     { Public declarations }
@@ -88,10 +90,11 @@ var
   DIF_OTCH_FORM: TDIF_OTCH_FORM;
   ELEM_DEP,
   ELEM_DEP_TYPE,
-  ELEM_TYPE
+  ELEM_TYPE,
+  SORT_FIELD,
+  SORT_TYPE,
+  EVAL_DEP
   : string;
-  
-  vCursor: TCursor;
 
 implementation
 
@@ -158,7 +161,7 @@ if filter_type.Checked[0] then
   ELEM_TYPE := ELEM_TYPE + '(tronix_select_mat(TRONIX_SPRAV.tree_tree_id, ''01'' ) = 1 AND NVL(TRONIX_SPRAV.CAN_DO_SELF, 0) <> 1) or ';
 
 if filter_type.Checked[1] then
-  ELEM_TYPE := ELEM_TYPE + '(tronix_select_mat(TRONIX_SPRAV.tree_tree_id, ''01'' ) = 0 AND NVL(TRONIX_SPRAV.CAN_DO_SELF, 0) <> 1) or '
+  ELEM_TYPE := ELEM_TYPE + '(tronix_select_mat(TRONIX_SPRAV.tree_tree_id, ''02'' ) = 1 AND NVL(TRONIX_SPRAV.CAN_DO_SELF, 0) <> 1) or '
 else
   ELEM_TYPE := ELEM_TYPE + '(1 = 2) or ';
 
@@ -174,10 +177,21 @@ else
 
 ELEM_TYPE := ELEM_TYPE + ')';
 
+//if ( (cb_podr.ItemIndex < 0) or (cb_typepodr.ItemIndex = 0) ) then
+if (cb_typepodr.ItemIndex = 0) then
+  EVAL_DEP := ''
+else
+  EVAL_DEP := '_TR';
+
 SQL := StringReplace(SQL, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
 SQL := StringReplace(SQL, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCase]);
 SQL := StringReplace(SQL, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
 SQL := StringReplace(SQL, '<TYPE_ELEMS>', ELEM_TYPE, [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<ORDER_FIELD>', SORT_FIELD, [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<ORDER_TYPE>', SORT_TYPE, [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<EVAL_TYPE_DEP>', EVAL_DEP, [rfReplaceAll, rfIgnoreCase]);
+
+//showmessage(SQL);
 
 OraQuery.Close;
 OraQuery.SQL.Text := SQL;
@@ -190,6 +204,8 @@ if OraQuery.RecordCount <> 0 then
   Button1.Enabled := true
 else
   DBGridEh1.Enabled := false;
+
+//edit2.Text := SQL;
 
 end;
 
@@ -250,6 +266,9 @@ cb_podr.Clear;
 
 cb_invi_typepodr.Clear;
 cb_invi_podr.Clear;
+
+SORT_FIELD := 'KOD';
+SORT_TYPE := 'ASC';
 
 Execute_SQL('SELECT * FROM KADRY_TYPE_DEP WHERE KOD in (''01'', ''02'', ''04'', ''05'', ''07'', ''08'') ORDER BY NAME ASC');
 
@@ -334,25 +353,56 @@ LOCK_BOX.Visible := true;
 Button1.Enabled := false;
 end;
 
+procedure TDIF_OTCH_FORM.CalcTypeText;
+var i : integer;
+begin
+if filter_type.Checked[3] then
+  combobox1.Items[0] := filter_type.Items[3]
+else
+begin
+
+combobox1.Items[0] := '[';
+for i := 0 to 3 do
+  if filter_type.Checked[i] then
+    combobox1.Items[0] := Combobox1.Items[0] + filter_type.Items[i] + ';';
+
+combobox1.Items[0] := combobox1.Items[0] + ']';
+end;
+
+combobox1.ItemIndex := 0;
+end;
+
 procedure TDIF_OTCH_FORM.filter_typeClick(Sender: TObject);
 begin
-if ((not filter_type.Checked[0]) and (not filter_type.Checked[1]) and (not filter_type.Checked[2])) then
+if (((not filter_type.Checked[0]) and (not filter_type.Checked[1]) and (not filter_type.Checked[2])) or ((filter_type.Checked[0]) and (filter_type.Checked[1]) and (filter_type.Checked[2]))) then
+begin
+  filter_type.Checked[0] := false;
+  filter_type.Checked[1] := false;
+  filter_type.Checked[2] := false;
   filter_type.Checked[3] := true;
+end;
 
 if ((filter_type.Checked[0]) or (filter_type.Checked[1]) or (filter_type.Checked[2])) then
   filter_type.Checked[3] := false;
-  
+
+CalcTypeText;
 LOCK_BOX.Visible := true;
 end;
 
 procedure TDIF_OTCH_FORM.filter_typeClickCheck(Sender: TObject);
 begin
-if ((not filter_type.Checked[0]) and (not filter_type.Checked[1]) and (not filter_type.Checked[2])) then
+if (((not filter_type.Checked[0]) and (not filter_type.Checked[1]) and (not filter_type.Checked[2])) or ((filter_type.Checked[0]) and (filter_type.Checked[1]) and (filter_type.Checked[2]))) then
+begin
+  filter_type.Checked[0] := false;
+  filter_type.Checked[1] := false;
+  filter_type.Checked[2] := false;
   filter_type.Checked[3] := true;
+end;
 
 if ((filter_type.Checked[0]) or (filter_type.Checked[1]) or (filter_type.Checked[2])) then
   filter_type.Checked[3] := false;
 
+CalcTypeText;
 LOCK_BOX.Visible := true;
 end;
 
@@ -419,14 +469,20 @@ SQL_Tx := StringReplace(SQL_Tx, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCas
 SQL_Tx := StringReplace(SQL_Tx, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
 SQL_Tx := StringReplace(SQL_Tx, '<SP_ID>', dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString, [rfReplaceAll, rfIgnoreCase]);
 
+//showmessage(SQL_Tx);
+
 SQL_Zam := StringReplace(SQL_Zam, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zam := StringReplace(SQL_Zam, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zam := StringReplace(SQL_Zam, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zam := StringReplace(SQL_Zam, '<STYPE_DEP_ID>', ELEM_DEP_STYPE, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zam := StringReplace(SQL_Zam, '<SPRAV_ID>', dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString, [rfReplaceAll, rfIgnoreCase]);
 
+//showmessage(SQL_Zam);
+
 SQL_Zams := StringReplace(SQL_Zams, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zams := StringReplace(SQL_Zams, '<SPRAV_ID>', dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString, [rfReplaceAll, rfIgnoreCase]);
+
+//showmessage(SQL_Zams);
 
 Application.CreateForm(Tzams, zams);
 
@@ -452,6 +508,25 @@ procedure TDIF_OTCH_FORM.DBGridEh1MouseMove(Sender: TObject;
 begin
 filter_type.Visible := false;
 combobox1.Visible := true;
+end;
+
+procedure TDIF_OTCH_FORM.DBGridEh1TitleClick(Column: TColumnEh);
+var dummy: TObject;
+begin
+
+if MessageDlg('Пересортировать список по ' + Column.Title.Caption + '?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+  exit;
+
+SORT_FIELD := Column.Field.FieldName;
+
+if SORT_TYPE = 'ASC' then
+  SORT_TYPE := 'DESC'
+else
+  SORT_TYPE := 'ASC';
+
+dummy := nil;
+CalcDeficit(dummy);
+
 end;
 
 end.

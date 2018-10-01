@@ -24,7 +24,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     Left = 46
     Top = 16
     Width = 170
-    Height = 22
+    Height = 20
     Caption = #1058#1080#1087' '#1087#1086#1076#1088#1072#1079#1076#1077#1083#1077#1085#1080#1103
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -37,7 +37,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     Left = 454
     Top = 16
     Width = 138
-    Height = 22
+    Height = 20
     Anchors = [akTop]
     Caption = #1055#1086#1076#1088#1072#1079#1076#1077#1083#1077#1085#1080#1077
     Font.Charset = DEFAULT_CHARSET
@@ -90,6 +90,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     UseMultiTitle = True
     OnDblClick = DBGridEh1DblClick
     OnMouseMove = DBGridEh1MouseMove
+    OnTitleClick = DBGridEh1TitleClick
     Columns = <
       item
         EditButtons = <>
@@ -252,7 +253,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
         Font.Style = []
         Footers = <>
         Layout = tlCenter
-        Title.Caption = #1055#1045#1056#1045#1044#1040#1058#1068'|'#1047#1072#1082#1091#1087#1086#1095#1085'. '#1077#1076#1080#1085#1080#1094#1099
+        Title.Caption = #1053#1040' '#1057#1053#1040#1041'. '#1057#1050#1051#1040#1044#1040#1061'|'#1047#1072#1082#1091#1087#1086#1095#1085'. '#1077#1076#1080#1085#1080#1094#1099
         Title.Font.Charset = DEFAULT_CHARSET
         Title.Font.Color = clWindowText
         Title.Font.Height = -13
@@ -271,7 +272,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
         Font.Style = []
         Footers = <>
         Layout = tlCenter
-        Title.Caption = #1055#1045#1056#1045#1044#1040#1058#1068'|'#1058#1077#1093#1085#1086#1083#1086#1075'. '#1077#1076#1080#1085#1080#1094#1099
+        Title.Caption = #1053#1040' '#1057#1053#1040#1041'. '#1057#1050#1051#1040#1044#1040#1061'|'#1058#1077#1093#1085#1086#1083#1086#1075'. '#1077#1076#1080#1085#1080#1094#1099
         Title.Font.Charset = DEFAULT_CHARSET
         Title.Font.Color = clWindowText
         Title.Font.Height = -13
