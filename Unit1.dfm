@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 306
-  Top = 267
+  Left = 341
+  Top = 231
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = #1054#1090#1095#1077#1090#1099' '#1082' Tronix v1.9.2'

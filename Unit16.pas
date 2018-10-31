@@ -51,6 +51,10 @@ type
     IdHTTP1: TIdHTTP;
     OraQuerySPRAV_ID: TFloatField;
     OraQueryZAM_FLAG: TStringField;
+    Image1: TImage;
+    filter_query: TEdit;
+    cbt_filter: TComboBox;
+    Image2: TImage;
     procedure Button1Click(Sender: TObject);
     procedure CalcDeficit(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -72,11 +76,16 @@ type
     procedure DBGridEh1MouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
     procedure DBGridEh1TitleClick(Column: TColumnEh);
+    procedure Image1Click(Sender: TObject);
+    procedure filter_queryChange(Sender: TObject);
+    procedure cbt_filterClick(Sender: TObject);
+    procedure Image2Click(Sender: TObject);
   private
     { Private declarations }
     procedure Execute_SQL(SQL: string);
     function ServerRequest(s : string) : string;
     procedure CalcTypeText;
+    procedure parseFilterMask;
   public
     function SCAlive : boolean;
     { Public declarations }
@@ -93,7 +102,8 @@ var
   ELEM_TYPE,
   SORT_FIELD,
   SORT_TYPE,
-  EVAL_DEP
+  EVAL_DEP,
+  FILTER_MASK
   : string;
 
 implementation
@@ -135,7 +145,12 @@ SQL
 begin
 
 if SCAlive then
-  SQL := ServerRequest('DEFICIT')
+begin
+  if (cb_typepodr.ItemIndex = 0) then
+    SQL := ServerRequest('DEFICIT_ZAVOD')
+  else
+    SQL := ServerRequest('DEFICIT');
+end
 else
   exit;
 
@@ -190,6 +205,7 @@ SQL := StringReplace(SQL, '<TYPE_ELEMS>', ELEM_TYPE, [rfReplaceAll, rfIgnoreCase
 SQL := StringReplace(SQL, '<ORDER_FIELD>', SORT_FIELD, [rfReplaceAll, rfIgnoreCase]);
 SQL := StringReplace(SQL, '<ORDER_TYPE>', SORT_TYPE, [rfReplaceAll, rfIgnoreCase]);
 SQL := StringReplace(SQL, '<EVAL_TYPE_DEP>', EVAL_DEP, [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<FILTER_MASK>', FILTER_MASK, [rfReplaceAll, rfIgnoreCase]);
 
 //showmessage(SQL);
 
@@ -269,6 +285,7 @@ cb_invi_podr.Clear;
 
 SORT_FIELD := 'KOD';
 SORT_TYPE := 'ASC';
+FILTER_MASK := '(1 = 1)';
 
 Execute_SQL('SELECT * FROM KADRY_TYPE_DEP WHERE KOD in (''01'', ''02'', ''04'', ''05'', ''07'', ''08'') ORDER BY NAME ASC');
 
@@ -527,6 +544,56 @@ else
 dummy := nil;
 CalcDeficit(dummy);
 
+end;
+
+procedure TDIF_OTCH_FORM.Image1Click(Sender: TObject);
+begin
+
+if filter_query.Visible then
+begin
+  FILTER_MASK := '(1 = 1)';
+  cbt_filter.Visible := false;
+  filter_query.Visible := false;
+end
+else
+begin
+  parseFilterMask;
+  cbt_filter.Visible := true;
+  filter_query.Visible := true;
+  filter_query.SetFocus; 
+end;
+
+end;
+
+procedure TDIF_OTCH_FORM.ParseFilterMask;
+var filter_field : string;
+begin
+  if length(filter_query.text) < 1 then
+    exit;
+
+  if cbt_filter.ItemIndex = 0 then
+    filter_field := 'potr.KOD'
+  else
+    filter_field := 'LOWER(potr.MTR_NAME)';
+
+  FILTER_MASK := filter_field + ' like LOWER(' + chr(39) + filter_query.Text + chr(39) + ')';
+end;
+
+procedure TDIF_OTCH_FORM.filter_queryChange(Sender: TObject);
+begin
+parseFilterMask;
+end;
+
+procedure TDIF_OTCH_FORM.cbt_filterClick(Sender: TObject);
+begin
+parseFilterMask;
+end;
+
+procedure TDIF_OTCH_FORM.Image2Click(Sender: TObject);
+var dummy: TObject;
+begin
+dummy := nil;
+CalcDeficit(dummy);
 end;
 
 end.
