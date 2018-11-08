@@ -37,7 +37,8 @@ uses Unit9, Unit38;
 procedure TForm32.FormShow(Sender: TObject);
 begin
   OraQuery1.Active:=true;
-  if  form32.Caption='Потребность по материалам и оборудованию общая по проекту'
+  if  (form32.Caption='Потребность по материалам и оборудованию общая по проекту')
+  or (form32.Caption='Наряды. Выберите цех')
   then  Button1.Visible:=false
   else Button1.Visible:=true;
   // form9.Caption:='Потребность по материалам в разрезе чертежа';
@@ -67,13 +68,34 @@ begin
      form9.ShowModal();
   end;
 
+   if form32.Caption='Наряды. Выберите цех' then
+     begin
+  form9.Caption:='Наряды';
+  form9.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
+  form9.ShowModal();
+     end;
 
-end;
+   if form32.Caption='Остатки трудоёмкости по МСЧ. Выберите цех' then
+     begin
+  form9.Caption:='Остатки трудоёмкости по МСЧ';
+  form9.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
+  form9.ShowModal();
+     end;
+
+     end;
 
 procedure TForm32.Button1Click(Sender: TObject);
 begin
     form32.Close();
-  form9.Caption:='Потребность по материалам в разрезе чертежа';
+// if form32.Caption='Наряды. Выберите цех' then
+//    form9.Caption:='Наряды';
+
+ if form32.Caption='Остатки трудоёмкости по МСЧ. Выберите цех' then
+    form9.Caption:='Остатки трудоёмкости по МСЧ';
+
+ if form32.Caption='Потребность по материалам в разрезе чертежа. Выберите цех' then
+    form9.Caption:='Потребность по материалам в разрезе чертежа';
+ 
   form9.Edit1.text:='All';
   form9.ShowModal();
 end;

@@ -55,7 +55,10 @@ uses
   Unit50 in 'Unit50.pas' {Form50},
   Unit51 in 'Unit51.pas' {Form51},
   addzams in 'addzams.pas' {zams},
-  Unit99 in 'Unit99.pas' {DIF_OTCH_OLD};
+  Unit99 in 'Unit99.pas' {DIF_OTCH_OLD},
+  Unit52 in 'Unit52.pas' {Form52},
+  Unit53 in 'Unit53.pas' {Form53},
+  Unit54 in 'Unit54.pas' {Form54};
 
 {$R *.res}
 
@@ -109,5 +112,7 @@ begin
   Application.CreateForm(TForm46, Form46);
   Application.CreateForm(TForm47, Form47);
   Application.CreateForm(TForm48, Form48);
+  Application.CreateForm(TForm52, Form52);
+  Application.CreateForm(TForm53, Form53);
   Application.Run;
 end.

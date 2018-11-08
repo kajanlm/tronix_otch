@@ -1,6 +1,6 @@
 object Form32: TForm32
-  Left = 450
-  Top = 345
+  Left = 526
+  Top = 143
   Width = 354
   Height = 255
   Caption = 'Form32'

@@ -9,6 +9,7 @@ uses
 
 type
   TForm9 = class(TForm)
+	//button1: tButton;
     OraQuery1: TOraQuery;
     Label1: TLabel;
     DBGridEh1: TDBGridEh;
@@ -23,7 +24,10 @@ type
     ExcelApplication1: TExcelApplication;
     ExcelWorksheet1: TExcelWorksheet;
     OraQuery3: TOraQuery;
+    Button1: TButton;
+    Edit2: TEdit;
     procedure DBGridEh2DblClick(Sender: TObject);
+	procedure Button1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure DBGridEh1DblClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -41,7 +45,7 @@ implementation
 
 uses Unit10, Unit15, Unit16, Unit20, Unit21, Unit22, Unit23, Unit25, Unit26,
   Unit27, Unit35, Unit36, Unit37, Unit38, Unit43, Unit45, Unit46, Unit34,
-  Unit47, Unit49, Unit50;
+  Unit47, Unit49, Unit50, Unit52, Unit53, Unit32;
 
 {$R *.dfm}
 
@@ -117,6 +121,8 @@ or  (form9.caption='Отчет по поиску позиций с приоритетом 0 по проекту')
 or  (form9.caption='Построечный журнал') or (form9.caption='Ведомость комплектации по помещениям.')
 or  (form9.caption='Проверка документов на согласовании к справочнику.')
 or  (form9.caption='Потребность по материалам и оборудованию общая по проекту')
+or  (form9.caption='Наряды')
+or  (form9.Caption='Остатки трудоёмкости по МСЧ. Выберите проект')
 or  (form9.caption='Формрование ведомости комплектации запуска.')
 or  (form9.Caption='Изделия с незаполненой трудоемкостью ТНа')
 or  (form9.Caption='Выберите проект для анализа')
@@ -128,6 +134,9 @@ or (form9.Caption='Выгружаем транспортный файл.')
 then
 begin
   Form9.DBgridEH2.Visible:=false;
+  Form9.Button1.Visible:=false;
+  if form9.caption='Наряды' then
+  Form9.Button1.Visible:=true;
 end;
 
  if (form9.caption='Построечный журнал') then
@@ -650,6 +659,29 @@ While NOT OraQuery3.EOF Do
 
 end;
 
+     if form9.caption='Наряды' then
+begin
+  Application.CreateForm(TForm52, Form52);
+  Form52.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
+  Form52.EDIT2.TEXT:=EDIT1.Text;
+  Form52.Caption:='Наряды: '+oraQuery1.FieldByName('name').asString;
+  Form52.Caption:=Form52.Caption+'  ЦЕХ='+Form32.oraQuery1.FieldByName('nomer').asString;
+  Form52.ShowModal();
+  Form52.Free;
+end;
+
+     if form9.caption='Остатки трудоёмкости по МСЧ. Выберите проект' then
+begin
+  Application.CreateForm(TForm53, Form53);
+  Form53.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
+//  Form53.EDIT2.TEXT:=EDIT1.Text;
+  Form53.Caption:='Остатки трудоёмкости по МСЧ: '+oraQuery1.FieldByName('name').asString;
+//  if  Form53.EDIT2.TEXT<>'All' then
+//  Form53.Caption:=Form53.Caption+'  ЦЕХ='+Form32.oraQuery1.FieldByName('nomer').asString;
+  Form53.ShowModal();
+  Form53.Free;
+end;
+
 if form9.caption='Формрование ведомости комплектации запуска.' then
 begin
  Form43.Label2.Caption:=oraQuery1.FieldByName('project_id').asString;
@@ -917,6 +949,17 @@ begin
   OraQuery2.Close;
     OraQuery1.Close;
     OraQuery3.Close;
+end;
+
+procedure TForm9.Button1Click(Sender: TObject);
+begin
+ Edit2.Text:='All';
+ Application.CreateForm(TForm52, Form52);
+ Form52.Edit1.Text:='All';
+ Form52.EDIT2.TEXT:=EDIT1.Text;
+ Form52.Caption:=Form52.Caption+'  ЦЕХ='+Form32.oraQuery1.FieldByName('nomer').asString;
+ Form52.ShowModal();
+ Form52.Free;
 end;
 
 end.

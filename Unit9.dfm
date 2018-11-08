@@ -3,7 +3,7 @@ object Form9: TForm9
   Top = 191
   BorderStyle = bsSingle
   Caption = 'KOD'
-  ClientHeight = 324
+  ClientHeight = 337
   ClientWidth = 493
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -133,6 +133,30 @@ object Form9: TForm9
     ItemHeight = 13
     TabOrder = 3
     Text = #1057#1087#1080#1089#1082#1086#1084
+    Visible = False
+  end
+  object Button1: TButton
+    Left = 8
+    Top = 312
+    Width = 473
+    Height = 25
+    Caption = #1055#1054' '#1042#1057#1045#1052
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 4
+    OnClick = Button1Click
+  end
+  object Edit2: TEdit
+    Left = 436
+    Top = 48
+    Width = 121
+    Height = 21
+    TabOrder = 5
+    Text = 'Edit1'
     Visible = False
   end
   object OraQuery1: TOraQuery

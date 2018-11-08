@@ -49,6 +49,8 @@ type
     N32: TMenuItem;
     N33: TMenuItem;
     N34: TMenuItem;
+    N35: TMenuItem;
+    N36: TMenuItem;
     procedure N3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure tn1Click(Sender: TObject);
@@ -81,6 +83,8 @@ type
     procedure N32Click(Sender: TObject);
     procedure N33Click(Sender: TObject);
     procedure N34Click(Sender: TObject);
+    procedure N35Click(Sender: TObject);
+    procedure N36Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -291,6 +295,18 @@ end;
 procedure TForm1.N34Click(Sender: TObject);
 begin
      form9.Caption:='Выгружаем транспортный файл.';
+  form9.ShowModal();
+end;
+
+procedure TForm1.N35Click(Sender: TObject);
+begin
+   form32.Caption:='Наряды. Выберите цех';
+  form32.ShowModal();
+end;
+
+ procedure TForm1.N36Click(Sender: TObject);
+begin
+   form9.Caption:='Остатки трудоёмкости по МСЧ. Выберите проект';
   form9.ShowModal();
 end;
 

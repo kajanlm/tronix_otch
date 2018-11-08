@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Grids, DBGridEh, DB, DBAccess, Ora, MemDS, ExcelXP, OleServer,
   StdCtrls,DBGridEhImpExp, GridsEh, DBGrids, DBClient, ExtCtrls, CheckLst,
-  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP;
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, jpeg;
 
 type
   TDIF_OTCH_FORM = class(TForm)
@@ -51,9 +51,9 @@ type
     IdHTTP1: TIdHTTP;
     OraQuerySPRAV_ID: TFloatField;
     OraQueryZAM_FLAG: TStringField;
-    Image1: TImage;
     filter_query: TEdit;
     cbt_filter: TComboBox;
+    Image1: TImage;
     Image2: TImage;
     procedure Button1Click(Sender: TObject);
     procedure CalcDeficit(Sender: TObject);
@@ -103,7 +103,8 @@ var
   SORT_FIELD,
   SORT_TYPE,
   EVAL_DEP,
-  FILTER_MASK
+  FILTER_MASK,
+  SFILTER_MASK
   : string;
 
 implementation
@@ -206,6 +207,7 @@ SQL := StringReplace(SQL, '<ORDER_FIELD>', SORT_FIELD, [rfReplaceAll, rfIgnoreCa
 SQL := StringReplace(SQL, '<ORDER_TYPE>', SORT_TYPE, [rfReplaceAll, rfIgnoreCase]);
 SQL := StringReplace(SQL, '<EVAL_TYPE_DEP>', EVAL_DEP, [rfReplaceAll, rfIgnoreCase]);
 SQL := StringReplace(SQL, '<FILTER_MASK>', FILTER_MASK, [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<SFILTER_MASK>', SFILTER_MASK, [rfReplaceAll, rfIgnoreCase]);
 
 //showmessage(SQL);
 
@@ -286,6 +288,7 @@ cb_invi_podr.Clear;
 SORT_FIELD := 'KOD';
 SORT_TYPE := 'ASC';
 FILTER_MASK := '(1 = 1)';
+SFILTER_MASK := '(1 = 1)';
 
 Execute_SQL('SELECT * FROM KADRY_TYPE_DEP WHERE KOD in (''01'', ''02'', ''04'', ''05'', ''07'', ''08'') ORDER BY NAME ASC');
 
@@ -552,6 +555,7 @@ begin
 if filter_query.Visible then
 begin
   FILTER_MASK := '(1 = 1)';
+  SFILTER_MASK := '(1 = 1)';
   cbt_filter.Visible := false;
   filter_query.Visible := false;
 end
@@ -566,17 +570,24 @@ end;
 end;
 
 procedure TDIF_OTCH_FORM.ParseFilterMask;
-var filter_field : string;
+var filter_field, sfilter_field : string;
 begin
   if length(filter_query.text) < 1 then
     exit;
 
   if cbt_filter.ItemIndex = 0 then
-    filter_field := 'potr.KOD'
+  begin
+    filter_field := 'potr.KOD';
+    sfilter_field := 'Y.KOD';
+  end
   else
+  begin
     filter_field := 'LOWER(potr.MTR_NAME)';
+    sfilter_field := 'LOWER(Y.MTR_NAME)';
+  end;
 
   FILTER_MASK := filter_field + ' like LOWER(' + chr(39) + filter_query.Text + chr(39) + ')';
+  SFILTER_MASK := sfilter_field + ' like lower(' + chr(39) + filter_query.Text + chr(39) + ')';
 end;
 
 procedure TDIF_OTCH_FORM.filter_queryChange(Sender: TObject);
