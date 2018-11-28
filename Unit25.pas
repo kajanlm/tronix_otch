@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Grids, DBGridEh, DB, DBAccess, Ora, MemDS,DBGridEhImpExp,
-  ExcelXP, OleServer;
+  ExcelXP, OleServer, GridsEh;
 
 type
   TForm25 = class(TForm)
@@ -57,7 +57,7 @@ begin
 tx:=' Select a1.texkompl texkompl, a1.nomer nomer, a1.name name1,a1.razlov razlov1,a1.kod kod1,a1.kol kol1, a1.vid vid1, ';
 tx:=tx+'  a2.name name2,a2.razlov razlov2,a2.kod kod2, a2.kol kol2, a2.vid vid2, a2.certezh certezh2 ';
 tx:=tx+' from ';
-tx:=tx+' (Select texkompl,nomer,name,razlov,kod,kol,decode(pr,1,''Материал'',''Изделиё'') vid, certezh ';
+tx:=tx+' (Select texkompl,nomer,name,razlov,kod,kol,decode(pr,1,''Материал'',''Изделие'') vid, certezh ';
 tx:=tx+'  from ';
 tx:=tx+' (Select tx.texkompl_id texkompl,tx.nomer, ';
 tx:=tx+'  sprav.Name name, (Select name from  tronix.raz_lov where raz_lov_id=raz_lov_raz_lov_id ) razlov, ';
@@ -71,7 +71,7 @@ tx:=tx+' and tx.dep_dep_id in (Select dep_id from nordsy.dep where dep_dep_id=40
 tx:=tx+' and tmat.tex_texkompl_id=tx.texkompl_id ';
 tx:=tx+' and sprav.sprav_id=tmat.sprav_sprav_id) ';
 tx:=tx+' where pr=1) a1, ';
-tx:=tx+' (Select texkompl,nomer,name,razlov,kod,kol,decode(pr,1,''Материал'',''Изделиё'') vid, certezh ';
+tx:=tx+' (Select texkompl,nomer,name,razlov,kod,kol,decode(pr,1,''Материал'',''Изделие'') vid, certezh ';
 tx:=tx+'  from ';
 tx:=tx+' (Select tx.texkompl_id texkompl,tx.nomer, ';
 tx:=tx+'  sprav.Name name, (Select name from  tronix.raz_lov where raz_lov_id=raz_lov_raz_lov_id ) razlov, ';

@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Grids, DBGridEh, DB, DBAccess, Ora, MemDS, DBGridEhImpExp,ExcelXP,
-  OleServer;
+  OleServer, GridsEh;
 
 type
   TForm22 = class(TForm)
@@ -137,7 +137,7 @@ tx:=tx+') ll   ';
 tx:=tx+') l ';
 tx:=tx+'order by l.zavn,l.ident, l.poz, l.podpoz,l.rp,l.kod, l.namek, l.kol,l.tndateins,l.tnnomer,l.ednamek,l.ednamek1 ';
 ORAQuery1.SQL.Text:=tx;
-ShowMessage(ORAQuery1.SQL.Text);
+//ShowMessage(ORAQuery1.SQL.Text);
 
 ORAQuery1.ExecSQL;
 
@@ -154,7 +154,7 @@ var tx,ya:string;
 begin
 
   ya:='';
-tx:='Select ''№''||ttn.nomer||'' Проведен ''||'' ''||ttn.date_ins||'' ''||(Select name from nordsy.dep where dep_id=ttn.dep_dep_id_to) ||'' в кол ''||tmat.kol  ya from tronix.ttn ttn, tronix.ttn_mat tmat, tronix.sprav sp';
+tx:='Select ''№''||ttn.nomer||'' Проведен ''||'' ''||to_char(ttn.date_ins, ''DD.MM.YYYY'')||'' ''||(Select name from nordsy.dep where dep_id=ttn.dep_dep_id_to) ||'' в кол ''||tmat.kol  ya from tronix.ttn ttn, tronix.ttn_mat tmat, tronix.sprav sp';
 tx:=tx+' where tmat.sprav_sprav_id=sp.sprav_id ';
 tx:=tx+' and tmat.ttn_ttn_id=ttn.ttn_id ';
 tx:=tx+'and sp.kod='+#39+oraQuery1.FieldByName('KOD').AsString+#39;

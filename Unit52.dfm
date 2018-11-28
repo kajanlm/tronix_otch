@@ -1,7 +1,7 @@
 object Form52: TForm52
-  Left = 388
-  Top = 136
-  Width = 1508
+  Left = 199
+  Top = 310
+  Width = 1300
   Height = 700
   Anchors = []
   Caption = 'Form52'
@@ -16,13 +16,13 @@ object Form52: TForm52
   OnClose = FormClose
   OnShow = FormShow
   DesignSize = (
-    1500
+    1292
     666)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 1148
-    Top = 17
+    Left = 692
+    Top = 33
     Width = 184
     Height = 20
     Alignment = taRightJustify
@@ -35,10 +35,10 @@ object Form52: TForm52
     ParentFont = False
   end
   object DBGridEh1: TDBGridEh
-    Left = 0
-    Top = 56
-    Width = 1500
-    Height = 580
+    Left = 5
+    Top = 96
+    Width = 1280
+    Height = 544
     Anchors = []
     DataSource = OraDataSource1
     Flat = False
@@ -264,7 +264,7 @@ object Form52: TForm52
         Title.Font.Height = -13
         Title.Font.Name = 'MS Sans Serif'
         Title.Font.Style = [fsBold]
-        Width = 300
+        Width = 100
       end
       item
         EditButtons = <>
@@ -282,12 +282,12 @@ object Form52: TForm52
         Title.Font.Height = -13
         Title.Font.Name = 'MS Sans Serif'
         Title.Font.Style = [fsBold]
-        Width = 400
+        Width = 250
       end>
   end
   object Edit1: TEdit
-    Left = 513
-    Top = 165
+    Left = 529
+    Top = 317
     Width = 247
     Height = 21
     TabOrder = 6
@@ -319,8 +319,8 @@ object Form52: TForm52
     OnClick = Button1Click
   end
   object Edit3: TEdit
-    Left = 528
-    Top = 113
+    Left = 760
+    Top = 361
     Width = 121
     Height = 21
     TabOrder = 8
@@ -328,8 +328,8 @@ object Form52: TForm52
     Visible = False
   end
   object DateTimePicker1: TDateTimePicker
-    Left = 1333
-    Top = 12
+    Left = 877
+    Top = 28
     Width = 124
     Height = 28
     Date = 43405.428657766210000000
@@ -344,10 +344,10 @@ object Form52: TForm52
     OnChange = DateTimePicker1Change
   end
   object Button2: TButton
-    Left = 1280
-    Top = 640
+    Left = 1096
+    Top = 28
     Width = 129
-    Height = 25
+    Height = 28
     Caption = #1042#1067#1041#1056#1040#1058#1068
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -359,12 +359,11 @@ object Form52: TForm52
     OnClick = Button2Click
   end
   object RadioGroup1: TRadioGroup
-    Left = 16
+    Left = 0
     Top = 8
-    Width = 385
-    Height = 33
+    Width = 217
+    Height = 81
     Caption = #1048#1089#1087#1086#1083#1085#1080#1090#1077#1083#1080' . . . '
-    Columns = 3
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -15
@@ -378,12 +377,11 @@ object Form52: TForm52
     TabOrder = 0
   end
   object RadioGroup2: TRadioGroup
-    Left = 768
+    Left = 480
     Top = 8
-    Width = 361
-    Height = 33
+    Width = 209
+    Height = 81
     Caption = #1042#1099#1073#1080#1088#1072#1090#1100' '#1089' . . . '
-    Columns = 2
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -15
@@ -396,12 +394,11 @@ object Form52: TForm52
     TabOrder = 1
   end
   object RadioGroup3: TRadioGroup
-    Left = 432
+    Left = 240
     Top = 8
-    Width = 305
-    Height = 33
+    Width = 209
+    Height = 81
     Caption = #1042#1099#1073#1080#1088#1072#1090#1100' '#1085#1072#1088#1103#1076#1099' . . . '
-    Columns = 3
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -15
@@ -481,7 +478,7 @@ object Form52: TForm52
   object ExcelWorksheet1: TExcelWorksheet
     AutoConnect = False
     ConnectKind = ckRunningOrNew
-    Left = 800
-    Top = 168
+    Left = 808
+    Top = 240
   end
 end

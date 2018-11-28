@@ -45,7 +45,7 @@ implementation
 
 uses Unit10, Unit15, Unit16, Unit20, Unit21, Unit22, Unit23, Unit25, Unit26,
   Unit27, Unit35, Unit36, Unit37, Unit38, Unit43, Unit45, Unit46, Unit34,
-  Unit47, Unit49, Unit50, Unit52, Unit53, Unit32;
+  Unit47, Unit49, Unit50, Unit52, Unit53, Unit55, Unit57, Unit32;
 
 {$R *.dfm}
 
@@ -115,14 +115,16 @@ begin
    ComboBox1.Visible:=false;
 
 if (form9.caption='Отчет по заявкам') or (form9.caption='Отчет планируемой трудоемкости') or
-(form9.caption='Отчет по выполнению ведомостей (Для склада)') or (form9.caption='Отчет по Отчет по ТН (материал изделие)')
+(form9.caption='Отчет по выполнению ведомостей (Для склада ЗИП)') or (form9.caption='Отчет по Отчет по ТН (материал изделие)')
 or (form9.caption='Ведомость материалов')  or (form9.caption='Потребность по материалам в разрезе чертежа')
 or  (form9.caption='Отчет по поиску позиций с приоритетом 0 по проекту')
 or  (form9.caption='Построечный журнал') or (form9.caption='Ведомость комплектации по помещениям.')
 or  (form9.caption='Проверка документов на согласовании к справочнику.')
 or  (form9.caption='Потребность по материалам и оборудованию общая по проекту')
-or  (form9.caption='Наряды')
+or  (form9.caption='Наряды по цеху,проекту')
 or  (form9.Caption='Остатки трудоёмкости по МСЧ. Выберите проект')
+or  (form9.Caption='Количество изделий МСЧ по проекту. Выберите проект')
+or  (form9.Caption='Оборудование из комплектной поставки для склада ЗИП по проекту. Выберите проект')
 or  (form9.caption='Формрование ведомости комплектации запуска.')
 or  (form9.Caption='Изделия с незаполненой трудоемкостью ТНа')
 or  (form9.Caption='Выберите проект для анализа')
@@ -135,7 +137,7 @@ then
 begin
   Form9.DBgridEH2.Visible:=false;
   Form9.Button1.Visible:=false;
-  if form9.caption='Наряды' then
+  if form9.caption='Наряды по цеху,проекту' then
   Form9.Button1.Visible:=true;
 end;
 
@@ -659,13 +661,16 @@ While NOT OraQuery3.EOF Do
 
 end;
 
-     if form9.caption='Наряды' then
+     if form9.caption='Наряды по цеху,проекту' then
 begin
   Application.CreateForm(TForm52, Form52);
   Form52.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
   Form52.EDIT2.TEXT:=EDIT1.Text;
   Form52.Caption:='Наряды: '+oraQuery1.FieldByName('name').asString;
-  Form52.Caption:=Form52.Caption+'  ЦЕХ='+Form32.oraQuery1.FieldByName('nomer').asString;
+  if EDIT1.Text <> 'All' then
+  Form52.Caption:=Form52.Caption+'  ЦЕХ='+Form32.oraQuery1.FieldByName('nomer').asString
+  else
+  Form52.Caption:=Form52.Caption+'  по всем цехам';
   Form52.ShowModal();
   Form52.Free;
 end;
@@ -674,13 +679,29 @@ end;
 begin
   Application.CreateForm(TForm53, Form53);
   Form53.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
-//  Form53.EDIT2.TEXT:=EDIT1.Text;
   Form53.Caption:='Остатки трудоёмкости по МСЧ: '+oraQuery1.FieldByName('name').asString;
-//  if  Form53.EDIT2.TEXT<>'All' then
-//  Form53.Caption:=Form53.Caption+'  ЦЕХ='+Form32.oraQuery1.FieldByName('nomer').asString;
   Form53.ShowModal();
   Form53.Free;
 end;
+
+     if form9.caption='Количество изделий МСЧ по проекту. Выберите проект' then
+begin
+  Application.CreateForm(TForm55, Form55);
+  Form55.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
+  Form55.Caption:='Количество изделий МСЧ по проекту: '+oraQuery1.FieldByName('name').asString;
+  Form55.ShowModal();
+  Form55.Free;
+end;
+
+    if form9.caption='Оборудование из комплектной поставки для склада ЗИП по проекту. Выберите проект' then
+begin
+  Application.CreateForm(TForm57, Form57);
+  Form57.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
+  Form57.Caption:='Оборудование из комплектной поставки для склада ЗИП по проекту. Выберите проект: '+oraQuery1.FieldByName('name').asString;
+  Form57.ShowModal();
+  Form57.Free;
+end;
+
 
 if form9.caption='Формрование ведомости комплектации запуска.' then
 begin
@@ -716,12 +737,13 @@ begin
 
 end;
 
-if form9.caption='Отчет по выполнению ведомостей (Для склада)' then
+if form9.caption='Отчет по выполнению ведомостей (Для склада ЗИП)' then
 begin
+  Application.CreateForm(TForm22, Form22);
   Form22.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
-  Form22.Caption:='Отчет по выполнению ведомостей (Для склада) c Приходмами!';
+  Form22.Caption:='Отчет по выполнению ведомостей (Для склада) c Приходами!   '+oraQuery1.FieldByName('name').asString;
   Form22.ShowModal();
-
+  Form22.Free;
 end;
 
   if form9.caption='Отчет по Отчет по ТН (материал изделие)' then
@@ -954,12 +976,19 @@ end;
 procedure TForm9.Button1Click(Sender: TObject);
 begin
  Edit2.Text:='All';
+ if form9.caption='Наряды по цеху,проекту' then
+begin
  Application.CreateForm(TForm52, Form52);
  Form52.Edit1.Text:='All';
  Form52.EDIT2.TEXT:=EDIT1.Text;
- Form52.Caption:=Form52.Caption+'  ЦЕХ='+Form32.oraQuery1.FieldByName('nomer').asString;
- Form52.ShowModal();
+ Form52.Caption:='Наряды';
+ if EDIT1.Text <> 'All' then
+ Form52.Caption:=Form52.Caption+' по всем проектам ЦЕХА='+Form32.oraQuery1.FieldByName('nomer').asString
+ else
+ Form52.Caption:=Form52.Caption+' по всем цехам и проектам';
+  Form52.ShowModal();
  Form52.Free;
+ end;
 end;
 
 end.

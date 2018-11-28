@@ -30,6 +30,7 @@ object Form22: TForm22
     Width = 977
     Height = 561
     DataSource = OraDataSource1
+    Flat = False
     FooterColor = clWindow
     FooterFont.Charset = DEFAULT_CHARSET
     FooterFont.Color = clWindowText
@@ -49,7 +50,7 @@ object Form22: TForm22
         Footers = <>
         ReadOnly = True
         Title.Caption = #1057#1058#1056' '#8470
-        Width = 20
+        Width = 25
       end
       item
         EditButtons = <>
@@ -64,6 +65,7 @@ object Form22: TForm22
         Footers = <>
         ReadOnly = True
         Title.Caption = #1055#1086#1079#1080#1094#1080#1103
+        Width = 50
       end
       item
         EditButtons = <>
@@ -85,6 +87,7 @@ object Form22: TForm22
         Footers = <>
         ReadOnly = True
         Title.Caption = #1050#1086#1076
+        Width = 75
       end
       item
         EditButtons = <>
@@ -92,6 +95,7 @@ object Form22: TForm22
         Footers = <>
         ReadOnly = True
         Title.Caption = #1045#1044'.'#1048#1047#1052'.'#1087#1086' '#1057#1055
+        Width = 50
       end
       item
         EditButtons = <>
@@ -99,6 +103,7 @@ object Form22: TForm22
         Footers = <>
         ReadOnly = True
         Title.Caption = #1050#1054#1051'-'#1042#1054' '#1087#1086' '#1057#1055
+        Width = 50
       end
       item
         EditButtons = <>
@@ -106,6 +111,7 @@ object Form22: TForm22
         Footers = <>
         ReadOnly = True
         Title.Caption = #8470#1058#1056#1045#1041
+        Width = 50
       end
       item
         EditButtons = <>
@@ -113,6 +119,7 @@ object Form22: TForm22
         Footers = <>
         ReadOnly = True
         Title.Caption = #1044#1040#1058#1040' '#1057#1054#1047#1044#1040#1053#1048#1071
+        Width = 60
       end
       item
         EditButtons = <>
@@ -120,6 +127,7 @@ object Form22: TForm22
         Footers = <>
         ReadOnly = True
         Title.Caption = #1044#1040#1058#1040' '#1047#1040#1050#1056#1067#1058#1048#1071
+        Width = 60
       end
       item
         EditButtons = <>
@@ -127,6 +135,7 @@ object Form22: TForm22
         Footers = <>
         ReadOnly = True
         Title.Caption = #1044#1072#1090#1072' '#1054#1052#1058#1054
+        Width = 60
       end
       item
         EditButtons = <>
@@ -134,6 +143,7 @@ object Form22: TForm22
         Footers = <>
         ReadOnly = True
         Title.Caption = #1045#1044'.'#1048#1047#1052'.'#1087#1086' '#1058#1056#1045#1041'.'
+        Width = 50
       end
       item
         EditButtons = <>
@@ -141,6 +151,7 @@ object Form22: TForm22
         Footers = <>
         ReadOnly = True
         Title.Caption = #1050#1054#1051'-'#1042#1054' '#1087#1086' '#1058#1056#1045#1041
+        Width = 50
       end
       item
         EditButtons = <>
@@ -148,6 +159,7 @@ object Form22: TForm22
         Footers = <>
         ReadOnly = True
         Title.Caption = #1045#1044'.'#1048#1047#1052'.'#1057#1055
+        Width = 50
       end
       item
         EditButtons = <>
@@ -155,6 +167,7 @@ object Form22: TForm22
         Footers = <>
         ReadOnly = True
         Title.Caption = #1050#1054#1051'-'#1042#1054' '#1042#1067#1044#1040#1053#1053#1054#1045' '#1087#1086' '#1045#1044'.'#1048#1047#1052'.'#1057#1055
+        Width = 50
       end
       item
         EditButtons = <>
@@ -176,7 +189,13 @@ object Form22: TForm22
     Top = 568
     Width = 75
     Height = 25
-    Caption = #1042' '#1077#1082#1089#1077#1083#1100'!'
+    Caption = 'EXCEL'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
     TabOrder = 2
     OnClick = Button1Click
   end

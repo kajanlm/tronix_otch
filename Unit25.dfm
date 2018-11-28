@@ -29,6 +29,7 @@ object Form25: TForm25
     Width = 833
     Height = 385
     DataSource = OraDataSource1
+    Flat = False
     FooterColor = clWindow
     FooterFont.Charset = DEFAULT_CHARSET
     FooterFont.Color = clWindowText

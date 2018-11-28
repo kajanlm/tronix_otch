@@ -1,4 +1,4 @@
-unit Unit52;
+unit Unit58;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   OleServer, GridsEh, ComCtrls, ExtCtrls;
 
 type
-  TForm52 = class(TForm)
+  TForm58 = class(TForm)
     DBGridEh1: TDBGridEh;
     OraQuery1: TOraQuery;
     OraDataSource1: TOraDataSource;
@@ -36,13 +36,14 @@ type
     Label1: TLabel;
     Button2: TButton;
     RadioGroup1: TRadioGroup;
-    RadioGroup2: TRadioGroup;
-    RadioGroup3: TRadioGroup;
+    Label2: TLabel;
+    DateTimePicker2: TDateTimePicker;
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure DateTimePicker1Change(Sender: TObject);
+    procedure DateTimePicker2Change(Sender: TObject);
   private
     { Private declarations }
   public
@@ -50,32 +51,33 @@ type
   end;
 
 var
-  Form52: TForm52;
-  dt: string;
+  Form58: TForm58;
+  dn: string;
+  dk: string;
 implementation
 
-uses Unit9;
+uses Unit32;
 
 {$R *.dfm}
 
-procedure TForm52.FormShow(Sender: TObject);
+procedure TForm58.FormShow(Sender: TObject);
 begin
 //ShowMessage(Edit1.Text);
-//ShowMessage(Form52.Caption);
-//Edit1.Text:='458';
+//Edit1.Text:='4011';
+//ShowMessage(Form58.Caption);
 RadioGroup1.ItemIndex:=0;
-RadioGroup2.ItemIndex:=1;
-RadioGroup3.ItemIndex:=0;
 DateTimePicker1.DateTime:=date();
-dt:=FormatDateTime('yyyymmdd',DateTimePicker1.DateTime);
+DateTimePicker2.DateTime:=date();
+dn:=FormatDateTime('yyyymmdd',DateTimePicker1.DateTime);
+dk:=FormatDateTime('yyyymmdd',DateTimePicker2.DateTime);
 end;
 
-procedure TForm52.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TForm58.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
      OraQuery1.Close;
 end;
 
-procedure TForm52.Button1Click(Sender: TObject);
+procedure TForm58.Button1Click(Sender: TObject);
 var
 ExcelApplication:TExcelApplication;
 Range, Sheet: VAriant;
@@ -104,9 +106,10 @@ end;
 
 end;
 
-procedure TForm52.Button2Click(Sender: TObject);
+procedure TForm58.Button2Click(Sender: TObject);
 var tx:string;
 begin
+//ShowMessage(Edit2.Text);
 tx:=' ';
 tx:='select tt.dtnnomer dtnnomer,tt.zak zak,tt.typnomer typnomer,tt.txnomer txnomer,decode(tt.ducnomer,'''',tt.dtxnomer,tt.ducnomer) ducnomer,';
 tx:=tx+'tt.tnnomer tnnomer,tt.date_dok date_dok,tt.date_ins date_ins,tt.trudoem trudoem,tt.ts_number ts_number,tt.naname naname,tt.pname pname from (';
@@ -125,8 +128,8 @@ tx:=tx+' from tronix.ttn tn,tronix.ttn_mat tm,tronix.zakaz zk,kadry_dep dtx,kadr
 
 tx:=tx+' where tn.type_ttn_type_ttn_id=60 and tm.ttn_ttn_id=tn.ttn_id and tn.texkompl_texkompl_id_nar=tx.texkompl_id';
 tx:=tx+' and tx.dep_dep_id=dtx.dep_id(+) and tn.dep_dep_id_to=dtn.dep_id(+)';
-if Edit2.Text<>'All' then
-tx:=tx+' and dtn.dep_id='+Edit2.Text;
+if Edit1.Text<>'All' then
+tx:=tx+' and dtn.dep_id='+Edit1.Text;
 
 tx:=tx+' and tx.uch_uch_id=duc.dep_id(+) and tm.KVALIF_KVALIF_ID=kv.kvalif_id(+) and tn.post_post_id_nar is null';
 tx:=tx+' and tn.uzak_uzak_id=zk.nn(+) and tn.CADRY_CADRY_ID_NAR=pi.CADRY_CADRY_ID(+)';
@@ -135,17 +138,10 @@ tx:=tx+' and pi.CADRY_CADRY_ID=na.CADRY_CADRY_ID(+) and tm.trudoem is not null a
 tx:=tx+' and nvl(nordsy.go_in_tk(tx.TEXkompl_TEXKOMPL_ID,''осе'',''TYPE''),tx.TEXkompl_TEXKOMPL_ID)=tk.texkompl_id and nordsy.uzak_tx(tx.TEXkompl_TEXKOMPL_ID)=z.nn(+)';
 tx:=tx+' and not exists ( select * from tronix.ttn tz where tz.zamen_nar = tn.ttn_id)';
 
-if Edit1.Text<>'All' then
-tx:=tx+' and zk.id_project='+Edit1.Text;
-
-if RadioGroup3.ItemIndex=1 then
 tx:=tx+' and tn.date_ins is not null';
 
-if RadioGroup3.ItemIndex=2 then
-tx:=tx+' and tn.date_ins is null';
-
-if RadioGroup2.ItemIndex=1 then
-tx:=tx+' and TO_CHAR(tn.date_dok,''YYYYMMDD'') >='+DT;
+tx:=tx+' and TO_CHAR(tn.date_ins,''YYYYMMDD'') >='+DN;
+tx:=tx+' and TO_CHAR(tn.date_ins,''YYYYMMDD'') <='+DK;
 
 if RadioGroup1.ItemIndex=0 then
 tx:=tx+' union';
@@ -166,8 +162,8 @@ tx:=tx+'feb_zakaz z,nordsy.kvalif kv,tronix.firm fi';
 tx:=tx+' where tn.type_ttn_type_ttn_id=60 and tm.ttn_ttn_id=tn.ttn_id and tn.texkompl_texkompl_id_nar=tx.texkompl_id';
 tx:=tx+' and tx.dep_dep_id=dtx.dep_id(+) and tn.dep_dep_id_to=dtn.dep_id(+)';
 
-if Edit2.Text<>'All' then
-tx:=tx+' and dtn.dep_id='+Edit2.Text;
+if Edit1.Text<>'All' then
+tx:=tx+' and dtn.dep_id='+Edit1.Text;
 
 tx:=tx+' and tx.uch_uch_id=duc.dep_id(+) and tm.KVALIF_KVALIF_ID=kv.kvalif_id(+) and tn.post_post_id_nar=fi.firm_id(+) and tn.post_post_id_nar is not null';
 tx:=tx+' and tn.uzak_uzak_id=zk.nn(+)';
@@ -175,17 +171,10 @@ tx:=tx+' and tm.trudoem is not null and tn.date_anul_nar is null and nvl(nordsy.
 
 tx:=tx+' and nordsy.uzak_tx(tx.TEXkompl_TEXKOMPL_ID)=z.nn(+)';
 
-if Edit1.Text<>'All' then
-tx:=tx+' and zk.id_project='+Edit1.Text;
-
-if RadioGroup3.ItemIndex=1 then
 tx:=tx+' and tn.date_ins is not null';
 
-if RadioGroup3.ItemIndex=2 then
-tx:=tx+' and tn.date_ins is null';
-
-if RadioGroup2.ItemIndex=1 then
-tx:=tx+' and TO_CHAR(tn.date_dok,''YYYYMMDD'') >='+DT;
+tx:=tx+' and TO_CHAR(tn.date_ins,''YYYYMMDD'') >='+DN;
+tx:=tx+' and TO_CHAR(tn.date_ins,''YYYYMMDD'') <='+DK;
 
 end;
 tx:=tx+' ) tt';
@@ -215,9 +204,14 @@ tx:=tx+' order by tt.zak,tt.dtnnomer,tt.typnomer,tt.txnomer,tt.tnnomer';
 
  end;
 
-procedure TForm52.DateTimePicker1Change(Sender: TObject);
+procedure TForm58.DateTimePicker1Change(Sender: TObject);
 begin
-dt:=FormatDateTime('yyyymmdd',DateTimePicker1.DateTime);
+dn:=FormatDateTime('yyyymmdd',DateTimePicker1.DateTime);
+end;
+
+procedure TForm58.DateTimePicker2Change(Sender: TObject);
+begin
+dk:=FormatDateTime('yyyymmdd',DateTimePicker2.DateTime);
 end;
 
 end.

@@ -58,7 +58,9 @@ uses
   Unit99 in 'Unit99.pas' {DIF_OTCH_OLD},
   Unit52 in 'Unit52.pas' {Form52},
   Unit53 in 'Unit53.pas' {Form53},
-  Unit54 in 'Unit54.pas' {Form54};
+  Unit54 in 'Unit54.pas' {Form54},
+  Unit55 in 'Unit55.pas' {Form55},
+  Unit56 in 'Unit56.pas' {Form56};
 
 {$R *.res}
 
@@ -114,5 +116,6 @@ begin
   Application.CreateForm(TForm48, Form48);
   Application.CreateForm(TForm52, Form52);
   Application.CreateForm(TForm53, Form53);
+  Application.CreateForm(TForm55, Form55);
   Application.Run;
 end.

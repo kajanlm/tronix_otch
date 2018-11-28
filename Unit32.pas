@@ -28,7 +28,7 @@ var
 
 implementation
 
-uses Unit9, Unit38;
+uses Unit9, Unit38,Unit58,Unit52;
 
 {$R *.dfm}
 
@@ -43,7 +43,7 @@ begin
   else Button1.Visible:=true;
   // form9.Caption:='Потребность по материалам в разрезе чертежа';
   //form9.ShowModal();
-  
+
 end;
 
 procedure TForm32.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -55,12 +55,14 @@ procedure TForm32.DBGridEh1DblClick(Sender: TObject);
 begin
 
    form32.Close();
+
    if form32.Caption='Потребность по материалам в разрезе чертежа. Выберите цех' then
      begin
   form9.Caption:='Потребность по материалам в разрезе чертежа';
   form9.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
   form9.ShowModal();
      end;
+
   if form32.Caption='Потребность по материалам и оборудованию общая по проекту' then
   begin
     form9.Caption:='Потребность по материалам и оборудованию общая по проекту';
@@ -68,9 +70,9 @@ begin
      form9.ShowModal();
   end;
 
-   if form32.Caption='Наряды. Выберите цех' then
+   if form32.Caption='Наряды по цеху,проекту. Выберите цех' then
      begin
-  form9.Caption:='Наряды';
+  form9.Caption:='Наряды по цеху,проекту';
   form9.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
   form9.ShowModal();
      end;
@@ -82,22 +84,49 @@ begin
   form9.ShowModal();
      end;
 
+   if form32.Caption='Наряды,закрытые за период по цеху (ПДО). Выберите цех' then
+     begin
+  Application.CreateForm(TForm58, Form58);
+  form58.Caption:='Наряды,закрытые за период по цеху '+oraQuery1.FieldByName('nomer').asString;
+ form58.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
+  form58.ShowModal();
+  Form58.Free;
      end;
+
+ end;
 
 procedure TForm32.Button1Click(Sender: TObject);
 begin
     form32.Close();
-// if form32.Caption='Наряды. Выберите цех' then
-//    form9.Caption:='Наряды';
+
+if (form32.Caption='Остатки трудоёмкости по МСЧ. Выберите цех')
+or (form32.Caption='Потребность по материалам в разрезе чертежа. Выберите цех')
+or (form32.Caption='Наряды по цеху,проекту. Выберите цех')
+then
+begin
+//howMessage('all');
+   if form32.Caption='Наряды по цеху,проекту. Выберите цех' then
+    form9.Caption:='Наряды по цеху,проекту';
 
  if form32.Caption='Остатки трудоёмкости по МСЧ. Выберите цех' then
     form9.Caption:='Остатки трудоёмкости по МСЧ';
 
  if form32.Caption='Потребность по материалам в разрезе чертежа. Выберите цех' then
     form9.Caption:='Потребность по материалам в разрезе чертежа';
- 
+
   form9.Edit1.text:='All';
   form9.ShowModal();
+  end;
+
+ if form32.Caption='Наряды,закрытые за период по цеху (ПДО). Выберите цех' then
+ begin
+  Application.CreateForm(TForm58, Form58);
+  form58.Caption:='Наряды,закрытые за период по всем цехам';
+  form58.Edit1.text:='All';
+  form58.ShowModal();
+  Form58.Free;
+ end
+
 end;
 
 end.

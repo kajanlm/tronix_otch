@@ -34,6 +34,7 @@ type
     N18: TMenuItem;
     N01: TMenuItem;
     N19: TMenuItem;
+    N40: TMenuItem;
     N20: TMenuItem;
     N21: TMenuItem;
     N22: TMenuItem;
@@ -51,6 +52,9 @@ type
     N34: TMenuItem;
     N35: TMenuItem;
     N36: TMenuItem;
+    N37: TMenuItem;
+    N38: TMenuItem;
+    N39: TMenuItem;
     procedure N3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure tn1Click(Sender: TObject);
@@ -85,6 +89,9 @@ type
     procedure N34Click(Sender: TObject);
     procedure N35Click(Sender: TObject);
     procedure N36Click(Sender: TObject);
+    procedure N37Click(Sender: TObject);
+    procedure N38Click(Sender: TObject);
+    procedure N39Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -160,7 +167,7 @@ end;
 
 procedure TForm1.N12Click(Sender: TObject);
 begin
-    form9.Caption:='Отчет по выполнению ведомостей (Для склада)';
+    form9.Caption:='Отчет по выполнению ведомостей (Для склада ЗИП)';
   form9.ShowModal();
 end;
 
@@ -300,7 +307,7 @@ end;
 
 procedure TForm1.N35Click(Sender: TObject);
 begin
-   form32.Caption:='Наряды. Выберите цех';
+   form32.Caption:='Наряды по цеху,проекту. Выберите цех';
   form32.ShowModal();
 end;
 
@@ -308,6 +315,24 @@ end;
 begin
    form9.Caption:='Остатки трудоёмкости по МСЧ. Выберите проект';
   form9.ShowModal();
+end;
+
+ procedure TForm1.N37Click(Sender: TObject);
+begin
+  form9.Caption:='Количество изделий МСЧ по проекту. Выберите проект';
+  form9.ShowModal();
+end;
+
+ procedure TForm1.N38Click(Sender: TObject);
+begin
+   form9.Caption:='Оборудование из комплектной поставки для склада ЗИП по проекту. Выберите проект';
+  form9.ShowModal();
+end;
+
+ procedure TForm1.N39Click(Sender: TObject);
+begin
+   form32.Caption:='Наряды,закрытые за период по цеху (ПДО). Выберите цех';
+  form32.ShowModal();
 end;
 
 end.
