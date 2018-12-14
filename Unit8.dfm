@@ -28,6 +28,7 @@ object Form8: TForm8
     Width = 473
     Height = 161
     DataSource = OraDataSource1
+    Flat = False
     FooterColor = clWindow
     FooterFont.Charset = DEFAULT_CHARSET
     FooterFont.Color = clWindowText

@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, DBAccess, OdacVcl, DB, Ora, Menus;
+  Dialogs, DBAccess, OdacVcl, DB, Ora, Menus, IdBaseComponent, IdComponent,
+  IdTCPConnection, IdTCPClient, IdHTTP;
 
 type
   TForm1 = class(TForm)
@@ -55,6 +56,8 @@ type
     N37: TMenuItem;
     N38: TMenuItem;
     N39: TMenuItem;
+    N41: TMenuItem;
+    IdHTTP1: TIdHTTP;
     procedure N3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure tn1Click(Sender: TObject);
@@ -92,18 +95,26 @@ type
     procedure N37Click(Sender: TObject);
     procedure N38Click(Sender: TObject);
     procedure N39Click(Sender: TObject);
+    procedure N41Click(Sender: TObject);
   private
     { Private declarations }
   public
+    function SCAlive : boolean;
+    function ServerRequest(s : string) : string;
     { Public declarations }
   end;
 
 var
   Form1: TForm1;
   z:integer;
+
+const
+SERVER_ADDR = 'http://192.168.10.15:7777/server/tronix_otch/';
+SERVER_FILE_PART = '.sql';
+
 implementation
 
-uses Unit2, Unit7, Unit8, Unit9, Unit12, Unit17, Unit23, Unit32, Unit34;
+uses Unit2, Unit7, Unit8, Unit9, Unit12, Unit17, Unit23, Unit32, Unit34, cpct;
 
 {$R *.dfm}
 
@@ -283,20 +294,21 @@ end;
 
 procedure TForm1.N32Click(Sender: TObject);
 begin
-Form9.Caption:='Техкомплекты в обеспечении материалами с признаком поступления';
- Form9.ShowModal();
+  Form9.Caption:='Техкомплекты в обеспечении материалами с признаком поступления';
+  Form9.ShowModal();
 end;
 
 procedure TForm1.N33Click(Sender: TObject);
 var value:string;
 begin
- repeat
-value:=InputBox('!!!', 'Пожалуйста, пароль', '******');
+  repeat
+    value:=InputBox('!!!', 'Пожалуйста, пароль', '******');
   until value <> '';
-   if value='zopa' then    begin
-     form9.Caption:='Построечный журнал. Подрядчики';
-   form9.ShowModal();
-   end;
+  if value='zopa' then
+  begin
+    form9.Caption:='Построечный журнал. Подрядчики';
+    form9.ShowModal();
+  end;
 end;
 
 procedure TForm1.N34Click(Sender: TObject);
@@ -333,6 +345,55 @@ end;
 begin
    form32.Caption:='Наряды,закрытые за период по цеху (ПДО). Выберите цех';
   form32.ShowModal();
+end;
+
+procedure TForm1.N41Click(Sender: TObject);
+var takepw, password : string;
+begin
+  if not SCAlive then
+    exit;
+
+  password := ServerRequest('[PASS]CONTRACT_COPY');
+
+  takepw := InputBox('ДОСТУП', 'Введите пароль для данной операции', '');
+  if takepw = '' then
+  begin
+    showmessage('ПОЛЕ НЕ ЗАПОЛНЕНО. Введите пароль!');
+    exit;
+  end;
+
+  if takepw = password then
+  begin
+    Application.CreateForm(Tcopycnct, copycnct);
+    copycnct.ShowModal();
+    copycnct.Free;
+  end
+  else
+    showmessage('Неверный пароль! Обратитесь в АСУ');
+end;
+
+function TForm1.SCAlive : boolean;
+begin
+try 
+  idhttp1.Get(SERVER_ADDR + 'dummy');
+except
+  showmessage('Ошибка соединения с сервером!');
+  SCAlive := false;
+  exit;
+end;
+
+SCAlive := true;
+end;
+
+function TForm1.ServerRequest(s : string) : string;
+begin
+try
+  ServerRequest := idhttp1.Get(SERVER_ADDR + s + SERVER_FILE_PART);
+except
+  showmessage('ERROR');
+  Application.Terminate;
+end;
+
 end;
 
 end.

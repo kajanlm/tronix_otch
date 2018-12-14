@@ -48,7 +48,6 @@ type
     cb_invi_podr_name: TComboBox;
     filter_type: TCheckListBox;
     ComboBox1: TComboBox;
-    IdHTTP1: TIdHTTP;
     OraQuerySPRAV_ID: TFloatField;
     OraQueryZAM_FLAG: TStringField;
     filter_query: TEdit;
@@ -83,17 +82,11 @@ type
   private
     { Private declarations }
     procedure Execute_SQL(SQL: string);
-    function ServerRequest(s : string) : string;
     procedure CalcTypeText;
     procedure parseFilterMask;
   public
-    function SCAlive : boolean;
     { Public declarations }
   end;
-
-const
-SERVER_ADDR = 'http://192.168.10.15:7777/server/tronix_otch/';
-SERVER_FILE_PART = '.sql';
 
 var
   DIF_OTCH_FORM: TDIF_OTCH_FORM;
@@ -106,36 +99,12 @@ var
   FILTER_MASK,
   SFILTER_MASK
   : string;
-
+  
 implementation
 
-uses Unit15, Unit5, Unit9, addzams;
+uses Unit15, Unit5, Unit9, addzams, unit1;
 
 {$R *.dfm}
-
-function TDIF_OTCH_FORM.SCAlive : boolean;
-begin
-
-try
-  idhttp1.Get(SERVER_ADDR + 'dummy');
-except
-  showmessage('Ошибка соединения с сервером!');
-  SCAlive := false;
-  exit;
-end;
-
-SCAlive := true;
-end;
-
-function TDIF_OTCH_FORM.ServerRequest(s : string) : string;
-begin
-try
-  ServerRequest := idhttp1.Get(SERVER_ADDR + s + SERVER_FILE_PART);
-except
-  showmessage('ERROR');
-  Application.Terminate;
-end;
-end;
 
 procedure TDIF_OTCH_FORM.CalcDeficit(Sender: TObject);
 var
@@ -145,12 +114,12 @@ SQL
 
 begin
 
-if SCAlive then
+if form1.SCAlive then
 begin
   if (cb_typepodr.ItemIndex = 0) then
-    SQL := ServerRequest('DEFICIT_ZAVOD')
+    SQL := form1.ServerRequest('DEFICIT_ZAVOD')
   else
-    SQL := ServerRequest('DEFICIT');
+    SQL := form1.ServerRequest('DEFICIT');
 end
 else
   exit;
@@ -470,11 +439,11 @@ ELEM_DEP_STYPE
 
 begin
 
-if SCAlive then
+if form1.SCAlive then
 begin
-  SQL_Tx := ServerRequest('TXKOMPL_POS_FROM_POTR');
-  SQL_Zam := ServerRequest('_ZAMENY');
-  SQL_Zams := ServerRequest('ZAMENY_');
+  SQL_Tx := form1.ServerRequest('TXKOMPL_POS_FROM_POTR');
+  SQL_Zam := form1.ServerRequest('_ZAMENY');
+  SQL_Zams := form1.ServerRequest('ZAMENY_');
 end
 else
   exit;

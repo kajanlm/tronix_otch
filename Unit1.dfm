@@ -4,7 +4,7 @@ object Form1: TForm1
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = #1054#1090#1095#1077#1090#1099' '#1082' Tronix v1.9.2'
-  ClientHeight = 2
+  ClientHeight = 3
   ClientWidth = 984
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -45,6 +45,10 @@ object Form1: TForm1
       object N19: TMenuItem
         Caption = #1055#1086#1089#1090#1088#1086#1077#1095#1085#1099#1081' '#1078#1091#1088#1085#1072#1083
         OnClick = N19Click
+      end
+      object N41: TMenuItem
+        Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1085#1080#1077' '#1082#1086#1085#1090#1088#1072#1082#1090'-'#1076#1086#1075#1086#1074#1086#1088#1086#1074
+        OnClick = N41Click
       end
     end
     object N40: TMenuItem
@@ -205,5 +209,22 @@ object Form1: TForm1
     object HELP1: TMenuItem
       Caption = 'HELP'
     end
+  end
+  object IdHTTP1: TIdHTTP
+    MaxLineAction = maException
+    ReadTimeout = 0
+    AllowCookies = True
+    ProxyParams.BasicAuthentication = False
+    ProxyParams.ProxyPort = 0
+    Request.ContentLength = -1
+    Request.ContentRangeEnd = 0
+    Request.ContentRangeStart = 0
+    Request.ContentType = 'text/html'
+    Request.Accept = 'text/html, */*'
+    Request.BasicAuthentication = False
+    Request.UserAgent = 'Mozilla/3.0 (compatible; Indy Library)'
+    HTTPOptions = [hoForceEncodeParams]
+    Left = 488
+    Top = 16
   end
 end

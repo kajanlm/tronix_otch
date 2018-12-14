@@ -60,7 +60,10 @@ uses
   Unit53 in 'Unit53.pas' {Form53},
   Unit54 in 'Unit54.pas' {Form54},
   Unit55 in 'Unit55.pas' {Form55},
-  Unit56 in 'Unit56.pas' {Form56};
+  Unit56 in 'Unit56.pas' {Form56},
+  cpct in 'cpct.pas' {copycnct},
+  cnctbody in 'cnctbody.pas' {s_contract},
+  cnctinfo in 'cnctinfo.pas' {cntinfo};
 
 {$R *.res}
 

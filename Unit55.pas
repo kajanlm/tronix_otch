@@ -79,6 +79,7 @@ tx:=tx+'kd.namek namek,tronix.sp_name(tm.sprav_sprav_id) name';
 tx:=tx+' from nordsy.tx_mat tm, nordsy.texkompl tx, tronix.koded kd, feb_zakaz z';
 tx:=tx+' where type_relation_type_relation_id=9';
 tx:=tx+' and tm.tex_texkompl_id=tx.texkompl_id(+)';
+//tx:=tx+' and substr(tx.nomer,3,1)<>''*''';
 tx:=tx+' and tm.koded_koded_id=kd.koded_id';
 tx:=tx+' and tx.project_project_id='+edit1.text;
 tx:=tx+' and nordsy.uzak_tx(tx.texkompl_id)=z.nn';

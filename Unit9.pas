@@ -45,7 +45,7 @@ implementation
 
 uses Unit10, Unit15, Unit16, Unit20, Unit21, Unit22, Unit23, Unit25, Unit26,
   Unit27, Unit35, Unit36, Unit37, Unit38, Unit43, Unit45, Unit46, Unit34,
-  Unit47, Unit49, Unit50, Unit52, Unit53, Unit55, Unit57, Unit32;
+  Unit47, Unit49, Unit50, Unit52, Unit53, Unit55, Unit57, Unit32, Unit1;
 
 {$R *.dfm}
 
@@ -64,7 +64,7 @@ if MessageDlg('Запуститить модуль дефицита в новом варианте? Да - запустить. Нет
 begin
   Application.CreateForm(TDIF_OTCH_FORM, DIF_OTCH_FORM);
 
-  if DIF_OTCH_FORM.SCAlive then
+  if Form1.SCAlive then
   begin
     DIF_OTCH_FORM.Caption := form9.Caption + ' ' + dbgrideh2.DataSource.DataSet.FieldByName('ZAK').asString;
     DIF_OTCH_FORM.ShowModal();
