@@ -1,11 +1,11 @@
-object Form54: TForm54
-  Left = 311
-  Top = 157
-  Width = 1134
-  Height = 709
+object Form59: TForm59
+  Left = 271
+  Top = 114
+  Width = 1169
+  Height = 713
   Anchors = []
   AutoSize = True
-  Caption = 'Form54'
+  Caption = 'Form59'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,14 +17,14 @@ object Form54: TForm54
   OnClose = FormClose
   OnShow = FormShow
   DesignSize = (
-    1126
-    675)
+    1161
+    679)
   PixelsPerInch = 96
   TextHeight = 13
   object DBGridEh1: TDBGridEh
     Left = 0
     Top = 0
-    Width = 1126
+    Width = 1161
     Height = 649
     Anchors = []
     DataSource = OraDataSource1
@@ -86,7 +86,7 @@ object Form54: TForm54
         Title.Font.Height = -13
         Title.Font.Name = 'MS Sans Serif'
         Title.Font.Style = [fsBold]
-        Width = 115
+        Width = 100
       end
       item
         EditButtons = <>
@@ -104,7 +104,25 @@ object Form54: TForm54
         Title.Font.Height = -13
         Title.Font.Name = 'MS Sans Serif'
         Title.Font.Style = [fsBold]
-        Width = 280
+        Width = 222
+      end
+      item
+        EditButtons = <>
+        FieldName = 'txnomer'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        Footers = <>
+        Title.Alignment = taCenter
+        Title.Caption = #1062'/'#1050
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 120
       end
       item
         DisplayFormat = '00.,000'
@@ -125,6 +143,33 @@ object Form54: TForm54
         Footers = <>
         Title.Alignment = taCenter
         Title.Caption = #1058#1056#1059#1044'-'#1058#1068' '#1058#1053
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 100
+      end
+      item
+        DisplayFormat = '00.,000'
+        EditButtons = <>
+        FieldName = 'txtrud'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        Footer.DisplayFormat = '0.,000'
+        Footer.Font.Charset = DEFAULT_CHARSET
+        Footer.Font.Color = clWindowText
+        Footer.Font.Height = -11
+        Footer.Font.Name = 'MS Sans Serif'
+        Footer.Font.Style = [fsBold]
+        Footer.ValueType = fvtSum
+        Footers = <>
+        Layout = tlCenter
+        Title.Alignment = taCenter
+        Title.Caption = #1058#1056#1059#1044'-'#1058#1068' '#1062'/'#1050
         Title.Font.Charset = DEFAULT_CHARSET
         Title.Font.Color = clWindowText
         Title.Font.Height = -13
@@ -157,7 +202,7 @@ object Form54: TForm54
         Title.Font.Height = -13
         Title.Font.Name = 'MS Sans Serif'
         Title.Font.Style = [fsBold]
-        Width = 150
+        Width = 126
       end
       item
         DisplayFormat = '00.,000'
@@ -184,7 +229,7 @@ object Form54: TForm54
         Title.Font.Height = -13
         Title.Font.Name = 'MS Sans Serif'
         Title.Font.Style = [fsBold]
-        Width = 152
+        Width = 146
       end
       item
         DisplayFormat = '00.,000'
@@ -204,12 +249,31 @@ object Form54: TForm54
         Title.Font.Height = -13
         Title.Font.Name = 'MS Sans Serif'
         Title.Font.Style = [fsBold]
-        Width = 276
+        Width = 192
+      end
+      item
+        EditButtons = <>
+        FieldName = 'koop'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        Footers = <>
+        Title.Alignment = taCenter
+        Title.Caption = #1053#1054#1052#1045#1056' ID'
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Visible = False
+        Width = 0
       end>
   end
   object Edit1: TEdit
-    Left = 514
-    Top = 170
+    Left = 513
+    Top = 174
     Width = 247
     Height = 21
     TabOrder = 1
@@ -217,8 +281,8 @@ object Form54: TForm54
     Visible = False
   end
   object Edit2: TEdit
-    Left = 497
-    Top = 42
+    Left = 496
+    Top = 46
     Width = 249
     Height = 21
     TabOrder = 2
@@ -226,8 +290,8 @@ object Form54: TForm54
     Visible = False
   end
   object Button1: TButton
-    Left = 41
-    Top = 650
+    Left = 40
+    Top = 654
     Width = 75
     Height = 25
     Caption = 'Excel'
@@ -238,35 +302,21 @@ object Form54: TForm54
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 3
+    OnClick = Button1Click
   end
   object Edit3: TEdit
-    Left = 513
-    Top = 74
+    Left = 512
+    Top = 78
     Width = 121
     Height = 21
     TabOrder = 4
     Text = 'Edit3'
     Visible = False
   end
-  object Button2: TButton
-    Left = 801
-    Top = 650
-    Width = 289
-    Height = 25
-    Caption = #1056#1040#1057#1050#1056#1067#1058#1068' '#1062#1045#1061#1054#1050#1054#1054#1055#1045#1056#1040#1062#1048#1048
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -16
-    Font.Name = 'MS Sans Serif'
-    Font.Style = [fsBold]
-    ParentFont = False
-    TabOrder = 5
-    OnClick = Button2Click
-  end
   object OraQuery1: TOraQuery
     Session = Form1.OraSession1
     ReadOnly = True
-    Left = 1000
+    Left = 1064
     Top = 112
     object OraQuery1zak: TStringField
       FieldName = 'zak'
@@ -277,8 +327,14 @@ object Form54: TForm54
     object OraQuery1tkname: TStringField
       FieldName = 'tkname'
     end
+    object OraQuery1txnomer: TStringField
+      FieldName = 'txnomer'
+    end
     object OraQuery1tktrud: TFloatField
       FieldName = 'tktrud'
+    end
+    object OraQuery1txtrud: TFloatField
+      FieldName = 'txtrud'
     end
     object OraQuery1trudz: TFloatField
       FieldName = 'trudz'
@@ -289,11 +345,14 @@ object Form54: TForm54
     object OraQuery1trudnz: TFloatField
       FieldName = 'trudnz'
     end
+    object OraQuery1koop: TStringField
+      FieldName = 'koop'
+    end
   end
   object OraDataSource1: TOraDataSource
     DataSet = OraQuery1
-    Left = 944
-    Top = 104
+    Left = 1008
+    Top = 112
   end
   object SaveDialog1: TSaveDialog
     Left = 680

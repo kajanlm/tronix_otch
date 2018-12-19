@@ -1,4 +1,4 @@
-unit Unit54;
+unit Unit59;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   OleServer, GridsEh;
 
 type
-  TForm54 = class(TForm)
+  TForm59 = class(TForm)
     DBGridEh1: TDBGridEh;
     OraQuery1: TOraQuery;
     OraDataSource1: TOraDataSource;
@@ -17,23 +17,24 @@ type
     OraQuery1zak: TStringField;
     OraQuery1tknomer: TStringField;
     OraQuery1tkname: TStringField;
+    OraQuery1txnomer: TStringField;
     OraQuery1tktrud: TFloatField;
+    OraQuery1txtrud: TFloatField;
     OraQuery1trudz: TFloatField;
     OraQuery1osttrud: TFloatField;
     OraQuery1trudnz: TFloatField;
+    OraQuery1koop: TStringField;
     Button1: TButton;
     SaveDialog1: TSaveDialog;
     ExcelApplication1: TExcelApplication;
     ExcelWorkbook1: TExcelWorkbook;
     ExcelWorksheet1: TExcelWorksheet;
     Edit3: TEdit;
-    Button2: TButton;
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Button1Click(Sender: TObject);
     procedure DBGridEh1DrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumnEh; State: TGridDrawState);
-    procedure Button2Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -41,15 +42,15 @@ type
   end;
 
 var
-  Form54: TForm54;
+  Form59: TForm59;
 
 implementation
 
-uses Unit53,Unit59;
+uses Unit54;
 
 {$R *.dfm}
 
-procedure TForm54.FormShow(Sender: TObject);
+procedure TForm59.FormShow(Sender: TObject);
 var tx:string;
 begin
 //Edit1.Text:='458';
@@ -57,17 +58,18 @@ begin
 //Edit2.Text:='4011';
 //ShowMessage(Edit2.Text);
 
-tx:=' select lm.zak zak, lm.tknomer tknomer,lm.tkname tkname,lm.tktrud tktrud,lm.trudz trudz,lm.osttrud osttrud,lm.trudnz trudnz';
+tx:=' select lm.zak zak, lm.tknomer tknomer,lm.tkname tkname,lm.txnomer txnomer,';
+tx:=tx+'lm.tktrud tktrud,lm.txtrud txtrud,lm.trudz trudz,lm.osttrud osttrud,lm.trudnz trudnz,lm.koop koop';
 //lm
 tx:=tx+' from (';
-tx:=tx+'select l.zak zak,l.tknomer tknomer,replace(l.tkname, chr(10), '' '') tkname,';
-tx:=tx+' max(l.tktrud) tktrud,max(l.trudz) trudz,(max(l.tktrud)-max(l.trudz)) osttrud,max(l.trudnz) trudnz';
+tx:=tx+'select distinct l.zak zak,l.tknomer tknomer,replace(l.tkname, chr(10), '' '') tkname,l.txnomer txnomer,l.koop koop,';
+tx:=tx+' max(l.tktrud) tktrud,max(l.txtrud) txtrud,max(l.trudz) trudz,(max(l.txtrud)-max(l.trudz)) osttrud,max(l.trudnz) trudnz';
 //l
 tx:=tx+' from (';
-tx:=tx+'select m.zak zak,m.tknomer tknomer,m.tkname tkname,sum(m.tktrud) tktrud,0 trudz,0 trudnz ';
-//m
-tx:=tx+' from (';
-tx:=tx+' select z.zak zak,tk.nomer tknomer,nordsy.trud_tx(tx.texkompl_id) tktrud,tk.name tkname';
+tx:=tx+'select z.zak zak,tk.nomer tknomer,tk.name tkname,';
+tx:=tx+' decode(de.type_dep_type_dep_id,2,de.nomer,dd.nomer) denomer,TO_CHAR(tx.texkompl_id) koop,';
+tx:=tx+' tx.nomer txnomer,';
+tx:=tx+' nordsy.trud_tx(tk.texkompl_id) tktrud, nordsy.trud_tx(tx.texkompl_id) txtrud,0 trudz,0 trudnz ';
 
 tx:=tx+' from nordsy.texkompl tx,nordsy.texkompl tk,tronix.project_list pr,kadry_dep de,kadry_dep dd,feb_zakaz z';
 tx:=tx+' where tk.type_tex_type_tex_id=8 and tx.texkompl_texkompl_id=tk.texkompl_id and nordsy.uzak_tx(tk.TEXKOMPL_ID)=z.nn(+)';
@@ -76,16 +78,30 @@ tx:=tx+' and tk.project_project_id=pr.project_id(+) and pr.project_id='+Edit1.Te
 tx:=tx+' and upper(z.zak) like (''%ÌÑ×%'') and substr(tk.nomer,3,1)=''-''';
 tx:=tx+' and tx.dep_dep_id=de.dep_id(+) and de.dep_dep_id=dd.dep_id(+)';
 tx:=tx+' and '+Edit2.Text+' in (de.dep_id,dd.dep_id)';
-tx:=tx+') m';
-//m
-tx:=tx+' group by m.zak,m.tknomer,m.tkname';
+
 tx:=tx+' union';
 
-tx:=tx+' select ll.zak zak,ll.tknomer tknomer,ll.tkname tkname,';
-tx:=tx+' max(ll.tktrud) tktrud,sum(ll.trudz) trudz,sum(ll.trudnz) trudnz';
+tx:=tx+' select ll.zak zak,ll.tknomer tknomer,ll.tkname tkname,ll.denomer denomer,ll.koop koop,ll.txnomer txnomer,';
+tx:=tx+' max(ll.tktrud) tktrud,max(ll.txtrud) txtrud,sum(ll.trudz) trudz,sum(ll.trudnz) trudnz';
 //ll
 tx:=tx+' from (';
-tx:=tx+' select z.zak zak,decode(tk.type_tex_type_tex_id,7,tk.nomer,8,tk.nomer,tx.nomer) tknomer,tk.name tkname,0 tktrud,';
+tx:=tx+' select lk.zak zak,lk.tknomer tknomer,lk.tkname tkname,';
+
+tx:=tx+' (select decode(de.type_dep_type_dep_id,2,de.nomer,dd.nomer) from nordsy.texkompl tt,kadry_dep de,kadry_dep dd';
+tx:=tx+' where tt.texkompl_id=lk.koop and tt.dep_dep_id=de.dep_id(+) and de.dep_dep_id=dd.dep_id(+)';
+tx:=tx+' and '+Edit2.Text+' in (de.dep_id,dd.dep_id)';
+tx:=tx+' ) denomer,';
+
+tx:=tx+'lk.koop koop,nordsy.tx_nomer(lk.koop) txnomer,';
+tx:=tx+' lk.tktrud tktrud,nordsy.trud_tx(lk.koop) txtrud, lk.trudz trudz,lk.trudnz trudnz';
+//lk
+tx:=tx+' from (';
+tx:=tx+' select z.zak zak,decode(tk.type_tex_type_tex_id,7,tk.nomer,8,tk.nomer,tx.nomer) tknomer,';
+tx:=tx+' tk.name tkname,nordsy.trud_tx(tk.texkompl_id) tktrud,';
+
+tx:=tx+' substr(nordsy.tk_nomer_all(tx.texkompl_id),instr(nordsy.tk_nomer_all(tx.texkompl_id),''--'',-1,4)+3,';
+tx:=tx+'instr(nordsy.tk_nomer_all(tx.texkompl_id),''--'',-1,3)-(instr(nordsy.tk_nomer_all(tx.texkompl_id),''--'',-1,4)+4)) koop,';
+
 tx:=tx+' decode(tn.date_ins,null,0,tm.trudoem) trudz,decode(tn.date_ins,null,tm.trudoem,0) trudnz ';
 
 tx:=tx+' from tronix.ttn tn,tronix.ttn_mat tm,nordsy.texkompl tx,nordsy.texkompl tk,tronix.project_list pr,tronix.zakaz zk,feb_zakaz z';
@@ -96,12 +112,13 @@ tx:=tx+' and tn.project_project_id=pr.project_id(+) and pr.project_id='+Edit1.Te
 
 tx:=tx+' and tn.dep_dep_id_to='+Edit2.Text;
 tx:=tx+' and not exists ( select * from tronix.ttn tz where tz.zamen_nar = tn.ttn_id)';
+ tx:=tx+' ) lk';
 tx:=tx+' ) ll';
-tx:=tx+' group by ll.zak,ll.tknomer,ll.tkname';
+tx:=tx+' group by ll.zak,ll.tknomer,ll.tkname,ll.txnomer,ll.koop,ll.denomer';
 tx:=tx+' ) l';
-tx:=tx+' group by l.zak,l.tknomer,l.tkname';
+tx:=tx+' group by l.zak,l.tknomer,l.tkname,l.txnomer,l.denomer,l.koop';
 tx:=tx+') lm';
-tx:=tx+' order by lm.zak,lm.tknomer,lm.tkname';
+tx:=tx+' order by lm.zak,lm.tknomer,lm.tkname,lm.txnomer,lm.koop';
 
 //ShowMEssage(tx);
   With OraQuery1 Do
@@ -109,10 +126,13 @@ tx:=tx+' order by lm.zak,lm.tknomer,lm.tkname';
         FieldByName('zak').DisplayLAbel:='Ó×.ÇÀÊÀÇ ';
         FieldByName('tknomer').DisplayLAbel:='ÒÍ ';
         FieldByName('tkname').DisplayLAbel:='ÍÀÈÌÅÍÎÂÀÍÈÅ ÒÍ ';
+        FieldByName('txnomer').DisplayLAbel:='Ö/Ê ';
         FieldByName('tktrud').DisplayLAbel:='ÒÐ-ÒÜ ÒÍ. ';
+        FieldByName('txtrud').DisplayLAbel:='ÒÐ-ÒÜ Ö/Ê';
         FieldByName('trudz').DisplayLAbel:='ÒÐ-ÒÜ ÇÀÊÐÛÒÀß ';
         FieldByName('osttrud').DisplayLAbel:='ÎÑÒÀÒÊÈ ÒÐ-ÒÈ';
-        FieldByName('trudnz').DisplayLAbel:='ÒÐ-ÒÜ ÍÀÐßÄÎÂ ÑÎÇÄÀÍÍÛÕ,ÍÎ ÍÅ ÇÀÊÐÛÒÛÕ';
+        FieldByName('trudnz').DisplayLAbel:='ÎÑÒÀÒÊÈ ÒÐ-ÒÈ';
+        FieldByName('koop').DisplayLAbel:='ID ';
      end;
 
    OraQuery1.SQL.Text:=tx;
@@ -122,12 +142,12 @@ tx:=tx+' order by lm.zak,lm.tknomer,lm.tkname';
 end;
 
 
-procedure TForm54.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TForm59.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
      OraQuery1.Close;
 end;
 
-procedure TForm54.Button1Click(Sender: TObject);
+procedure TForm59.Button1Click(Sender: TObject);
 var
 ExcelApplication:TExcelApplication;
 Range, Sheet: VAriant;
@@ -156,11 +176,15 @@ end;
 
 end;
 
-procedure TForm54.DBGridEh1DrawColumnCell(Sender: TObject;
+
+procedure TForm59.DBGridEh1DrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumnEh;
   State: TGridDrawState);
 begin
       if (Column.FieldName='tktrud') and (Column.Field.Dataset.FieldByName('tktrud').AsFloat > 0) then
+    TDBGridEh(Sender).Canvas.Font.Style:=[fsbold];
+
+      if (Column.FieldName='txtrud') and (Column.Field.Dataset.FieldByName('txtrud').AsFloat > 0) then
     TDBGridEh(Sender).Canvas.Font.Style:=[fsbold];
 
     if (Column.FieldName='trudnz') and (Column.Field.Dataset.FieldByName('trudnz').AsFloat > 0) then
@@ -173,19 +197,6 @@ begin
     TDBGridEh(Sender).Canvas.Font.Style:=[fsbold];
 
  TDBGridEh(Sender).DefaultDrawColumnCell(Rect, DataCol, Column, State);
-end;
-
-procedure TForm54.Button2Click(Sender: TObject);
-begin
-//  ShowMessage(Form54.edit2.Text);
-//  ShowMessage(Form54.edit1.Text);
-  Application.CreateForm(TForm59, Form59);
-  Form59.Edit2.Text:=Form54.Edit2.Text;
-  Form59.Edit1.Text:=Form54.Edit1.Text;
-//  ShowMessage(Form54.Edit1.Text);
-  Form59.Caption:=Form54.Caption;
-  Form59.ShowModal();
-  Form59.Free;
 end;
 
 end.
