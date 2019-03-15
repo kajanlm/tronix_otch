@@ -26,6 +26,8 @@ type
     { Private declarations }
   public
     { Public declarations }
+    FIRM_NAME,
+    SELECTED_FIRM,
     GLOBAL_ID : string;
   end;
 
@@ -41,8 +43,12 @@ uses cnctinfo;
 procedure Ts_contract.Button1Click(Sender: TObject);
 begin
   Application.CreateForm(Tcntinfo, cntinfo);
+  
   cntinfo.ShowModal();
   cntinfo.Free;
+
+  modalResult := mrOk;
+  self.close;
 end;
 
 end.

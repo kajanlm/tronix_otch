@@ -65,6 +65,7 @@ object Form9: TForm9
     TitleFont.Height = -11
     TitleFont.Name = 'MS Sans Serif'
     TitleFont.Style = []
+    OnCellClick = DBGridEh1CellClick
     OnDblClick = DBGridEh1DblClick
     Columns = <
       item
@@ -158,6 +159,46 @@ object Form9: TForm9
     TabOrder = 5
     Text = 'Edit1'
     Visible = False
+  end
+  object uzaks_memory: TComboBox
+    Left = 184
+    Top = 176
+    Width = 145
+    Height = 21
+    ItemHeight = 13
+    TabOrder = 6
+    Visible = False
+  end
+  object uzaks: TCheckListBox
+    Left = 8
+    Top = 216
+    Width = 473
+    Height = 97
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -17
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ItemHeight = 20
+    ParentFont = False
+    TabOrder = 7
+    Visible = False
+  end
+  object Button2: TButton
+    Left = 8
+    Top = 312
+    Width = 473
+    Height = 25
+    Caption = #1054#1058#1063#1045#1058
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -17
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 8
+    Visible = False
+    OnClick = Button2Click
   end
   object OraQuery1: TOraQuery
     Session = Form1.OraSession1

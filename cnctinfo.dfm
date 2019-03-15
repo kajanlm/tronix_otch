@@ -4,7 +4,7 @@ object cntinfo: Tcntinfo
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1050#1086#1087#1080#1103' '#1082#1086#1085#1090#1088#1072#1082#1090#1072
-  ClientHeight = 252
+  ClientHeight = 254
   ClientWidth = 446
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -57,7 +57,7 @@ object cntinfo: Tcntinfo
     ParentFont = False
   end
   object Label4: TLabel
-    Left = 56
+    Left = 8
     Top = 160
     Width = 82
     Height = 16
@@ -68,21 +68,6 @@ object cntinfo: Tcntinfo
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
     ParentFont = False
-  end
-  object post: TEdit
-    Left = 208
-    Top = 160
-    Width = 185
-    Height = 21
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -8
-    Font.Name = 'MS Sans Serif'
-    Font.Style = []
-    ParentFont = False
-    ReadOnly = True
-    TabOrder = 5
-    OnClick = postClick
   end
   object ndoc: TEdit
     Left = 208
@@ -108,7 +93,7 @@ object cntinfo: Tcntinfo
     TabOrder = 2
   end
   object Button1: TButton
-    Left = 77
+    Left = 69
     Top = 205
     Width = 321
     Height = 41
@@ -122,68 +107,13 @@ object cntinfo: Tcntinfo
     TabOrder = 3
     OnClick = Button1Click
   end
-  object postavk: TDBGridEh
-    Left = 0
-    Top = 136
-    Width = 449
-    Height = 120
-    DataSource = DataSource
-    Flat = False
-    FooterColor = clWindow
-    FooterFont.Charset = DEFAULT_CHARSET
-    FooterFont.Color = clWindowText
-    FooterFont.Height = -11
-    FooterFont.Name = 'MS Sans Serif'
-    FooterFont.Style = []
+  object postava: TEdit
+    Left = 104
+    Top = 160
+    Width = 329
+    Height = 21
     ReadOnly = True
     TabOrder = 4
-    TitleFont.Charset = DEFAULT_CHARSET
-    TitleFont.Color = clWindowText
-    TitleFont.Height = -11
-    TitleFont.Name = 'MS Sans Serif'
-    TitleFont.Style = []
-    Visible = False
-    OnDblClick = postavkDblClick
-    Columns = <
-      item
-        Alignment = taCenter
-        EditButtons = <>
-        FieldName = 'INN'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -8
-        Font.Name = 'MS Sans Serif'
-        Font.Style = [fsBold]
-        Footers = <>
-        Layout = tlCenter
-        Title.Alignment = taCenter
-        Title.Caption = #1048#1053#1053
-        Title.Font.Charset = DEFAULT_CHARSET
-        Title.Font.Color = clWindowText
-        Title.Font.Height = -7
-        Title.Font.Name = 'MS Sans Serif'
-        Title.Font.Style = [fsBold]
-        Width = 135
-      end
-      item
-        EditButtons = <>
-        FieldName = 'name'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -8
-        Font.Name = 'MS Sans Serif'
-        Font.Style = []
-        Footers = <>
-        Layout = tlCenter
-        Title.Alignment = taCenter
-        Title.Caption = #1055#1054#1057#1058#1040#1042#1065#1048#1050
-        Title.Font.Charset = DEFAULT_CHARSET
-        Title.Font.Color = clWindowText
-        Title.Font.Height = -7
-        Title.Font.Name = 'MS Sans Serif'
-        Title.Font.Style = [fsBold]
-        Width = 274
-      end>
   end
   object Query: TOraQuery
     Session = Form1.OraSession1
@@ -204,10 +134,5 @@ object cntinfo: Tcntinfo
       FieldName = 'sname'
       Size = 255
     end
-  end
-  object DataSource: TOraDataSource
-    DataSet = Query
-    Left = 408
-    Top = 48
   end
 end

@@ -1,6 +1,6 @@
 object s_contract: Ts_contract
-  Left = 271
-  Top = 123
+  Left = 352
+  Top = 298
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1050#1086#1085#1090#1088#1072#1082#1090
@@ -29,6 +29,7 @@ object s_contract: Ts_contract
     FooterFont.Height = -11
     FooterFont.Name = 'MS Sans Serif'
     FooterFont.Style = []
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit]
     ReadOnly = True
     RowHeight = 40
     TabOrder = 0

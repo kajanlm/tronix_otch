@@ -57,6 +57,13 @@ type
     N38: TMenuItem;
     N39: TMenuItem;
     N41: TMenuItem;
+    N60: TMenuItem;
+    N61: TMenuItem;
+    N62: TMenuItem;
+    N63: TMenuItem;
+    N64: TMenuItem;
+    N65: TMenuItem;
+    N66: TMenuItem;
     IdHTTP1: TIdHTTP;
     procedure N3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -96,6 +103,13 @@ type
     procedure N38Click(Sender: TObject);
     procedure N39Click(Sender: TObject);
     procedure N41Click(Sender: TObject);
+    procedure N60Click(Sender: TObject);
+    procedure N61Click(Sender: TObject);
+    procedure N62Click(Sender: TObject);
+    procedure N63Click(Sender: TObject);
+    procedure N64Click(Sender: TObject);
+    procedure N65Click(Sender: TObject);
+    procedure N66Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -132,13 +146,17 @@ end;
 
 procedure TForm1.tn1Click(Sender: TObject);
 begin
-   Form8.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  Form8.ShowModal();
+  Form9.Free;
 end;
 
 procedure TForm1.N5Click(Sender: TObject);
 begin
- Form9.Caption:='Отчет по нарядам';
- form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='Отчет по нарядам';
+  form9.ShowModal();
+  Form9.Free;
 end;
 
 procedure TForm1.N4Click(Sender: TObject);
@@ -149,8 +167,10 @@ end;
 
 procedure TForm1.N6Click(Sender: TObject);
 begin
+  Application.CreateForm(TForm9, Form9);
   form9.Caption:='Дефицит по номенклатуре';
-  form9.ShowModal();
+  form9.ShowModal();  
+  Form9.Free;
 end;
 
 procedure TForm1.N8Click(Sender: TObject);
@@ -160,50 +180,66 @@ end;
 
 procedure TForm1.N9Click(Sender: TObject);
 begin
-      form9.Caption:='Отчет по трудоемкости (Новый)';
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Отчет по трудоемкости (Новый)';
   form9.ShowModal();
+  Form9.Free;
 end;
 
 procedure TForm1.N10Click(Sender: TObject);
 begin
-   Form9.Caption:='Отчет по заявкам';
- form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Отчет по заявкам';
+  form9.ShowModal(); 
+  Form9.Free;
 end;
 
 procedure TForm1.N11Click(Sender: TObject);
 begin
+  Application.CreateForm(TForm9, Form9);
   form9.Caption:='Отчет планируемой трудоемкости';
-  form9.ShowModal();
+  form9.ShowModal();   
+  Form9.Free;
 end;
 
 procedure TForm1.N12Click(Sender: TObject);
 begin
-    form9.Caption:='Отчет по выполнению ведомостей (Для склада ЗИП)';
-  form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Отчет по выполнению ведомостей (Для склада ЗИП)';
+  form9.ShowModal();    
+  Form9.Free;
 end;
 
 procedure TForm1.N13Click(Sender: TObject);
 begin
-        form23.Caption:='Отчет по сравниваю ПУЭ в проектах (ТехОтдел)';
-  form23.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form23.Caption:='Отчет по сравниваю ПУЭ в проектах (ТехОтдел)';
+  form23.ShowModal();     
+  Form9.Free;
 end;
 
 procedure TForm1.N14Click(Sender: TObject);
 begin
-       form9.Caption:='Отчет по Отчет по ТН (материал изделие)';
-  form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Отчет по Отчет по ТН (материал изделие)';
+  form9.ShowModal(); 
+  Form9.Free;
 end;
 
 procedure TForm1.N15Click(Sender: TObject);
 begin
-form9.Caption:='Ведомость материалов';
-  form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Ведомость материалов';
+  form9.ShowModal(); 
+  Form9.Free;
 end;
 
 procedure TForm1.N16Click(Sender: TObject);
 begin
-   form32.Caption:='Потребность по материалам в разрезе чертежа. Выберите цех';
-  form32.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form32.Caption:='Потребность по материалам в разрезе чертежа. Выберите цех';
+  form32.ShowModal(); 
+  Form9.Free;
 end;
 
 procedure TForm1.N18Click(Sender: TObject);
@@ -215,87 +251,114 @@ end;
 
 procedure TForm1.N01Click(Sender: TObject);
 begin
-   form9.Caption:='Отчет по поиску позиций с приоритетом 0 по проекту';
-  form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Отчет по поиску позиций с приоритетом 0 по проекту';
+  form9.ShowModal(); 
+  Form9.Free;
 end;
 
 procedure TForm1.N19Click(Sender: TObject);
 begin
-    form9.Caption:='Построечный журнал';
-  form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Построечный журнал';
+  form9.ShowModal(); 
+  Form9.Free;
 end;
 
 procedure TForm1.N21Click(Sender: TObject);
 begin
-       form9.Caption:='Ведомость комплектации по помещениям.';
-  form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Ведомость комплектации по помещениям.';
+  form9.ShowModal();  
+  Form9.Free;
 end;
 
 procedure TForm1.N22Click(Sender: TObject);
 begin
-    form9.Caption:='Проверка документов на согласовании к справочнику.';
-  form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Проверка документов на согласовании к справочнику.';
+  form9.ShowModal();  
+  Form9.Free;
 end;
 
 procedure TForm1.N23Click(Sender: TObject);
 begin
-
- form32.Caption:='Потребность по материалам и оборудованию общая по проекту';
-  form32.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form32.Caption:='Потребность по материалам и оборудованию общая по проекту';
+  form32.ShowModal(); 
+  Form9.Free;
 end;
 
 procedure TForm1.N24Click(Sender: TObject);
 begin
-    form9.Caption:='Формрование ведомости комплектации запуска.';
-  form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Формрование ведомости комплектации запуска.';
+  form9.ShowModal(); 
+  Form9.Free;
 end;
 
 procedure TForm1.N25Click(Sender: TObject);
 begin
-       form9.Caption:='Изделия с незаполненой трудоемкостью ТНа';
-  form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Изделия с незаполненой трудоемкостью ТНа';
+  form9.ShowModal(); 
+  Form9.Free;
 end;
 
 procedure TForm1.N26Click(Sender: TObject);
 begin
-       form9.Caption:='Отчет по материальной ведомости';
-  form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Отчет по материальной ведомости';
+  form9.ShowModal(); 
+  Form9.Free;
 end;
 
 procedure TForm1.N27Click(Sender: TObject);
 begin
- form9.Caption:='Проверка дублей ТК и ПТК в проекте';
-  form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Проверка дублей ТК и ПТК в проекте';
+  form9.ShowModal();  
+  Form9.Free;
 end;
 
 procedure TForm1.N28Click(Sender: TObject);
 begin
- form9.Caption:='Проверка масс (спецификация и справочник)';
-  form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Проверка масс (спецификация и справочник)';
+  form9.ShowModal(); 
+  Form9.Free;
 end;
 
 procedure TForm1.N29Click(Sender: TObject);
 begin
-   form9.Caption:='Отчёт по сравнению потребности с ведомостями заказа';
-  form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Отчёт по сравнению потребности с ведомостями заказа';
+  form9.ShowModal();  
+  Form9.Free;
 end;
 
 procedure TForm1.N30Click(Sender: TObject);
 begin
- Form2.Caption:='Отчёт по изделиям МСЧ';
- Form2.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  Form2.Caption:='Отчёт по изделиям МСЧ';
+  Form2.ShowModal();    
+  Form9.Free;
 end;
 
 procedure TForm1.N31Click(Sender: TObject);
 begin
- Form2.Caption:='МСЧ (Россыпь) с составом по проекту';
- Form2.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  Form2.Caption:='МСЧ (Россыпь) с составом по проекту';
+  Form2.ShowModal();
+  Form9.Free;
 end;
 
 procedure TForm1.N32Click(Sender: TObject);
 begin
+  Application.CreateForm(TForm9, Form9);
   Form9.Caption:='Техкомплекты в обеспечении материалами с признаком поступления';
-  Form9.ShowModal();
+  Form9.ShowModal(); 
+  Form9.Free;
 end;
 
 procedure TForm1.N33Click(Sender: TObject);
@@ -306,45 +369,115 @@ begin
   until value <> '';
   if value='zopa' then
   begin
+    Application.CreateForm(TForm9, Form9);
     form9.Caption:='Построечный журнал. Подрядчики';
-    form9.ShowModal();
+    form9.ShowModal(); 
+    Form9.Free;
   end;
 end;
 
 procedure TForm1.N34Click(Sender: TObject);
 begin
-     form9.Caption:='Выгружаем транспортный файл.';
-  form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Выгружаем транспортный файл.';
+  form9.ShowModal(); 
+  Form9.Free;
 end;
 
 procedure TForm1.N35Click(Sender: TObject);
 begin
-   form32.Caption:='Наряды по цеху,проекту. Выберите цех';
-  form32.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form32.Caption:='Наряды по цеху,проекту. Выберите цех';
+  form32.ShowModal();  
+  Form9.Free;
 end;
 
- procedure TForm1.N36Click(Sender: TObject);
+procedure TForm1.N36Click(Sender: TObject);
 begin
-   form9.Caption:='Остатки трудоёмкости по МСЧ. Выберите проект';
-  form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Остатки трудоёмкости по МСЧ. Выберите проект';
+  form9.ShowModal();   
+  Form9.Free;
 end;
 
- procedure TForm1.N37Click(Sender: TObject);
+procedure TForm1.N37Click(Sender: TObject);
 begin
+  Application.CreateForm(TForm9, Form9);
   form9.Caption:='Количество изделий МСЧ по проекту. Выберите проект';
-  form9.ShowModal();
+  form9.ShowModal();  
+  Form9.Free;
 end;
 
  procedure TForm1.N38Click(Sender: TObject);
 begin
-   form9.Caption:='Оборудование из комплектной поставки для склада ЗИП по проекту. Выберите проект';
-  form9.ShowModal();
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Оборудование из комплектной поставки для склада ЗИП по проекту. Выберите проект';
+  form9.ShowModal();  
+  Form9.Free;
 end;
 
  procedure TForm1.N39Click(Sender: TObject);
 begin
-   form32.Caption:='Наряды,закрытые за период по цеху (ПДО). Выберите цех';
+  Application.CreateForm(TForm9, Form9);
+  form32.Caption:='Наряды,закрытые за период по цеху (ПДО). Выберите цех';
+  form32.ShowModal();  
+  Form9.Free;
+end;
+
+ procedure TForm1.N60Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='СП Ведомости снабжения группы 237 по проекту. Выберите проект';
+  form9.ShowModal();   
+  Form9.Free;
+end;
+
+ procedure TForm1.N61Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Перечень закрытой оснастки по проекту. Выберите проект';
+  form9.ShowModal(); 
+  Form9.Free;
+end;
+
+ procedure TForm1.N62Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  form32.Caption:='Паспорт предприятия - Фактическая тр-ть по цеху в разрезе профессий,рабочих ЯСЗ,подрядчиков за период. Выберите цех';
+  form32.ShowModal(); 
+  Form9.Free;
+end;
+
+ procedure TForm1.N63Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Наряды с привязкой к УКР с начала постройки по проекту. Выберите проект';
+  form9.ShowModal();    
+  Form9.Free;
+end;
+
+ procedure TForm1.N64Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  form32.Caption:='Нормированная тр-ть по цеху в разрезе профессий,разрядов,тарифных сеток по проекту. Выберите цех';
   form32.ShowModal();
+  Form9.Free;
+end;
+
+ procedure TForm1.N65Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  form32.Caption:='Суммарная нормированная тр-ть по цеху в разрезе разрядов,тарифных сеток,профессий c привязкой к УКР по проекту. Выберите цех';
+  form32.ShowModal();
+  Form9.Free;
+end;
+
+ procedure TForm1.N66Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  form32.Caption:='Незакрытые ПУЕ(без МСЧ) по цеху по проекту. Выберите цех';
+  form32.ShowModal();
+  Form9.Free;
 end;
 
 procedure TForm1.N41Click(Sender: TObject);

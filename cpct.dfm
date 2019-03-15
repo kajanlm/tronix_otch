@@ -157,7 +157,7 @@ object copycnct: Tcopycnct
     ParentFont = False
   end
   object Label4: TLabel
-    Left = 800
+    Left = 792
     Top = 24
     Width = 49
     Height = 17
@@ -189,6 +189,7 @@ object copycnct: Tcopycnct
     FooterFont.Height = -11
     FooterFont.Name = 'MS Sans Serif'
     FooterFont.Style = [fsBold]
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit]
     ParentFont = False
     ReadOnly = True
     RowHeight = 50
@@ -368,7 +369,7 @@ object copycnct: Tcopycnct
     TabOrder = 5
   end
   object selffilter: TCheckBox
-    Left = 776
+    Left = 784
     Top = 24
     Width = 17
     Height = 17
@@ -384,6 +385,9 @@ object copycnct: Tcopycnct
     ReadOnly = True
     Left = 832
     Top = 560
+    object QueryPOST_ID: TFloatField
+      FieldName = 'POST_ID'
+    end
     object QueryINN: TFloatField
       FieldName = 'INN'
     end

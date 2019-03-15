@@ -28,7 +28,7 @@ var
 
 implementation
 
-uses Unit9, Unit38,Unit58,Unit52;
+uses Unit9, Unit38,Unit58,Unit52,Unit62;
 
 {$R *.dfm}
 
@@ -37,8 +37,11 @@ uses Unit9, Unit38,Unit58,Unit52;
 procedure TForm32.FormShow(Sender: TObject);
 begin
   OraQuery1.Active:=true;
-  if  (form32.Caption='Потребность по материалам и оборудованию общая по проекту')
+  if (form32.Caption='Потребность по материалам и оборудованию общая по проекту')
   or (form32.Caption='Наряды. Выберите цех')
+  or (form32.Caption='Паспорт предприятия - Фактическая тр-ть по цеху в разрезе профессий,рабочих ЯСЗ,подрядчиков за период. Выберите цех')
+  or (form32.Caption='Нормированная тр-ть по цеху в разрезе профессий,разрядов,тарифных сеток по проекту. Выберите цех')
+  or (form32.Caption='Суммарная нормированная тр-ть по цеху в разрезе разрядов,тарифных сеток,профессий c привязкой к УКР по проекту. Выберите цех')
   then  Button1.Visible:=false
   else Button1.Visible:=true;
   // form9.Caption:='Потребность по материалам в разрезе чертежа';
@@ -84,7 +87,37 @@ begin
   form9.ShowModal();
      end;
 
-   if form32.Caption='Наряды,закрытые за период по цеху (ПДО). Выберите цех' then
+   if form32.Caption='Паспорт предприятия - Фактическая тр-ть по цеху в разрезе профессий,рабочих ЯСЗ,подрядчиков за период. Выберите цех' then
+     begin
+  Application.CreateForm(TForm62, Form62);
+  form62.Caption:='Паспорт предприятия - Фактическая тр-ть по цеху в разрезе профессий,рабочих ЯСЗ,подрядчиков по цеху '+oraQuery1.FieldByName('nomer').asString;
+  form62.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
+  form62.ShowModal();
+  Form62.Free;
+      end;
+
+   if form32.Caption='Нормированная тр-ть по цеху в разрезе профессий,разрядов,тарифных сеток по проекту. Выберите цех' then
+     begin
+  form9.Caption:='Нормированная тр-ть по цеху в разрезе профессий,разрядов,тарифных сеток по проекту. Выберите проект';
+  form9.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
+  form9.ShowModal();
+     end;
+
+  if form32.Caption='Суммарная нормированная тр-ть по цеху в разрезе разрядов,тарифных сеток,профессий c привязкой к УКР по проекту. Выберите цех' then
+     begin
+  form9.Caption:='Суммарная нормированная тр-ть по цеху в разрезе разрядов,тарифных сеток,профессий c привязкой к УКР по проекту. Выберите проект';
+  form9.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
+  form9.ShowModal();
+     end;
+
+  if form32.Caption='Незакрытые ПУЕ(без МСЧ) по цеху по проекту. Выберите цех' then
+     begin
+  form9.Caption:='Незакрытые ПУЕ(без МСЧ) по цеху по проекту. Выберите проект';
+  form9.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
+  form9.ShowModal();
+     end;
+
+  if form32.Caption='Наряды,закрытые за период по цеху (ПДО). Выберите цех' then
      begin
   Application.CreateForm(TForm58, Form58);
   form58.Caption:='Наряды,закрытые за период по цеху '+oraQuery1.FieldByName('nomer').asString;
@@ -93,7 +126,7 @@ begin
   Form58.Free;
      end;
 
- end;
+end;
 
 procedure TForm32.Button1Click(Sender: TObject);
 begin

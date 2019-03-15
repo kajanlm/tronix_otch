@@ -310,7 +310,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
         Font.Style = []
         Footers = <>
         Layout = tlCenter
-        Title.Caption = #1054#1041#1045#1057#1055#1045#1063#1045#1053#1048#1045'|'#1047#1072#1082#1091#1087#1086#1095#1085'. '#1077#1076#1080#1085#1080#1094#1099
+        Title.Caption = #1042#1067#1044#1040#1053#1054' '#1042' '#1062#1045#1061'|'#1047#1072#1082#1091#1087#1086#1095#1085'. '#1077#1076#1080#1085#1080#1094#1099
         Title.Font.Charset = DEFAULT_CHARSET
         Title.Font.Color = clWindowText
         Title.Font.Height = -13
@@ -329,7 +329,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
         Font.Style = []
         Footers = <>
         Layout = tlCenter
-        Title.Caption = #1054#1041#1045#1057#1055#1045#1063#1045#1053#1048#1045'|'#1058#1077#1093#1085#1086#1083#1086#1075'. '#1077#1076#1080#1085#1080#1094#1099
+        Title.Caption = #1042#1067#1044#1040#1053#1054' '#1042' '#1062#1045#1061'|'#1058#1077#1093#1085#1086#1083#1086#1075'. '#1077#1076#1080#1085#1080#1094#1099
         Title.Font.Charset = DEFAULT_CHARSET
         Title.Font.Color = clWindowText
         Title.Font.Height = -13

@@ -30,6 +30,7 @@ type
     Label4: TLabel;
     selffilter: TCheckBox;
     QueryID: TIntegerField;
+    QueryPOST_ID: TFloatField;
     procedure Image1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure filter_queryChange(Sender: TObject);
@@ -43,12 +44,11 @@ type
     { Private declarations }
   public
     { Public declarations }
+    DATE_MASK : string;
   end;
 
 var
   copycnct: Tcopycnct;
-const
-  DATE_MASK = 'DD.MM.YYYY';
 
 implementation
 
@@ -59,7 +59,7 @@ uses unit1, cnctbody;
 procedure Tcopycnct.LOAD_CONTRACTS;
 var SQL : string;
 begin
-  SQL := 'SELECT cnt.NN as ID, post.kod_ni as INN, post.NAME as POSTAVK, TO_CHAR(cnt.DATE_BEG, ' + char(39) + DATE_MASK + char(39) + ') as DB, '
+  SQL := 'SELECT post.FIRM_ID as POST_ID, cnt.NN as ID, post.kod_ni as INN, post.NAME as POSTAVK, TO_CHAR(cnt.DATE_BEG, ' + char(39) + DATE_MASK + char(39) + ') as DB, '
   + 'TO_CHAR(cnt.DATE_END, ' + char(39) + DATE_MASK + char(39) + ') as DE, cnt.NUM_DOC as DOC FROM TRONIX.FIRM post, TRONIX.CONTRACT cnt WHERE '
   + 'cnt.NN_FIRM_EXEC = post.firm_id(+) AND ' + FILTER_MASK + ' AND ';
 
@@ -94,7 +94,6 @@ begin
     pole := 'post.name';
 
   FILTER_MASK := pole + ' like ' + char(39) + filter_query.text + char(39);
-  //showmessage(FILTER_MASK);
 end;
 
 procedure Tcopycnct.Image1Click(Sender: TObject);
@@ -120,10 +119,13 @@ end;
 
 procedure Tcopycnct.FormShow(Sender: TObject);
 begin
+  DATE_MASK := 'DD.MM.YYYY';
   FILTER_MASK := '(1 = 1)';
   
   datefrom.Date := now;
   dateto.Date := now;
+
+  LOAD_CONTRACTS;
 end;
 
 procedure Tcopycnct.filter_queryChange(Sender: TObject);
@@ -144,14 +146,8 @@ end;
 procedure Tcopycnct.DBGridEh1DblClick(Sender: TObject);
 var SQL : string;
 begin
-  //showmessage(Query.FieldByName('INN').AsString);
   Application.CreateForm(Ts_contract, s_contract);
 
-  (*
-  SQL := 'SELECT SPRAV_SPRAV_ID as KOD, SPRAV_SPRAV_ID as NAME, KOL as KOL, KODED_KODED_ID as ED, CENA, '
-  + 'KOL_UCHET, KODED_KODED_ID_UCHET as ED_UCHET, CENA_UCHET, NDS FROM TRONIX.TTN_MAT '
-  + 'WHERE CONTRACT_CONTRACT_ID = ' + Query.FieldByName('ID').AsString;
-  *)
   SQL :=
   'SELECT sp.KOD as KOD, substr(upper(ltrim(tronix_sp_sp_name(ttn.sprav_sprav_id, null, 3))), 1, 50) '
   + 'as NAME, ttn.KOL as KOL, kdd.NAMEK as ED, ttn.CENA, ttn.KOL_UCHET, kdc.NAMEK as ED_UCHET, ttn.CENA_UCHET, '
@@ -160,10 +156,10 @@ begin
   + 'decode(ttn.KODED_KODED_ID_UCHET, null, ttn.KODED_KODED_ID, ttn.KODED_KODED_ID_UCHET) AND '
   + 'ttn.CONTRACT_CONTRACT_ID = ' + Query.FieldByName('ID').asString;
 
-  showmessage(SQL);
-
   s_contract.Caption := s_contract.Caption + ' ' + Query.FieldByName('POSTAVK').asString;
   s_contract.GLOBAL_ID := Query.FieldByName('ID').asString;
+  s_contract.SELECTED_FIRM := Query.FieldByName('POST_ID').asString;
+  s_contract.FIRM_NAME := Query.FieldByName('POSTAVK').asString;
 
   s_contract.Query.Close;
   s_contract.Query.SQL.Text := SQL;
@@ -171,6 +167,8 @@ begin
 
   s_contract.Showmodal();
   s_contract.Free;
+
+  LOAD_CONTRACTS;
 end;
 
 end.
