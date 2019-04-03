@@ -51,7 +51,7 @@ implementation
 
 uses Unit10, Unit15, Unit16, Unit20, Unit21, Unit22, Unit23, Unit25, Unit26,
   Unit27, Unit35, Unit36, Unit37, Unit38, Unit43, Unit45, Unit46, Unit34,
-  Unit47, Unit49, Unit50, Unit52, Unit53, Unit55, Unit57, Unit60, Unit61, Unit63, Unit64, Unit65, Unit66, Unit32, Unit1;
+  Unit47, Unit49, Unit50, Unit52, Unit53, Unit55, Unit57, Unit60, Unit61, Unit63, Unit64, Unit65, Unit66, Unit67, Unit32, Unit1;
 
 {$R *.dfm}
 
@@ -134,6 +134,7 @@ or  (form9.Caption='Суммарная нормированная тр-ть по цеху в разрезе разрядов,тар
 or  (form9.Caption='Незакрытые ПУЕ(без МСЧ) по цеху по проекту. Выберите проект')
 or  (form9.Caption='Остатки трудоёмкости по МСЧ. Выберите проект')
 or  (form9.Caption='Количество изделий МСЧ по проекту. Выберите проект')
+or  (form9.Caption='Количество покупных изделий с привязкой к ТН,позиции СП по проекту. Выберите проект')
 or  (form9.Caption='Оборудование из комплектной поставки для склада ЗИП по проекту. Выберите проект')
 or  (form9.Caption='СП Ведомости снабжения группы 237 по проекту. Выберите проект')
 or  (form9.Caption='Перечень закрытой оснастки по проекту. Выберите проект')
@@ -992,6 +993,16 @@ begin
   Form66.Caption:=Form66.Caption+'  ЦЕХ='+Form32.oraQuery1.FieldByName('nomer').asString;
   Form66.ShowModal();
   Form66.Free;
+end;
+
+
+     if form9.caption='Количество покупных изделий с привязкой к ТН,позиции СП по проекту. Выберите проект' then
+begin
+  Application.CreateForm(TForm67, Form67);
+  Form67.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
+  Form67.Caption:='Количество покупных изделий с привязкой к ТН,позиции СП по проекту: '+oraQuery1.FieldByName('name').asString;
+  Form67.ShowModal();
+  Form67.Free;
 end;
 
      if form9.caption='Количество изделий МСЧ по проекту. Выберите проект' then

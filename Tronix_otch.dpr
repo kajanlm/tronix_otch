@@ -61,9 +61,12 @@ uses
   Unit54 in 'Unit54.pas' {Form54},
   Unit55 in 'Unit55.pas' {Form55},
   Unit56 in 'Unit56.pas' {Form56},
+  Unit60 in 'Unit60.pas' {Form60},
+  Unit61 in 'Unit61.pas' {Form61},
   cpct in 'cpct.pas' {copycnct},
   cnctbody in 'cnctbody.pas' {s_contract},
-  cnctinfo in 'cnctinfo.pas' {cntinfo};
+  cnctinfo in 'cnctinfo.pas' {cntinfo},
+  ftrnomen in 'ftrnomen.pas' {trnomen};
 
 {$R *.res}
 
@@ -120,5 +123,7 @@ begin
   Application.CreateForm(TForm52, Form52);
   Application.CreateForm(TForm53, Form53);
   Application.CreateForm(TForm55, Form55);
+  Application.CreateForm(TForm60, Form60);
+  Application.CreateForm(TForm61, Form61);
   Application.Run;
 end.

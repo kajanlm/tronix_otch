@@ -102,7 +102,7 @@ var
   
 implementation
 
-uses Unit15, Unit5, Unit9, addzams, unit1;
+uses Unit15, Unit5, Unit9, addzams, unit1, ftrnomen;
 
 {$R *.dfm}
 
@@ -437,7 +437,61 @@ SQL_Zams,
 ELEM_DEP_STYPE
 : string;
 
+const
+DATEMASK = 'DD.MM.YYYY';
+
 begin
+
+if MessageDlg('Выберите дальнейшее действие. Да - просмотр замен. Нет - просмотр требований.', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+begin
+Application.CreateForm(Ttrnomen, trnomen);
+if MessageDlg('Требования по: Да - по всему дефициту. Нет - по выбранной номенклатуре.', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+begin
+(* весь *)
+
+end
+else
+begin
+(* выбранный *)
+
+end;
+
+(*
+trnomen.OraQueryS.SQL.Text := 'SELECT * FROM TRONIX.TTN_MAT TNMAT, TRONIX_SPRAV SPN, TRONIX.TTN TN WHERE TNMAT.UZAK_UZAK_ID = ' + form9.Label2.Caption + ' AND '
++ 'TNMAT.SPRAV_SPRAV_ID = SPN.SPRAV_ID AND SPN.KOD = ' + char(39) + '00370326022' + char(39) + ' AND TNMAT.TTN_TTN_ID is not null AND '
++ 'TN.TTN_ID = TNMAT.TTN_TTN_ID AND TN.TYPE_TTN_TYPE_TTN_ID in (43, 44)';
+edit1.text := trnomen.OraQueryS.SQL.Text;
+*)
+
+//ПЕРЕДЕЛАТЬ ДЕФИЦИТУ ПО ЗАВОДУ НА КОЭФИЦИЕНТЫ ПЕРЕВОДА И ЗАЧТЕНИЯ!!!
+//DEP_DEP_ID_TO - выводить родителя цеха через decode на null (если указан цех, то родитель будет пустой или ЯСЗ)
+//или сделать проверку на родителя по типу DEP
+//слияние чтобы были NULL через DP.DEP_ID(+) (дополнить таблице с плюсиком, если нету в таблице с +, то null)
+
+//ПОКАЗ ЗАМЕНЫ КОТОРУЮ ВЫДАЛИ В ИТОГЕ (А НЕ ТУ КОТОРУЮ ПРОСИЛИ) !!!!!!!!!!!!!!!!!!!!!!!!!
+//ФОРМАТИРОВАНИЕ TITLE (ЗАГОЛОВКОВ) КРАСИВЕЕ И ПОУДОБНЕЕ
+//ОКРУГЛЕНИЕ КАК В ДЕФИЦИТЕ (ВНУТРИ SQL)
+//+ char(39) + dbgrideh1.DataSource.DataSet.FieldByName('KOD').asString + char(39) + ' '
+
+trnomen.OraQueryS.SQL.Text := 'SELECT ' + char(39) + dbgrideh1.DataSource.DataSet.FieldByName('KOD').asString + char(39) + ' '
++ 'AS KOD, TN.NOMER as NOMER, TP.NAME as TYPE, decode(DPO.TYPE_DEP_TYPE_DEP_ID, 2, DPO.NOMER, DPT.NOMER) as CEH, '
++ 'ROUND(TNMAT.KOL_UCHET, 5) as KOL_UCHET, ROUND(TNMAT.KOL, 5) as KOL, TO_CHAR(TN.DATE_DOK, ' + char(39) + DATEMASK + char(39) + ') as DATEC, '
++ 'TO_CHAR(TN.USER_DATE1, ' + char(39) + DATEMASK + char(39) + ') as DATE1, '
++ 'TO_CHAR(TN.USER_DATE2, ' + char(39) + DATEMASK + char(39) + ') as DATE2, '
++ 'TO_CHAR(TN.DATE_INS, ' + char(39) + DATEMASK + char(39) + ') as DATE3 FROM TRONIX.TYPE_TTN TP, TRONIX.TTN TN, TRONIX.TTN_MAT TNMAT, '
++ 'KADRY_DEP DPO, KADRY_DEP DPT WHERE TN.UZAK_UZAK_ID = ' + form9.Label2.Caption + ' AND TN.TYPE_TTN_TYPE_TTN_ID in (43, 44) AND '
++ 'TNMAT.TTN_TTN_ID = TN.TTN_ID AND '
++ '((TNMAT.SPRAV_SPRAV_ID = ' + dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString + ' AND '
++ 'TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB is null) OR '
++ 'TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB = ' + dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString + ') AND '
++ 'TN.DEP_DEP_ID_TO = DPO.DEP_ID(+) AND DPO.DEP_DEP_ID = DPT.DEP_ID(+) AND TN.TYPE_TTN_TYPE_TTN_ID = TP.TYPE_TTN_ID(+) AND TN.UZAK_UZAK_ID = ' + form9.Label2.Caption;
+//edit1.text := trnomen.OraQueryS.SQL.Text;
+
+trnomen.ShowModal();
+trnomen.Free;
+
+exit;
+end;
 
 if form1.SCAlive then
 begin

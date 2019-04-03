@@ -64,6 +64,7 @@ type
     N64: TMenuItem;
     N65: TMenuItem;
     N66: TMenuItem;
+    N67: TMenuItem;
     IdHTTP1: TIdHTTP;
     procedure N3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -110,6 +111,7 @@ type
     procedure N64Click(Sender: TObject);
     procedure N65Click(Sender: TObject);
     procedure N66Click(Sender: TObject);
+    procedure N67Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -239,6 +241,14 @@ begin
   Application.CreateForm(TForm9, Form9);
   form32.Caption:='Потребность по материалам в разрезе чертежа. Выберите цех';
   form32.ShowModal(); 
+  Form9.Free;
+end;
+
+procedure TForm1.N67Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='Количество покупных изделий с привязкой к ТН,позиции СП по проекту. Выберите проект';
+  Form9.ShowModal();
   Form9.Free;
 end;
 
