@@ -2,7 +2,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
   Left = 234
   Top = 69
   Width = 1350
-  Height = 879
+  Height = 878
   Caption = #1054#1090#1095#1077#1090' '#1087#1086' '#1076#1077#1092#1080#1094#1080#1090#1091
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,7 +17,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
   OnShow = FormShow
   DesignSize = (
     1334
-    841)
+    840)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -163,7 +163,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     Left = 8
     Top = 48
     Width = 1318
-    Height = 781
+    Height = 780
     Anchors = [akLeft, akTop, akRight, akBottom]
     DataSource = DataSource
     Flat = False
@@ -418,7 +418,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     Left = 8
     Top = 48
     Width = 1321
-    Height = 784
+    Height = 783
     Anchors = [akLeft, akTop, akRight, akBottom]
     Caption = #1047#1072#1076#1072#1081#1090#1077' '#1087#1072#1088#1072#1084#1077#1090#1088#1099' '#1086#1090#1073#1086#1088#1072' '#1080' '#1085#1072#1078#1084#1080#1090#1077' '#1079#1076#1077#1089#1100
     Color = cl3DLight
@@ -710,20 +710,20 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
       FieldName = 'ZAPAS_POST_SUB_UCHET'
       ReadOnly = True
     end
-    object OraQueryDEFICIT: TFloatField
-      FieldName = 'DEFICIT'
-      ReadOnly = True
-    end
-    object OraQueryDEFICIT_UCHET: TFloatField
-      FieldName = 'DEFICIT_UCHET'
-      ReadOnly = True
-    end
     object OraQuerySPRAV_ID: TFloatField
       FieldName = 'SPRAV_ID'
     end
     object OraQueryZAM_FLAG: TStringField
       FieldName = 'ZAM_FLAG'
       Size = 5
+    end
+    object OraQueryDEFICIT: TStringField
+      FieldName = 'DEFICIT'
+      Size = 255
+    end
+    object OraQueryDEFICIT_UCHET: TStringField
+      FieldName = 'DEFICIT_UCHET'
+      Size = 255
     end
   end
   object OraDataSource1: TOraDataSource

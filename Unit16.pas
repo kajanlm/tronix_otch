@@ -24,8 +24,6 @@ type
     OraQueryED: TStringField;
     OraQueryPOTR_UCHET: TFloatField;
     OraQueryED_UCHET: TStringField;
-    OraQueryDEFICIT: TFloatField;
-    OraQueryDEFICIT_UCHET: TFloatField;
     OraQueryZAPAS_POST: TFloatField;
     OraQueryZAPAS_POST_UCHET: TFloatField;
     OraQueryZAPAS_POST_SUB: TFloatField;
@@ -54,6 +52,8 @@ type
     cbt_filter: TComboBox;
     Image1: TImage;
     Image2: TImage;
+    OraQueryDEFICIT: TStringField;
+    OraQueryDEFICIT_UCHET: TStringField;
     procedure Button1Click(Sender: TObject);
     procedure CalcDeficit(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -97,7 +97,8 @@ var
   SORT_TYPE,
   EVAL_DEP,
   FILTER_MASK,
-  SFILTER_MASK
+  SFILTER_MASK,
+  GLOBAL_SQL
   : string;
   
 implementation
@@ -183,6 +184,8 @@ SQL := StringReplace(SQL, '<SFILTER_MASK>', SFILTER_MASK, [rfReplaceAll, rfIgnor
 OraQuery.Close;
 OraQuery.SQL.Text := SQL;
 OraQuery.ExecSQL;
+
+GLOBAL_SQL := SQL;
 
 LOCK_BOX.Visible := false;
 
@@ -449,12 +452,36 @@ if MessageDlg('Требования по: Да - по всему дефициту. Нет - по выбранной номенкл
 begin
 (* весь *)
 
+GLOBAL_SQL := '';
+OraQuery.First;
+
+while not OraQuery.Eof do
+begin
+  GLOBAL_SQL := GLOBAL_SQL + OraQuery.FieldByName('sprav_id').asString + ',';
+  OraQuery.Next;
+end;
+
+delete(GLOBAL_SQL, length(GLOBAL_SQL), 1);
+
+trnomen.OraQueryS.SQL.Text := 'SELECT SPRAVA.KOD as KOD, '
++ 'TN.NOMER as NOMER, TP.NAME as TYPE, decode(DPO.TYPE_DEP_TYPE_DEP_ID, 2, DPO.NOMER, DPT.NOMER) as CEH, '
++ 'ROUND(TNMAT.KOL_UCHET, 5) as KOL_UCHET, ROUND(TNMAT.KOL, 5) as KOL, TO_CHAR(TN.DATE_DOK, ' + char(39) + DATEMASK + char(39) + ') as DATEC, '
++ 'TO_CHAR(TN.USER_DATE1, ' + char(39) + DATEMASK + char(39) + ') as DATE1, '
++ 'TO_CHAR(TN.USER_DATE2, ' + char(39) + DATEMASK + char(39) + ') as DATE2, '
++ 'TO_CHAR(TN.DATE_INS, ' + char(39) + DATEMASK + char(39) + ') as DATE3 FROM TRONIX_SPRAV SPRAVA, '
++ 'TRONIX.TYPE_TTN TP, TRONIX.TTN TN, TRONIX.TTN_MAT TNMAT, '
++ 'KADRY_DEP DPO, KADRY_DEP DPT WHERE TN.UZAK_UZAK_ID = ' + form9.Label2.Caption + ' AND TN.TYPE_TTN_TYPE_TTN_ID in (43, 44) AND '
++ 'TNMAT.TTN_TTN_ID = TN.TTN_ID AND '
++ '((TNMAT.SPRAV_SPRAV_ID in (' + GLOBAL_SQL + ') AND '
++ 'TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB is null) OR '
++ 'TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB in (' + GLOBAL_SQL + ')) AND DECODE(TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB, null, TNMAT.SPRAV_SPRAV_ID, TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB) = SPRAVA.SPRAV_ID(+) AND '
++ 'TN.DEP_DEP_ID_TO = DPO.DEP_ID(+) AND DPO.DEP_DEP_ID = DPT.DEP_ID(+) AND TN.TYPE_TTN_TYPE_TTN_ID = TP.TYPE_TTN_ID(+) AND TN.UZAK_UZAK_ID = ' + form9.Label2.Caption;
+//edit1.text := trnomen.OraQueryS.SQL.Text;
+
 end
 else
 begin
 (* выбранный *)
-
-end;
 
 (*
 trnomen.OraQueryS.SQL.Text := 'SELECT * FROM TRONIX.TTN_MAT TNMAT, TRONIX_SPRAV SPN, TRONIX.TTN TN WHERE TNMAT.UZAK_UZAK_ID = ' + form9.Label2.Caption + ' AND '
@@ -487,10 +514,12 @@ trnomen.OraQueryS.SQL.Text := 'SELECT ' + char(39) + dbgrideh1.DataSource.DataSe
 + 'TN.DEP_DEP_ID_TO = DPO.DEP_ID(+) AND DPO.DEP_DEP_ID = DPT.DEP_ID(+) AND TN.TYPE_TTN_TYPE_TTN_ID = TP.TYPE_TTN_ID(+) AND TN.UZAK_UZAK_ID = ' + form9.Label2.Caption;
 //edit1.text := trnomen.OraQueryS.SQL.Text;
 
+end;
+
 trnomen.ShowModal();
 trnomen.Free;
-
 exit;
+
 end;
 
 if form1.SCAlive then
