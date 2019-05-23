@@ -29,6 +29,7 @@ type
     uzaks_memory: TComboBox;
     uzaks: TCheckListBox;
     Button2: TButton;
+    allprs: TCheckBox;
     procedure DBGridEh2DblClick(Sender: TObject);
   	procedure Button1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -49,8 +50,8 @@ var
 
 implementation
 
-uses Unit10, Unit15, Unit16, Unit20, Unit21, Unit22, Unit23, Unit25, Unit26,
-  Unit27, Unit35, Unit36, Unit37, Unit38, Unit43, Unit45, Unit46, Unit34,
+uses Unit10, Unit15, Unit16, Unit20, Unit21, Unit22, Unit23, Unit25, Unit26, clipbrd,
+  Unit27, Unit35, Unit36, Unit37, Unit38, Unit43, Unit45, Unit46, Unit34, ftrnomen,
   Unit47, Unit49, Unit50, Unit52, Unit53, Unit55, Unit57, Unit60, Unit61, Unit63, Unit64, Unit65, Unit66, Unit67, Unit32, Unit1;
 
 {$R *.dfm}
@@ -63,25 +64,10 @@ begin
 Form10.Caption:='Отчет по нарядам';
 Form10.ShowModal();
 end;
-if form9.caption='Дефицит по номенклатуре' then
+
+if (self.caption = 'Дефицит по номенклатуре (старый)') then
 begin
-
-if MessageDlg('Запуститить модуль дефицита в новом варианте? Да - запустить. Нет - запустить старую версию модуля', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-begin
-  Application.CreateForm(TDIF_OTCH_FORM, DIF_OTCH_FORM);
-
-  if Form1.SCAlive then
-  begin
-    DIF_OTCH_FORM.Caption := form9.Caption + ' ' + dbgrideh2.DataSource.DataSet.FieldByName('ZAK').asString;
-    DIF_OTCH_FORM.ShowModal();
-  end;
-  DIF_OTCH_FORM.Free;
-
-  end
-  else
-    Form15.ShowModal();
-
-  exit;
+  Form15.Showmodal();
 end;
 
 if form9.caption='Отчет по трудоемкости (Новый)' then
@@ -156,8 +142,27 @@ end;
 
 if (self.caption = 'Отчет по материальной ведомости') then
 begin
+  allprs.Visible := true;
 	Button1.Visible := false;
   Button2.Visible := true;
+  uzaks.Visible := true;
+end;
+
+if (self.Caption = 'Дефицит по номенклатуре (новый)') then
+begin
+  allprs.Visible := true;
+  button1.Visible := false;
+  Button2.Visible := true;
+  Button2.Caption := 'ОТЧЕТ ПО ДЕФИЦИТУ';
+  uzaks.Visible := true;
+end;
+
+if (self.Caption = 'Требования по дефициту') then
+begin
+  allprs.Visible := true;
+  button1.Visible := false;
+  Button2.Visible := true;
+  Button2.Caption := 'ЗАГРУЗИТЬ ТРЕБОВАНИЯ';
   uzaks.Visible := true;
 end;
 
@@ -1251,7 +1256,7 @@ end;
 if form9.caption='Техкомплекты в обеспечении материалами с признаком поступления'
 then
  begin
- 
+
 tx:='Select (Select nomer from tx_texkompl where texkompl_id=tex_texkompl_id) nomer, ';
 tx:=tx+' (Select kod from tronix.sprav where sprav_id=sprav_sprav_id) kod, ';
 tx:=tx+'  tronix_sp_name(sprav_sprav_id) name, ';
@@ -1340,17 +1345,110 @@ begin
  end;
 
 procedure TForm9.Button2Click(Sender: TObject);
+var uzak, uzaki : string;
+e : integer;
+
+const
+DATEMASK = 'DD.MM.YYYY';
+
 begin
-DBGridEh1DblClick(nil);
+if (self.caption = 'Дефицит по номенклатуре (новый)') then
+begin
+  uzak := '-1';
+	for e := 0 to uzaks.Items.Count - 1 do
+		if uzaks.Checked[e] then
+    begin
+			uzak := uzak + ', ' + uzaks_memory.Items[e];
+      uzaki := uzaki + ' ' + uzaks.Items[e];
+    end;
+
+	if uzak = '-1' then
+	begin
+		showmessage('Выберите минимум 1 заказ!');
+		exit;
+	end;
+
+  Application.CreateForm(TDIF_OTCH_FORM, DIF_OTCH_FORM);
+  if Form1.SCAlive then
+  begin
+    Label2.Caption := '(' + uzak + ')';
+    DIF_OTCH_FORM.Caption := form9.Caption + ' ' + uzaki;
+    DIF_OTCH_FORM.ShowModal();
+  end;
+  DIF_OTCH_FORM.Free;
+
+  exit;
+end;
+
+if (self.caption = 'Требования по дефициту') then
+begin
+  uzak := '-1';
+	for e := 0 to uzaks.Items.Count - 1 do
+		if uzaks.Checked[e] then
+    begin
+			uzak := uzak + ', ' + uzaks_memory.Items[e];
+      uzaki := uzaki + ' ' + uzaks.Items[e];
+    end;
+
+	if uzak = '-1' then
+	begin
+		showmessage('Выберите минимум 1 заказ!');
+		exit;
+	end;
+
+  Application.CreateForm(Ttrnomen, trnomen);
+
+  trnomen.Caption := form9.Caption + ': ' + uzaki;
+  trnomen.OraQueryS.SQL.Text := 'SELECT TXK.NOMER as PUE, SPRAVA.KOD as KOD, SPRAVO.KOD as VYD, TN.NOMER as NOMER, TP.NAME as TYPE, '
+  + 'decode(DPO.TYPE_DEP_TYPE_DEP_ID, 2, DPO.NOMER, DPT.NOMER) as CEH, DPP.NOMER as SKLAD, DCG.IDENT as CHERT, ROUND(TNMAT.KOL_UCHET, 5) as KOL_UCHET, '
+  + 'ROUND(TNMAT.KOL, 5) as KOL, TO_CHAR(TN.DATE_DOK, ' + char(39) + DATEMASK + char(39) + ') as DATEC, '
+  + 'TO_CHAR(TN.USER_DATE1, ' + char(39) + DATEMASK + char(39) + ') as DATE1, TO_CHAR(TN.USER_DATE2, ' + char(39) + DATEMASK + char(39) + ') as DATE2, '
+  + 'TO_CHAR(TN.DATE_INS, ' + char(39) + DATEMASK + char(39) + ') as DATE3 FROM (select defa.s_i as sprav_id from (select src.SPRAV_ID as s_i, '
+  + '(src.POTR - src.ZAPAS) as d, '
+  + '((src.POTR * tronix_kof_koded(src.sprav_id, src.koded_potr, src.koded_uchet)) - (src.ZAPAS * tronix_kof_koded(src.sprav_id, src.koded_potr, '
+  + 'src.koded_uchet))) as d_u from (select tt.sprav_id as sprav_id, sum(tt.POTR) as potr, sum(tt.ZAPAS) as zapas, tt.koded_potr as koded_potr, '
+  + 'tt.koded_uchet as koded_uchet from (select tx.sprav_sprav_id as sprav_id, nvl(tx.KOL, 0) as POTR, nvl(tx.ZAPAS_POST, 0) AS ZAPAS, '
+  + 'tx.KODED_KODED_ID as koded_potr, nvl(sp.koded_koded_id2, sp.koded_koded_id) as koded_uchet from tx_car_potr tx, tronix_sprav sp '
+  + 'where tx.sprav_sprav_id = sp.sprav_id(+) and tx.uzak_uzak_id in (' + uzak + ')) tt group by tt.sprav_id, tt.koded_potr, tt.koded_uchet) src ) defa '
+  + 'where (defa.d > 0 or defa.d_u > 0)) deficit, TRONIX_SPRAV SPRAVA, TRONIX_SPRAV SPRAVO, TRONIX.TYPE_TTN TP, TRONIX.TTN TN, TRONIX.TTN_MAT TNMAT, '
+  + 'KADRY_DEP DPO, KADRY_DEP DPT, KADRY_DEP DPP, TRONIX.SP SPG, TRONIX.DOCUMENT DCG, TX_TEXKOMPL TXK WHERE TN.UZAK_UZAK_ID in (' + uzak + ') AND TN.TYPE_TTN_TYPE_TTN_ID in '
+  + '(43, 44, 26, 59, 11) '
+  + 'AND TNMAT.TTN_TTN_ID = TN.TTN_ID AND ((TNMAT.SPRAV_SPRAV_ID = deficit.sprav_id AND TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB is null) OR '
+  + 'TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB = deficit.sprav_id) AND DECODE(TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB, null, TNMAT.SPRAV_SPRAV_ID, TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB) '
+  + '= SPRAVA.SPRAV_ID(+) AND TNMAT.TEXKOMPL_TEXKOMPL_ID = TXK.TEXKOMPL_ID(+) AND TNMAT.SPRAV_SPRAV_ID = SPRAVO.SPRAV_ID(+) AND TN.DEP_DEP_ID_TO = DPO.DEP_ID(+) AND DPO.DEP_DEP_ID = DPT.DEP_ID(+) AND '
+  + 'TN.TYPE_TTN_TYPE_TTN_ID = TP.TYPE_TTN_ID(+) AND (TN.DATE_INS is null or TN.USER_DATE3 is null) AND TN.DEP_DEP_ID_FROM = DPP.DEP_ID(+) AND '
+  + 'TNMAT.SP_SP_ID = SPG.NN(+) AND SPG.NNN = DCG.DOCUMENT_ID(+)';
+  //Clipboard.AsText := trnomen.OraQueryS.SQL.Text;
+  //showmessage(trnomen.OraQueryS.SQL.Text);
+
+  trnomen.ShowModal();
+  trnomen.Free;
+
+  exit;
+end;
+
+DBGridEh1DblClick(nil); //отчет по материальной ведомости!!!
+
 end;
 
 procedure TForm9.DBGridEh1CellClick(Column: TColumnEh);
+var FILTER_S : string;
 begin
-if self.Caption = 'Отчет по материальной ведомости' then
+if ((self.Caption = 'Отчет по материальной ведомости') or (self.caption = 'Дефицит по номенклатуре (новый)') or (self.caption = 'Требования по дефициту')) then
 begin
 
   uzaks_memory.Clear;
   uzaks.Clear;
+
+  if not allprs.Checked then
+    FILTER_S := '(zak.DATE_END is null or TO_CHAR(zak.DATE_END) = ' + char(39) + ' ' + char(39) + ')'
+  else
+    FILTER_S := '(1 = 1)';
+
+  OraQuery2.Close;
+  OraQuery2.SQL.Text := 'Select zak.zak, feb.text, zak.id_project, zak.nn from tronix.feb_name feb, tronix.zakaz zak '
+  + 'where zak.name = feb.nn and ' + FILTER_S + ' order by zak.zak desc';
+  OraQuery2.Open;
 
   OraQuery2.First;
   while not OraQuery2.Eof do

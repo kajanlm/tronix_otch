@@ -19,7 +19,6 @@ type
     tn1: TMenuItem;
     N5: TMenuItem;
     N4: TMenuItem;
-    N6: TMenuItem;
     N7: TMenuItem;
     N8: TMenuItem;
     N9: TMenuItem;
@@ -66,6 +65,11 @@ type
     N66: TMenuItem;
     N67: TMenuItem;
     IdHTTP1: TIdHTTP;
+    N42: TMenuItem;
+    N43: TMenuItem;
+    N6: TMenuItem;
+    N44: TMenuItem;
+    N45: TMenuItem;
     procedure N3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure tn1Click(Sender: TObject);
@@ -112,6 +116,9 @@ type
     procedure N65Click(Sender: TObject);
     procedure N66Click(Sender: TObject);
     procedure N67Click(Sender: TObject);
+    procedure N43Click(Sender: TObject);
+    procedure N44Click(Sender: TObject);
+    procedure N45Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -130,7 +137,7 @@ SERVER_FILE_PART = '.sql';
 
 implementation
 
-uses Unit2, Unit7, Unit8, Unit9, Unit12, Unit17, Unit23, Unit32, Unit34, cpct;
+uses Unit2, Unit7, Unit8, Unit9, Unit12, Unit17, Unit23, Unit32, Unit34, cpct, r_dates;
 
 {$R *.dfm}
 
@@ -165,14 +172,6 @@ procedure TForm1.N4Click(Sender: TObject);
 begin
 //   form12.Caption:='Отчет по проектам';
  //  form12.ShowModal();
-end;
-
-procedure TForm1.N6Click(Sender: TObject);
-begin
-  Application.CreateForm(TForm9, Form9);
-  form9.Caption:='Дефицит по номенклатуре';
-  form9.ShowModal();  
-  Form9.Free;
 end;
 
 procedure TForm1.N8Click(Sender: TObject);
@@ -537,6 +536,58 @@ except
   Application.Terminate;
 end;
 
+end;
+
+procedure TForm1.N43Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption := 'Дефицит по номенклатуре (новый)';
+
+  form9.ShowModal();
+  Form9.Free;
+end;
+
+procedure TForm1.N6Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption := 'Дефицит по номенклатуре (старый)';
+
+  form9.ShowModal();
+  Form9.Free;
+end;
+
+procedure TForm1.N44Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption := 'Требования по дефициту';
+
+  form9.ShowModal();
+  Form9.Free;
+end;
+
+procedure TForm1.N45Click(Sender: TObject);
+var password, takepw : string;
+begin
+  if not SCAlive then
+    exit;
+
+  password := ServerRequest('[PASS]REQ_DATES');
+
+  takepw := InputBox('ДОСТУП', 'Введите пароль для данной операции', '');
+  if takepw = '' then
+  begin
+    showmessage('ПОЛЕ НЕ ЗАПОЛНЕНО. Введите пароль!');
+    exit;
+  end;
+
+  if takepw = password then
+  begin
+    Application.CreateForm(Trequest_date, request_date);
+    request_date.ShowModal();
+    request_date.Free;
+  end
+  else
+    showmessage('Неверный пароль! Обратитесь в АСУ');
 end;
 
 end.

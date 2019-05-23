@@ -1,9 +1,10 @@
 object Form9: TForm9
   Left = 414
   Top = 191
+  BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'KOD'
-  ClientHeight = 337
+  ClientHeight = 335
   ClientWidth = 493
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -200,6 +201,21 @@ object Form9: TForm9
     Visible = False
     OnClick = Button2Click
   end
+  object allprs: TCheckBox
+    Left = 306
+    Top = 5
+    Width = 119
+    Height = 17
+    Caption = #1042#1057#1045' '#1047#1040#1050#1040#1047#1067
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 9
+    Visible = False
+  end
   object OraQuery1: TOraQuery
     Session = Form1.OraSession1
     SQL.Strings = (
@@ -207,11 +223,13 @@ object Form9: TForm9
       'where date_end is null'
       'order by zavn')
     ReadOnly = True
-    Left = 384
+    Left = 352
+    Top = 344
   end
   object OraDataSource1: TOraDataSource
     DataSet = OraQuery1
-    Left = 360
+    Left = 328
+    Top = 344
   end
   object OraQuery2: TOraQuery
     Session = Form1.OraSession1
@@ -224,7 +242,8 @@ object Form9: TForm9
     MasterFields = 'PROJECT_ID'
     DetailFields = 'ID_PROJECT'
     ReadOnly = True
-    Left = 320
+    Left = 288
+    Top = 344
     ParamData = <
       item
         DataType = ftInteger
@@ -235,7 +254,8 @@ object Form9: TForm9
   end
   object OraDataSource2: TOraDataSource
     DataSet = OraQuery2
-    Left = 288
+    Left = 256
+    Top = 344
   end
   object ExcelApplication1: TExcelApplication
     AutoConnect = False
