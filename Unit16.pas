@@ -163,7 +163,6 @@ else
 
 ELEM_TYPE := ELEM_TYPE + ')';
 
-//if ( (cb_podr.ItemIndex < 0) or (cb_typepodr.ItemIndex = 0) ) then
 if (cb_typepodr.ItemIndex = 0) then
   EVAL_DEP := ''
 else
@@ -179,8 +178,6 @@ SQL := StringReplace(SQL, '<EVAL_TYPE_DEP>', EVAL_DEP, [rfReplaceAll, rfIgnoreCa
 SQL := StringReplace(SQL, '<FILTER_MASK>', FILTER_MASK, [rfReplaceAll, rfIgnoreCase]);
 SQL := StringReplace(SQL, '<SFILTER_MASK>', SFILTER_MASK, [rfReplaceAll, rfIgnoreCase]);
 
-//showmessage(SQL);
-
 OraQuery.Close;
 OraQuery.SQL.Text := SQL;
 OraQuery.ExecSQL;
@@ -194,8 +191,6 @@ if OraQuery.RecordCount <> 0 then
   Button1.Enabled := true
 else
   DBGridEh1.Enabled := false;
-
-//edit2.Text := SQL;
 
 end;
 
@@ -228,8 +223,6 @@ end;
 procedure TDIF_OTCH_FORM.Execute_SQL(SQL: string);
 begin
 LOCK_BOX.Visible := true;
-
-(* edit2.Text := SQL; *)
 
 OraQueryS.Close;
 OraQueryS.SQL.Text := SQL;
@@ -452,67 +445,44 @@ if MessageDlg('Требования по: Да - по всему дефициту. Нет - по выбранной номенкл
 begin
 (* весь *)
 
-GLOBAL_SQL := '';
-OraQuery.First;
-
-while not OraQuery.Eof do
-begin
-  GLOBAL_SQL := GLOBAL_SQL + OraQuery.FieldByName('sprav_id').asString + ',';
-  OraQuery.Next;
-end;
-
-delete(GLOBAL_SQL, length(GLOBAL_SQL), 1);
-
-trnomen.OraQueryS.SQL.Text := 'SELECT SPRAVA.KOD as KOD, '
-+ 'TN.NOMER as NOMER, TP.NAME as TYPE, decode(DPO.TYPE_DEP_TYPE_DEP_ID, 2, DPO.NOMER, DPT.NOMER) as CEH, '
+trnomen.OraQueryS.SQL.Text := 'SELECT TXK.NOMER as PUE, SPRAVA.KOD as KOD, SPRAVO.KOD as VYD, '
++ 'TN.NOMER as NOMER, TP.NAME as TYPE, decode(DPO.TYPE_DEP_TYPE_DEP_ID, 2, DPO.NOMER, DPT.NOMER) as CEH, DPP.NOMER as SKLAD, DCG.IDENT as CHERT, '
 + 'ROUND(TNMAT.KOL_UCHET, 5) as KOL_UCHET, ROUND(TNMAT.KOL, 5) as KOL, TO_CHAR(TN.DATE_DOK, ' + char(39) + DATEMASK + char(39) + ') as DATEC, '
 + 'TO_CHAR(TN.USER_DATE1, ' + char(39) + DATEMASK + char(39) + ') as DATE1, '
 + 'TO_CHAR(TN.USER_DATE2, ' + char(39) + DATEMASK + char(39) + ') as DATE2, '
-+ 'TO_CHAR(TN.DATE_INS, ' + char(39) + DATEMASK + char(39) + ') as DATE3 FROM TRONIX_SPRAV SPRAVA, '
-+ 'TRONIX.TYPE_TTN TP, TRONIX.TTN TN, TRONIX.TTN_MAT TNMAT, '
-+ 'KADRY_DEP DPO, KADRY_DEP DPT WHERE TN.UZAK_UZAK_ID = ' + form9.Label2.Caption + ' AND TN.TYPE_TTN_TYPE_TTN_ID in (43, 44) AND '
-+ 'TNMAT.TTN_TTN_ID = TN.TTN_ID AND '
-+ '((TNMAT.SPRAV_SPRAV_ID in (' + GLOBAL_SQL + ') AND '
-+ 'TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB is null) OR '
-+ 'TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB in (' + GLOBAL_SQL + ')) AND DECODE(TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB, null, TNMAT.SPRAV_SPRAV_ID, TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB) = SPRAVA.SPRAV_ID(+) AND '
-+ 'TN.DEP_DEP_ID_TO = DPO.DEP_ID(+) AND DPO.DEP_DEP_ID = DPT.DEP_ID(+) AND TN.TYPE_TTN_TYPE_TTN_ID = TP.TYPE_TTN_ID(+) AND TN.UZAK_UZAK_ID = ' + form9.Label2.Caption;
++ 'TO_CHAR(TN.DATE_INS, ' + char(39) + DATEMASK + char(39) + ') as DATE3 FROM TRONIX_SPRAV SPRAVA, TRONIX_SPRAV SPRAVO, '
++ 'TRONIX.TYPE_TTN TP, TRONIX.TTN TN, TRONIX.TTN_MAT TNMAT, TX_TEXKOMPL TXK, '
++ 'KADRY_DEP DPO, KADRY_DEP DPT, KADRY_DEP DPP, TRONIX.SP SPG, TRONIX.DOCUMENT DCG WHERE TN.UZAK_UZAK_ID in ' + form9.Label2.Caption + ' AND TN.TYPE_TTN_TYPE_TTN_ID in (43, 44, 26, 59, 11) AND '
++ 'TNMAT.TTN_TTN_ID = TN.TTN_ID AND TNMAT.TEXKOMPL_TEXKOMPL_ID = TXK.TEXKOMPL_ID(+) AND '
++ 'DECODE(TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB, null, TNMAT.SPRAV_SPRAV_ID, TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB) = SPRAVA.SPRAV_ID(+) AND '
++ 'TNMAT.SPRAV_SPRAV_ID = SPRAVO.SPRAV_ID(+) AND '
++ 'TN.DEP_DEP_ID_TO = DPO.DEP_ID(+) AND DPO.DEP_DEP_ID = DPT.DEP_ID(+) AND TN.TYPE_TTN_TYPE_TTN_ID = TP.TYPE_TTN_ID(+) AND '
++ '(TN.DATE_INS is null or TN.USER_DATE3 is null) AND TN.DEP_DEP_ID_FROM = DPP.DEP_ID(+) '
++ 'AND TNMAT.SP_SP_ID = SPG.NN(+) AND SPG.NNN = DCG.DOCUMENT_ID(+)';
 //edit1.text := trnomen.OraQueryS.SQL.Text;
+
+trnomen.Label5.Visible := true;
 
 end
 else
 begin
 (* выбранный *)
 
-(*
-trnomen.OraQueryS.SQL.Text := 'SELECT * FROM TRONIX.TTN_MAT TNMAT, TRONIX_SPRAV SPN, TRONIX.TTN TN WHERE TNMAT.UZAK_UZAK_ID = ' + form9.Label2.Caption + ' AND '
-+ 'TNMAT.SPRAV_SPRAV_ID = SPN.SPRAV_ID AND SPN.KOD = ' + char(39) + '00370326022' + char(39) + ' AND TNMAT.TTN_TTN_ID is not null AND '
-+ 'TN.TTN_ID = TNMAT.TTN_TTN_ID AND TN.TYPE_TTN_TYPE_TTN_ID in (43, 44)';
-edit1.text := trnomen.OraQueryS.SQL.Text;
-*)
-
-//ПЕРЕДЕЛАТЬ ДЕФИЦИТУ ПО ЗАВОДУ НА КОЭФИЦИЕНТЫ ПЕРЕВОДА И ЗАЧТЕНИЯ!!!
-//DEP_DEP_ID_TO - выводить родителя цеха через decode на null (если указан цех, то родитель будет пустой или ЯСЗ)
-//или сделать проверку на родителя по типу DEP
-//слияние чтобы были NULL через DP.DEP_ID(+) (дополнить таблице с плюсиком, если нету в таблице с +, то null)
-
-//ПОКАЗ ЗАМЕНЫ КОТОРУЮ ВЫДАЛИ В ИТОГЕ (А НЕ ТУ КОТОРУЮ ПРОСИЛИ) !!!!!!!!!!!!!!!!!!!!!!!!!
-//ФОРМАТИРОВАНИЕ TITLE (ЗАГОЛОВКОВ) КРАСИВЕЕ И ПОУДОБНЕЕ
-//ОКРУГЛЕНИЕ КАК В ДЕФИЦИТЕ (ВНУТРИ SQL)
-//+ char(39) + dbgrideh1.DataSource.DataSet.FieldByName('KOD').asString + char(39) + ' '
-
-trnomen.OraQueryS.SQL.Text := 'SELECT ' + char(39) + dbgrideh1.DataSource.DataSet.FieldByName('KOD').asString + char(39) + ' '
-+ 'AS KOD, TN.NOMER as NOMER, TP.NAME as TYPE, decode(DPO.TYPE_DEP_TYPE_DEP_ID, 2, DPO.NOMER, DPT.NOMER) as CEH, '
+trnomen.OraQueryS.SQL.Text := 'SELECT TXK.NOMER as PUE, SPRAVA.KOD as KOD, SPRAVO.KOD as VYD, '
++ 'TN.NOMER as NOMER, TP.NAME as TYPE, decode(DPO.TYPE_DEP_TYPE_DEP_ID, 2, DPO.NOMER, DPT.NOMER) as CEH, DPP.NOMER as SKLAD, DCG.IDENT as CHERT, '
 + 'ROUND(TNMAT.KOL_UCHET, 5) as KOL_UCHET, ROUND(TNMAT.KOL, 5) as KOL, TO_CHAR(TN.DATE_DOK, ' + char(39) + DATEMASK + char(39) + ') as DATEC, '
 + 'TO_CHAR(TN.USER_DATE1, ' + char(39) + DATEMASK + char(39) + ') as DATE1, '
 + 'TO_CHAR(TN.USER_DATE2, ' + char(39) + DATEMASK + char(39) + ') as DATE2, '
-+ 'TO_CHAR(TN.DATE_INS, ' + char(39) + DATEMASK + char(39) + ') as DATE3 FROM TRONIX.TYPE_TTN TP, TRONIX.TTN TN, TRONIX.TTN_MAT TNMAT, '
-+ 'KADRY_DEP DPO, KADRY_DEP DPT WHERE TN.UZAK_UZAK_ID = ' + form9.Label2.Caption + ' AND TN.TYPE_TTN_TYPE_TTN_ID in (43, 44) AND '
++ 'TO_CHAR(TN.DATE_INS, ' + char(39) + DATEMASK + char(39) + ') as DATE3 FROM TRONIX.TYPE_TTN TP, TRONIX.TTN TN, TRONIX.TTN_MAT TNMAT, TRONIX_SPRAV SPRAVA, TRONIX_SPRAV SPRAVO, '
++ 'KADRY_DEP DPO, KADRY_DEP DPT, KADRY_DEP DPP, TRONIX.SP SPG, TRONIX.DOCUMENT DCG, TX_TEXKOMPL TXK WHERE TN.UZAK_UZAK_ID in ' + form9.Label2.Caption + ' AND TN.TYPE_TTN_TYPE_TTN_ID in (43, 44, 26, 59, 11) AND '
 + 'TNMAT.TTN_TTN_ID = TN.TTN_ID AND '
 + '((TNMAT.SPRAV_SPRAV_ID = ' + dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString + ' AND '
 + 'TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB is null) OR '
 + 'TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB = ' + dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString + ') AND '
-+ 'TN.DEP_DEP_ID_TO = DPO.DEP_ID(+) AND DPO.DEP_DEP_ID = DPT.DEP_ID(+) AND TN.TYPE_TTN_TYPE_TTN_ID = TP.TYPE_TTN_ID(+) AND TN.UZAK_UZAK_ID = ' + form9.Label2.Caption;
-//edit1.text := trnomen.OraQueryS.SQL.Text;
++ 'TNMAT.SPRAV_SPRAV_ID = SPRAVO.SPRAV_ID(+) AND TNMAT.TEXKOMPL_TEXKOMPL_ID = TXK.TEXKOMPL_ID(+) AND '
++ 'DECODE(TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB, null, TNMAT.SPRAV_SPRAV_ID, TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB) = SPRAVA.SPRAV_ID(+) AND '
++ 'TN.DEP_DEP_ID_TO = DPO.DEP_ID(+) AND DPO.DEP_DEP_ID = DPT.DEP_ID(+) AND TN.TYPE_TTN_TYPE_TTN_ID = TP.TYPE_TTN_ID(+) '
++ 'AND TN.DEP_DEP_ID_FROM = DPP.DEP_ID(+) AND TNMAT.SP_SP_ID = SPG.NN(+) AND SPG.NNN = DCG.DOCUMENT_ID(+)';
 
 end;
 
@@ -541,20 +511,14 @@ SQL_Tx := StringReplace(SQL_Tx, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCas
 SQL_Tx := StringReplace(SQL_Tx, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
 SQL_Tx := StringReplace(SQL_Tx, '<SP_ID>', dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString, [rfReplaceAll, rfIgnoreCase]);
 
-//showmessage(SQL_Tx);
-
 SQL_Zam := StringReplace(SQL_Zam, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zam := StringReplace(SQL_Zam, '<DEP_ID>', ELEM_DEP, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zam := StringReplace(SQL_Zam, '<TYPE_DEP_ID>', ELEM_DEP_TYPE, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zam := StringReplace(SQL_Zam, '<STYPE_DEP_ID>', ELEM_DEP_STYPE, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zam := StringReplace(SQL_Zam, '<SPRAV_ID>', dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString, [rfReplaceAll, rfIgnoreCase]);
 
-//showmessage(SQL_Zam);
-
 SQL_Zams := StringReplace(SQL_Zams, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
 SQL_Zams := StringReplace(SQL_Zams, '<SPRAV_ID>', dbgrideh1.DataSource.DataSet.FieldByName('SPRAV_ID').asString, [rfReplaceAll, rfIgnoreCase]);
-
-//showmessage(SQL_Zams);
 
 Application.CreateForm(Tzams, zams);
 
