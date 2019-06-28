@@ -41,6 +41,7 @@ type
     OraQuerySCHERT: TStringField;
     OraQuerySPUE: TStringField;
     Label5: TLabel;
+    OraQuerySDATE4: TStringField;
     procedure FormShow(Sender: TObject);
     procedure DBGridEh1DrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumnEh; State: TGridDrawState);
@@ -162,7 +163,8 @@ begin
     dbgrideh1.DataSource.DataSet.FieldByName('SKLAD').asString + '$' + dbgrideh1.DataSource.DataSet.FieldByName('CEH').asString + '$' +
     dbgrideh1.DataSource.DataSet.FieldByName('KOL_UCHET').asString + '$' + dbgrideh1.DataSource.DataSet.FieldByName('KOL').asString + '$' +
     dbgrideh1.DataSource.DataSet.FieldByName('DATEC').asString + '$' + dbgrideh1.DataSource.DataSet.FieldByName('DATE1').asString + '$' +
-    dbgrideh1.DataSource.DataSet.FieldByName('DATE2').asString + '$' + dbgrideh1.DataSource.DataSet.FieldByName('DATE3').asString + '$' +
+    dbgrideh1.DataSource.DataSet.FieldByName('DATE2').asString + '$' + dbgrideh1.DataSource.DataSet.FieldByName('DATE4').asString + '$' +
+    dbgrideh1.DataSource.DataSet.FieldByName('DATE3').asString + '$' +
     dbgrideh1.DataSource.DataSet.FieldByName('PUE').asString + '$' + dbgrideh1.DataSource.DataSet.FieldByName('CHERT').asString);
     dbgrideh1.DataSource.DataSet.Next;
   end;

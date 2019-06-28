@@ -67,7 +67,10 @@ uses
   cnctbody in 'cnctbody.pas' {s_contract},
   cnctinfo in 'cnctinfo.pas' {cntinfo},
   ftrnomen in 'ftrnomen.pas' {trnomen},
-  r_dates in 'r_dates.pas' {request_date};
+  r_dates in 'r_dates.pas' {request_date},
+  r_ttns in 'r_ttns.pas' {defttns},
+  r_ttns_filters in 'r_ttns_filters.pas' {defttns_fltrs},
+  t_error in 't_error.pas' {errorForm};
 
 {$R *.res}
 

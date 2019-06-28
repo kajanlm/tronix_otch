@@ -39,9 +39,12 @@ type
     fnomer: TEdit;
     Label1: TLabel;
     Image2: TImage;
+    aClose: TCheckBox;
+    QueryDATEF: TStringField;
     procedure FormShow(Sender: TObject);
     procedure DBGridEh1DblClick(Sender: TObject);
     procedure Image2Click(Sender: TObject);
+    procedure aCloseClick(Sender: TObject);
   private
     { Private declarations }
     procedure SelectRequests;
@@ -65,7 +68,7 @@ begin
 end;
 
 procedure Trequest_date.SelectRequests;
-var SQL, DATE_FILTER, NOMER_FILTER : string;
+var SQL, DATE_FILTER, NOMER_FILTER, ALLOW_CLOSE_FILTER : string;
 const DATE_MASK = 'DD.MM.YYYY';
 begin
   Query.Close;
@@ -81,15 +84,20 @@ begin
   else
     NOMER_FILTER := '(1 = 1)';
 
+  if not aClose.Checked then
+    ALLOW_CLOSE_FILTER := 'tn.DATE_INS is null'
+  else
+    ALLOW_CLOSE_FILTER := '(1 = 1)';
+
   SQL := 'select tn.ttn_id as id, tn.NOMER, tpn.name as type, decode(DPM.TYPE_DEP_TYPE_DEP_ID, 2, DPM.NOMER, DPC.NOMER) as CEH, '
   + 'DPS.NOMER as SKLAD, TO_CHAR(tn.DATE_DOK, ' + char(39) + DATE_MASK + char(39) + ') as DATEC, '
   + 'TO_CHAR(tn.USER_DATE1, ' + char(39) + DATE_MASK + char(39) + ') as DATE1, TO_CHAR(tn.USER_DATE2, ' + char(39) + DATE_MASK + char(39) + ') as DATE2, '
-  + 'TO_CHAR(tn.USER_DATE4, ' + char(39) + DATE_MASK + char(39) + ') as DATE3 FROM kadry_dep dpc, kadry_dep dpm, kadry_dep dps, '
+  + 'TO_CHAR(tn.USER_DATE4, ' + char(39) + DATE_MASK + char(39) + ') as DATE3, TO_CHAR(tn.DATE_INS, ' + char(39) + DATE_MASK + char(39) + ') as DATEF '
+  + 'FROM kadry_dep dpc, kadry_dep dpm, kadry_dep dps, '
   + 'tronix.ttn tn, tronix.type_ttn tpn WHERE tn.DEP_DEP_ID_FROM = DPS.DEP_ID(+) AND tn.DEP_DEP_ID_TO = DPC.DEP_ID(+) AND DPC.DEP_DEP_ID = DPM.DEP_ID(+) '
-  + 'AND tn.TYPE_TTN_TYPE_TTN_ID = tpn.TYPE_TTN_ID(+) AND tn.DATE_INS is null AND tn.DATE_DOK is not null AND tn.TYPE_TTN_TYPE_TTN_ID in (43, 44) '
-  + 'AND ' + DATE_FILTER + ' AND ' + NOMER_FILTER + ' ORDER BY tn.DATE_DOK DESC';
+  + 'AND tn.TYPE_TTN_TYPE_TTN_ID = tpn.TYPE_TTN_ID(+) AND tn.DATE_DOK is not null AND tn.TYPE_TTN_TYPE_TTN_ID in (43, 44, 11) '
+  + 'AND ' + DATE_FILTER + ' AND ' + NOMER_FILTER + ' AND ' + ALLOW_CLOSE_FILTER + ' ORDER BY tn.DATE_DOK DESC';
 
-  //showmessage(SQL);
   Query.SQL.Text := SQL;
   Query.Open;
 end;
@@ -98,13 +106,15 @@ procedure Trequest_date.DBGridEh1DblClick(Sender: TObject);
 var
 D1,
 D2,
-D3
+D3,
+DC
 : string;
 begin
 
   D1 := Dbgrideh1.DataSource.DataSet.FieldByName('DATE1').AsString;
   D2 := Dbgrideh1.DataSource.DataSet.FieldByName('DATE2').AsString;
   D3 := Dbgrideh1.DataSource.DataSet.FieldByName('DATE3').AsString;
+  DC := Dbgrideh1.DataSource.DataSet.FieldByName('DATEF').asString;
 
   if D3 <> '' then
   begin
@@ -118,7 +128,13 @@ begin
     exit;
   end;
 
-  if MessageDlg('Проставить дату "ПОЛУЧЕН ОБЕСПЕЧЕНИЕМ" для документа ' + dbgrideh1.DataSource.DataSet.FieldByName('NOMER').asString + '?',
+  if DC <> '' then
+  begin
+    showmessage('Данный документ закрыт!');
+    exit;
+  end;
+
+  if MessageDlg('Проставить дату "Документ в УСХ" для документа ' + dbgrideh1.DataSource.DataSet.FieldByName('NOMER').asString + '?',
   mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
     OraInsert.Close;
@@ -134,6 +150,11 @@ begin
 end;
 
 procedure Trequest_date.Image2Click(Sender: TObject);
+begin
+  SelectRequests;
+end;
+
+procedure Trequest_date.aCloseClick(Sender: TObject);
 begin
   SelectRequests;
 end;

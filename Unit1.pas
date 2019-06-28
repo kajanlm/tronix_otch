@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, DBAccess, OdacVcl, DB, Ora, Menus, IdBaseComponent, IdComponent,
-  IdTCPConnection, IdTCPClient, IdHTTP;
+  IdTCPConnection, IdTCPClient, IdHTTP, clipbrd;
 
 type
   TForm1 = class(TForm)
@@ -116,14 +116,18 @@ type
     procedure N65Click(Sender: TObject);
     procedure N66Click(Sender: TObject);
     procedure N67Click(Sender: TObject);
+    procedure N69Click(Sender: TObject);
     procedure N43Click(Sender: TObject);
     procedure N44Click(Sender: TObject);
     procedure N45Click(Sender: TObject);
   private
     { Private declarations }
   public
+    errorStatusReturn : boolean;
     function SCAlive : boolean;
     function ServerRequest(s : string) : string;
+    function execQuery(Q : TOraQuery; S : string; T : boolean) : boolean;
+    function showError(H : string; B : string) : boolean;
     { Public declarations }
   end;
 
@@ -132,12 +136,15 @@ var
   z:integer;
 
 const
+
+VERSION = '2.0.0';
+
 SERVER_ADDR = 'http://192.168.10.15:7777/server/tronix_otch/';
 SERVER_FILE_PART = '.sql';
 
 implementation
 
-uses Unit2, Unit7, Unit8, Unit9, Unit12, Unit17, Unit23, Unit32, Unit34, cpct, r_dates;
+uses Unit2, Unit7, Unit8, Unit9, Unit12, Unit17, Unit23, Unit32, Unit34, cpct, r_dates, r_ttns, t_error;
 
 {$R *.dfm}
 
@@ -151,6 +158,21 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
  OraSession1.Connect;
+ self.Caption := 'Отчеты к Tronix v' + VERSION;
+end;
+
+function TForm1.showError(H : string; B : string): boolean;
+begin
+  errorStatusReturn := false;
+  Application.CreateForm(TerrorForm, errorForm);
+
+  errorForm.Caption := H;
+  errorForm.body.Caption := B;
+
+  errorForm.Showmodal();
+  errorForm.Free;
+
+  showError := errorStatusReturn;
 end;
 
 procedure TForm1.tn1Click(Sender: TObject);
@@ -247,6 +269,14 @@ procedure TForm1.N67Click(Sender: TObject);
 begin
   Application.CreateForm(TForm9, Form9);
   Form9.Caption:='Количество покупных изделий с привязкой к ТН,позиции СП по проекту. Выберите проект';
+  Form9.ShowModal();
+  Form9.Free;
+end;
+
+procedure TForm1.N69Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='Отёт по привязке ПУЕ к УДП по проекту. Выберите проект';
   Form9.ShowModal();
   Form9.Free;
 end;
@@ -519,7 +549,7 @@ begin
 try 
   idhttp1.Get(SERVER_ADDR + 'dummy');
 except
-  showmessage('Ошибка соединения с сервером!');
+  showError('Ошибка сети', 'Не удалось подключиться к серверу!');
   SCAlive := false;
   exit;
 end;
@@ -532,9 +562,38 @@ begin
 try
   ServerRequest := idhttp1.Get(SERVER_ADDR + s + SERVER_FILE_PART);
 except
-  showmessage('ERROR');
-  Application.Terminate;
+  if not showError('Ошибка сервера', 'Приложение будет закрыто! Если присутствуют не сохраненные данные '
+    + ' - обратитесь в АСУ и не закрывайте ошибку.') then
+    Application.Terminate;
 end;
+
+end;
+
+function TForm1.execQuery(Q : TOraQuery; S : string; T : boolean) : boolean;
+var E : exception;
+begin   //remake to custom form with backup input data and SQL print.
+
+  execQuery := true;
+  Q.Close;
+  Q.SQL.Text := S;
+
+  try
+    if T then
+      Q.ExecSQL
+    else
+      Q.Open;
+  except
+    On E : Exception do
+    begin
+      if not showError('Ошибка запроса', E.Message + #10#13 + 'Приложение будет закрыто! Если присутствуют не сохраненные данные '
+      + ' - обратитесь в АСУ и не закрывайте ошибку.') then
+        Application.Terminate;
+
+      Clipboard.asText := S;
+
+      execQuery := false;
+    end;
+  end;
 
 end;
 
@@ -558,11 +617,21 @@ end;
 
 procedure TForm1.N44Click(Sender: TObject);
 begin
+  //exit;
+
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption := 'Основная номенклатура по дефициту';
+
+  form9.ShowModal();
+  Form9.Free;
+
+  (*
   Application.CreateForm(TForm9, Form9);
   form9.Caption := 'Требования по дефициту';
 
   form9.ShowModal();
   Form9.Free;
+  *)
 end;
 
 procedure TForm1.N45Click(Sender: TObject);

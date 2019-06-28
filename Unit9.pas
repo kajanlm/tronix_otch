@@ -51,8 +51,8 @@ var
 implementation
 
 uses Unit10, Unit15, Unit16, Unit20, Unit21, Unit22, Unit23, Unit25, Unit26, clipbrd,
-  Unit27, Unit35, Unit36, Unit37, Unit38, Unit43, Unit45, Unit46, Unit34, ftrnomen,
-  Unit47, Unit49, Unit50, Unit52, Unit53, Unit55, Unit57, Unit60, Unit61, Unit63, Unit64, Unit65, Unit66, Unit67, Unit32, Unit1;
+  Unit27, Unit35, Unit36, Unit37, Unit38, Unit43, Unit45, Unit46, Unit34, ftrnomen, r_ttns,
+  Unit47, Unit49, Unit50, Unit52, Unit53, Unit55, Unit57, Unit60, Unit61, Unit63, Unit64, Unit65, Unit66, Unit67, Unit69, Unit32, Unit1;
 
 {$R *.dfm}
 
@@ -63,6 +63,13 @@ if form9.caption='Отчет по нарядам' then
 begin
 Form10.Caption:='Отчет по нарядам';
 Form10.ShowModal();
+end;
+
+if (self.Caption = 'Основная номенклатура по дефициту') then
+begin
+  Application.CreateForm(Tdefttns, defttns);
+  defttns.Showmodal();
+  defttns.Free;
 end;
 
 if (self.caption = 'Дефицит по номенклатуре (старый)') then
@@ -121,6 +128,7 @@ or  (form9.Caption='Незакрытые ПУЕ(без МСЧ) по цеху по проекту. Выберите проект'
 or  (form9.Caption='Остатки трудоёмкости по МСЧ. Выберите проект')
 or  (form9.Caption='Количество изделий МСЧ по проекту. Выберите проект')
 or  (form9.Caption='Количество покупных изделий с привязкой к ТН,позиции СП по проекту. Выберите проект')
+or  (form9.Caption='Отёт по привязке ПУЕ к УДП по проекту. Выберите проект')
 or  (form9.Caption='Оборудование из комплектной поставки для склада ЗИП по проекту. Выберите проект')
 or  (form9.Caption='СП Ведомости снабжения группы 237 по проекту. Выберите проект')
 or  (form9.Caption='Перечень закрытой оснастки по проекту. Выберите проект')
@@ -139,6 +147,9 @@ begin
   if (form9.caption='Наряды по цеху,проекту') or (form9.Caption='Перечень закрытой оснастки по проекту. Выберите проект') then
   Form9.Button1.Visible:=true;
 end;
+
+if (self.Caption = 'Основная номенклатура по дефициту') then
+  Button1.Visible := false;
 
 if (self.caption = 'Отчет по материальной ведомости') then
 begin
@@ -1010,6 +1021,15 @@ begin
   Form67.Free;
 end;
 
+     if form9.caption='Отёт по привязке ПУЕ к УДП по проекту. Выберите проект' then
+begin
+  Application.CreateForm(TForm69, Form69);
+  Form69.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
+  Form69.Caption:='Отёт по привязке ПУЕ к УДП по проекту: '+oraQuery1.FieldByName('name').asString;
+  Form69.ShowModal();
+  Form69.Free;
+end;
+
      if form9.caption='Количество изделий МСЧ по проекту. Выберите проект' then
 begin
   Application.CreateForm(TForm55, Form55);
@@ -1403,8 +1423,8 @@ begin
   + 'decode(DPO.TYPE_DEP_TYPE_DEP_ID, 2, DPO.NOMER, DPT.NOMER) as CEH, DPP.NOMER as SKLAD, DCG.IDENT as CHERT, ROUND(TNMAT.KOL_UCHET, 5) as KOL_UCHET, '
   + 'ROUND(TNMAT.KOL, 5) as KOL, TO_CHAR(TN.DATE_DOK, ' + char(39) + DATEMASK + char(39) + ') as DATEC, '
   + 'TO_CHAR(TN.USER_DATE1, ' + char(39) + DATEMASK + char(39) + ') as DATE1, TO_CHAR(TN.USER_DATE2, ' + char(39) + DATEMASK + char(39) + ') as DATE2, '
-  + 'TO_CHAR(TN.DATE_INS, ' + char(39) + DATEMASK + char(39) + ') as DATE3 FROM (select defa.s_i as sprav_id from (select src.SPRAV_ID as s_i, '
-  + '(src.POTR - src.ZAPAS) as d, '
+  + 'TO_CHAR(TN.DATE_INS, ' + char(39) + DATEMASK + char(39) + ') as DATE3, TO_CHAR(TN.USER_DATE4, ' + char(39) + DATEMASK + char(39) + ') as DATE4 '
+  + 'FROM (select defa.s_i as sprav_id from (select src.SPRAV_ID as s_i, (src.POTR - src.ZAPAS) as d, '
   + '((src.POTR * tronix_kof_koded(src.sprav_id, src.koded_potr, src.koded_uchet)) - (src.ZAPAS * tronix_kof_koded(src.sprav_id, src.koded_potr, '
   + 'src.koded_uchet))) as d_u from (select tt.sprav_id as sprav_id, sum(tt.POTR) as potr, sum(tt.ZAPAS) as zapas, tt.koded_potr as koded_potr, '
   + 'tt.koded_uchet as koded_uchet from (select tx.sprav_sprav_id as sprav_id, nvl(tx.KOL, 0) as POTR, nvl(tx.ZAPAS_POST, 0) AS ZAPAS, '
