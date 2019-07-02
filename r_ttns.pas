@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, GridsEh, DBGridEh, DB, MemDS, DBAccess, Ora, StdCtrls, DBClient,
+  Dialogs, GridsEh, DBGridEh, DB, MemDS, DBAccess, Ora, StdCtrls, DBClient, midaslib,
   Buttons;
 
 type
@@ -38,7 +38,7 @@ private
 
 public
   { Public declarations }
-  fBuffer_KOD, fBuffer_VYD, fBuffer_DOC, fBuffer_SKLAD, fBuffer_CEH, fBuffer_PUE, fBuffer_CHERT : string;
+  fBuffer_KOD, fBuffer_VYD, fBuffer_DOC, fBuffer_SKLAD, fBuffer_CEH, fBuffer_PUE, fBuffer_CHERT, fBuffer_UPE : string;
   NEED_UPDATE : boolean;
 
 end;
@@ -60,7 +60,7 @@ end;
 procedure Tdefttns.SelectTTNs;
 
 const
-  FIELDS_SIZE = 27;
+  FIELDS_SIZE = 28;
   TTN_TYPE_ARRAY = '43, 44, 26, 59, 11';
 
 var
@@ -88,19 +88,18 @@ begin
   fields[15] := 'DATE3';
   fields[16] := 'PUE';
   fields[17] := 'CHERT';
-  fields[18] := 'CHK_FLD';
-  
-  fields[19] := 'KOD_ID';
-  fields[20] := 'VYD_ID';
-  fields[21] := 'TTN_ID';
-  fields[22] := 'TYPE_TTN_ID';
-  fields[23] := 'CEH_ID';
-  fields[24] := 'SKLAD_ID';
-  fields[25] := 'TEXKOMPL_ID';
-  fields[26] := 'DOCUMENT_ID';
-  fields[27] := 'UZAK_ID';
-  
-  //fields[28] := 'UPE';
+  fields[18] := 'UPE';
+  fields[19] := 'CHK_FLD';
+
+  fields[20] := 'KOD_ID';
+  fields[21] := 'VYD_ID';
+  fields[22] := 'TTN_ID';
+  fields[23] := 'TYPE_TTN_ID';
+  fields[24] := 'CEH_ID';
+  fields[25] := 'SKLAD_ID';
+  fields[26] := 'TEXKOMPL_ID';
+  fields[27] := 'DOCUMENT_ID';
+  fields[28] := 'UZAK_ID';
 
   (* FIELDS *)
 
@@ -118,7 +117,8 @@ begin
   SQL := StringReplace(SQL, '<FILTER_CEH>', fBuffer_CEH, [rfReplaceAll, rfIgnoreCase]);
   SQL := StringReplace(SQL, '<FILTER_PUE>', fBuffer_PUE, [rfReplaceAll, rfIgnoreCase]);
   SQL := StringReplace(SQL, '<FILTER_CHERT>', fBuffer_CHERT, [rfReplaceAll, rfIgnoreCase]);
-  showmessage(SQL);
+  SQL := StringReplace(SQL, '<FILTER_UPE>', fBuffer_UPE, [rfReplaceAll, rfIgnoreCase]);
+  //showmessage(SQL);
 
   if not form1.execQuery(OraQueryS, SQL, false) then
     exit;
@@ -157,6 +157,7 @@ end;
 
 procedure Tdefttns.DBGridEh1DblClick(Sender: TObject);
 begin
+  exit;
   //showmessage(DBGrideh1.DataSource.DataSet.FieldByName('CHK_FLD').asString);
   //showmessage(DBGrideh1.DataSource.DataSet.FieldByName('FNAME').asString);
   //showmessage(DBGrideh1.DataSource.DataSet.FieldByName('SNAME').asString);
@@ -243,6 +244,7 @@ begin
   fBuffer_SKLAD := '(1 = 1)';
   fBuffer_PUE := '(1 = 1)';
   fBuffer_CHERT := '(1 = 1)';
+  fBuffer_UPE := '(1 = 1)';
 end;
 
 procedure Tdefttns.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -382,10 +384,7 @@ begin
 
   FExcel.Workbooks.Add('\\Ser1\s1sys2\PROG\FOX_WIN\SHABLON_MAINTTNS.xlsx');
   FExcel.Workbooks[1].WorkSheets[1].Name := 'Основная номенклатура';
-
   Sheet:=FExcel.Workbooks[1].WorkSheets['Основная номенклатура'];
-
-  //проверить дубликаты
 
   startNum := 4;
   strNum := startNum;
@@ -506,7 +505,10 @@ begin
   begin
     SQL := 'DELETE FROM TRONIX.DEFICIT_MAIN_NOMEN';
     form1.execQuery(OraInsertQuery, SQL, true);
+
     showmessage('Основная номенклатура очищена!');
+    SelectTTNs;
+
   end
   else
     showmessage('Неверный пароль! Обратитесь в АСУ');

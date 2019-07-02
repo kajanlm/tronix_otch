@@ -616,8 +616,16 @@ begin
 end;
 
 procedure TForm1.N44Click(Sender: TObject);
+var name : string;
 begin
   //exit;
+
+  name := OraSession1.Username;
+  if (name <> '20043') and (name <> '84007') and (name <> '15008') and (name <> '20078') and (name <> '10156') then
+  begin
+    showmessage('У вас нет прав для работы с данным модулем!');
+    exit;
+  end;
 
   Application.CreateForm(TForm9, Form9);
   form9.Caption := 'Основная номенклатура по дефициту';

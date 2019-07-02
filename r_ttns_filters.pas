@@ -31,6 +31,9 @@ type
     spchk: TCheckBox;
     cancel: TButton;
     apply: TButton;
+    Label8: TLabel;
+    upe: TEdit;
+    upchk: TCheckBox;
     procedure cancelClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure applyClick(Sender: TObject);
@@ -81,6 +84,7 @@ begin
     fBuffer_SKLAD := '(1 = 1)';
     fBuffer_PUE := '(1 = 1)';
     fBuffer_CHERT := '(1 = 1)';
+    fBuffer_UPE := '(1 = 1)';
   end;
 end;
 
@@ -124,6 +128,11 @@ begin
     defttns.fBuffer_CHERT := cTable + 'CHERT like ' + char(39) + '%' + chert.Text + '%' + char(39)
   else
     defttns.fBuffer_CHERT := '(1 = 1)';
+
+  if upchk.Checked then
+    defttns.fBuffer_UPE := cTable + 'UPE like ' + char(39) + '%' + upe.Text + '%' + char(39)
+  else
+    defttns.fBuffer_UPE := '(1 = 1)';
 
   defttns.NEED_UPDATE := true;
   self.Close;
