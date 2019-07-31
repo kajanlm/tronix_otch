@@ -57,6 +57,23 @@ uses Unit10, Unit15, Unit16, Unit20, Unit21, Unit22, Unit23, Unit25, Unit26, cli
 {$R *.dfm}
 
 procedure TForm9.DBGridEh2DblClick(Sender: TObject);
+
+const
+TTN_TYPE_ARRAY = '43, 44';
+
+var
+SQL,
+DEP_ID : string;
+
+FExcel,
+WorkBook,
+SheetActive,
+Sheet,
+Colum,
+Range : OleVariant;
+
+x : integer;
+
 begin
 label2.Caption:=OraQuery2.FieldByName('nn').AsString;
 if form9.caption='Отчет по нарядам' then
@@ -102,7 +119,80 @@ begin
   exit;
 end;
 
+if (self.caption = 'Требования по дефициту') then
+begin
+
+  //DEP_ID := '-1';
+  DEP_ID := '8024';
+  //dep_id answer
+
+  if form1.SCAlive then
+    SQL := form1.ServerRequest('TR_TTNS_FROM_DEFICIT');
+
+  SQL := StringReplace(SQL, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
+  SQL := StringReplace(SQL, '<DEP_ID>', DEP_ID, [rfReplaceAll, rfIgnoreCase]);
+  SQL := StringReplace(SQL, '<TTN_TYPE>', TTN_TYPE_ARRAY, [rfReplaceAll, rfIgnoreCase]);
+
+  if not form1.execQuery(OraQuery3, SQL, false) then
+    exit;
+
+  FExcel := CreateOleObject('Excel.Application');
+  FExcel.EnableEvents := False;
+  FExcel.Visible := false;
+
+  FExcel.Workbooks.Add('\\Ser1\s1sys2\PROG\FOX_WIN\SHABLON_TRTTNS_DEFICIT.xlsx');
+  FExcel.Workbooks[1].WorkSheets[1].Name := 'Требования по дефициту';
+  Colum := FExcel.Workbooks[1].WorkSheets['Требования по дефициту'].Columns;
+
+  Sheet:=FExcel.Workbooks[1].WorkSheets['Требования по дефициту'];
+  Range := Sheet.Columns;
+  Range.NumberFormat := '@';
+
+  x := 3; //start string-index
+  Sheet.range[Sheet.cells[x, 1], Sheet.cells[(OraQuery3.RecordCount + (x - 1)), 20]].borders.linestyle := xlContinuous;
+  Sheet.range[Sheet.cells[x, 1], Sheet.cells[(OraQuery3.RecordCount + (x - 1)), 20]].WrapText := true;
+  Sheet.range[Sheet.cells[x, 1], Sheet.cells[(OraQuery3.RecordCount + (x - 1)), 20]].HorizontalAlignment := xlCenter;
+  Sheet.range[Sheet.cells[x, 1], Sheet.cells[(OraQuery3.RecordCount + (x - 1)), 20]].VerticalAlignment := xlCenter;
+  Sheet.range[Sheet.cells[x, 1], Sheet.cells[(OraQuery3.RecordCount + (x - 1)), 20]].Font.Size := 12;
+  Sheet.range[Sheet.cells[x, 1], Sheet.cells[(OraQuery3.RecordCount + (x - 1)), 1]].Font.Bold := true;
+  // + 2 font-size for COLUMN: KOD
+  // HorizontalAlignment = xlLeft  for MTR_NAME
+
+  while not OraQuery3.Eof do
+  begin
+
+    Sheet.Cells[x, 1].Value := OraQuery3.FieldByName('KOD').asString;
+    Sheet.Cells[x, 2].Value := OraQuery3.FieldByName('MTR_NAME').asString;
+    Sheet.Cells[x, 3].Value := OraQuery3.FieldByName('P').asString;
+    Sheet.Cells[x, 4].Value := OraQuery3.FieldByName('NAMEK').asString;
+    Sheet.Cells[x, 5].Value := OraQuery3.FieldByName('P_UCHET').asString;
+    Sheet.Cells[x, 6].Value := OraQuery3.FieldByName('NAMEK_UCHET').asString;
+    Sheet.Cells[x, 7].Value := OraQuery3.FieldByName('ZS').asString;
+    Sheet.Cells[x, 8].Value := OraQuery3.FieldByName('ZS_UCHET').asString;
+    Sheet.Cells[x, 9].Value := OraQuery3.FieldByName('ZC').asString;
+    Sheet.Cells[x, 10].Value := OraQuery3.FieldByName('ZC_UCHET').asString;
+    Sheet.Cells[x, 11].Value := OraQuery3.FieldByName('DEF').asString;
+    Sheet.Cells[x, 12].Value := OraQuery3.FieldByName('DEF_UCHET').asString;
+    Sheet.Cells[x, 13].Value := OraQuery3.FieldByName('NOMER').asString;
+    Sheet.Cells[x, 14].Value := OraQuery3.FieldByName('KOL_UCHET').asString;   // ->swap
+    Sheet.Cells[x, 15].Value := OraQuery3.FieldByName('KOL').asString;         // swap<-
+    Sheet.Cells[x, 16].Value := OraQuery3.FieldByName('DATE_DOK').asString;
+    Sheet.Cells[x, 17].Value := OraQuery3.FieldByName('USER_DATE1').asString;
+    Sheet.Cells[x, 18].Value := OraQuery3.FieldByName('USER_DATE2').asString;
+    Sheet.Cells[x, 19].Value := OraQuery3.FieldByName('USER_DATE4').asString;
+    Sheet.Cells[x, 20].Value := OraQuery3.FieldByName('DATE_INS').asString;
+
+    inc(x);
+    OraQuery3.Next;
+  end;
+
+  FExcel.Visible := true;
+
 end;
+
+end;
+
+
 procedure TForm9.FormShow(Sender: TObject);
 var tx: string;
 begin
@@ -148,7 +238,7 @@ begin
   Form9.Button1.Visible:=true;
 end;
 
-if (self.Caption = 'Основная номенклатура по дефициту') then
+if ((self.Caption = 'Основная номенклатура по дефициту') or (self.caption = 'Требования по дефициту')) then
   Button1.Visible := false;
 
 if (self.caption = 'Отчет по материальной ведомости') then
@@ -168,6 +258,7 @@ begin
   uzaks.Visible := true;
 end;
 
+(*
 if (self.Caption = 'Требования по дефициту') then
 begin
   allprs.Visible := true;
@@ -176,6 +267,7 @@ begin
   Button2.Caption := 'ЗАГРУЗИТЬ ТРЕБОВАНИЯ';
   uzaks.Visible := true;
 end;
+*)
 
  if (form9.caption='Построечный журнал') then
   begin
@@ -679,6 +771,7 @@ begin
 			Sheet.Cells[e, 6].VerticalAlignment := xlCenter;
 
 			//kod ed izm osn
+      Sheet.Cells[e, 7].NumberFormat:= '@';
 			Sheet.Cells[e, 7].Value := OraQuery3.FieldByName('CED').AsString;
 			Sheet.Cells[e, 7].WrapText := true;
 			Sheet.Cells[e, 7].HorizontalAlignment := xlCenter;
@@ -691,6 +784,7 @@ begin
 			Sheet.Cells[e, 8].VerticalAlignment := xlCenter;
 
 			//kod ed izm uchet
+      Sheet.Cells[e, 9].NumberFormat:= '@';
 			Sheet.Cells[e, 9].Value := OraQuery3.FieldByName('CED_UCHET').AsString;
 			Sheet.Cells[e, 9].WrapText := true;
 			Sheet.Cells[e, 9].HorizontalAlignment := xlCenter;
@@ -1454,7 +1548,7 @@ end;
 procedure TForm9.DBGridEh1CellClick(Column: TColumnEh);
 var FILTER_S : string;
 begin
-if ((self.Caption = 'Отчет по материальной ведомости') or (self.caption = 'Дефицит по номенклатуре (новый)') or (self.caption = 'Требования по дефициту')) then
+if ((self.Caption = 'Отчет по материальной ведомости') or (self.caption = 'Дефицит по номенклатуре (новый)')(* or (self.caption = 'Требования по дефициту')*)) then
 begin
 
   uzaks_memory.Clear;

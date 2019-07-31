@@ -70,6 +70,7 @@ type
     N6: TMenuItem;
     N44: TMenuItem;
     N45: TMenuItem;
+    N46: TMenuItem;
     procedure N3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure tn1Click(Sender: TObject);
@@ -120,6 +121,7 @@ type
     procedure N43Click(Sender: TObject);
     procedure N44Click(Sender: TObject);
     procedure N45Click(Sender: TObject);
+    procedure N46Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -615,6 +617,15 @@ begin
   Form9.Free;
 end;
 
+procedure TForm1.N46Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption := 'Требования по дефициту';
+  
+  Form9.ShowModal();
+  Form9.Free;
+end;
+
 procedure TForm1.N44Click(Sender: TObject);
 var name : string;
 begin
@@ -666,5 +677,6 @@ begin
   else
     showmessage('Неверный пароль! Обратитесь в АСУ');
 end;
+
 
 end.
