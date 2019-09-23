@@ -3,6 +3,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
   Top = 69
   Width = 1350
   Height = 878
+  BorderIcons = [biSystemMenu, biMaximize]
   Caption = #1054#1090#1095#1077#1090' '#1087#1086' '#1076#1077#1092#1080#1094#1080#1090#1091
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -484,55 +485,13 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     Color = clActiveCaption
     TabOrder = 6
   end
-  object DBGrid1: TDBGrid
-    Left = 56
-    Top = 504
-    Width = 793
-    Height = 241
-    DataSource = OraDataSource1
-    TabOrder = 7
-    TitleFont.Charset = DEFAULT_CHARSET
-    TitleFont.Color = clWindowText
-    TitleFont.Height = -11
-    TitleFont.Name = 'MS Sans Serif'
-    TitleFont.Style = []
-    Visible = False
-  end
-  object Edit2: TEdit
-    Left = 208
-    Top = 800
-    Width = 633
-    Height = 21
-    TabOrder = 8
-    Visible = False
-  end
-  object Button2: TButton
-    Left = 168
-    Top = 800
-    Width = 33
-    Height = 25
-    Caption = 'X'
-    TabOrder = 9
-    Visible = False
-    OnClick = Button2Click
-  end
-  object Button3: TButton
-    Left = 856
-    Top = 800
-    Width = 75
-    Height = 25
-    Caption = 'SQL'
-    TabOrder = 10
-    Visible = False
-    OnClick = Button3Click
-  end
   object cb_invi_typepodr: TComboBox
     Left = 96
     Top = 0
     Width = 25
     Height = 21
     ItemHeight = 13
-    TabOrder = 11
+    TabOrder = 7
     Text = 'cb_invi_typepodr'
     Visible = False
   end
@@ -542,7 +501,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     Width = 25
     Height = 21
     ItemHeight = 13
-    TabOrder = 12
+    TabOrder = 8
     Text = 'cb_invi_typepodr'
     Visible = False
   end
@@ -552,7 +511,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     Width = 25
     Height = 21
     ItemHeight = 13
-    TabOrder = 13
+    TabOrder = 9
     Text = 'cb_invi_typepodr'
     Visible = False
   end
@@ -571,7 +530,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     ItemHeight = 16
     ItemIndex = 0
     ParentFont = False
-    TabOrder = 15
+    TabOrder = 11
     Text = '['#1058#1048#1055' '#1053#1054#1052#1045#1053#1050#1051#1040#1058#1059#1056#1067']'
     OnClick = ComboBox1Click
     OnDropDown = ComboBox1DropDown
@@ -597,7 +556,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
       #1052#1057#1063
       #1042#1057#1045)
     ParentFont = False
-    TabOrder = 14
+    TabOrder = 10
     Visible = False
     OnClick = filter_typeClick
   end
@@ -609,7 +568,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     Hint = #1042#1074#1077#1076#1080#1090#1077' '#1079#1072#1087#1088#1086#1089
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 16
+    TabOrder = 12
     Visible = False
     OnChange = filter_queryChange
   end
@@ -627,7 +586,7 @@ object DIF_OTCH_FORM: TDIF_OTCH_FORM
     ItemHeight = 16
     ItemIndex = 0
     ParentFont = False
-    TabOrder = 17
+    TabOrder = 13
     Text = #1050#1054#1044
     Visible = False
     OnClick = cbt_filterClick

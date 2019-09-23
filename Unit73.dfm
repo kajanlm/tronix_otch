@@ -1,11 +1,11 @@
-object Form55: TForm55
-  Left = 281
-  Top = 163
+object Form73: TForm73
+  Left = 384
+  Top = 247
   Width = 958
-  Height = 713
+  Height = 598
   Anchors = []
   AutoSize = True
-  Caption = 'Form55'
+  Caption = 'Form73'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,14 +18,42 @@ object Form55: TForm55
   OnShow = FormShow
   DesignSize = (
     950
-    679)
+    564)
   PixelsPerInch = 96
   TextHeight = 13
+  object Label1: TLabel
+    Left = 466
+    Top = 5
+    Width = 18
+    Height = 20
+    Alignment = taRightJustify
+    Caption = #1057' '
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Label2: TLabel
+    Left = 617
+    Top = 5
+    Width = 27
+    Height = 20
+    Alignment = taRightJustify
+    Caption = #1055#1054
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
   object DBGridEh1: TDBGridEh
     Left = 0
-    Top = 0
+    Top = 32
     Width = 950
-    Height = 649
+    Height = 506
     Anchors = []
     DataSource = OraDataSource1
     Flat = False
@@ -43,17 +71,17 @@ object Form55: TForm55
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit]
     ParentFont = False
     ReadOnly = True
+    SumList.Active = True
     TabOrder = 0
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -13
     TitleFont.Name = 'MS Sans Serif'
     TitleFont.Style = []
-    OnDrawColumnCell = DBGridEh1DrawColumnCell
     Columns = <
       item
         EditButtons = <>
-        FieldName = 'kod'
+        FieldName = 'cex'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
@@ -61,17 +89,17 @@ object Form55: TForm55
         Font.Style = []
         Footers = <>
         Title.Alignment = taCenter
-        Title.Caption = #1050#1054#1044
+        Title.Caption = #1062#1045#1061
         Title.Font.Charset = DEFAULT_CHARSET
         Title.Font.Color = clWindowText
         Title.Font.Height = -13
         Title.Font.Name = 'MS Sans Serif'
         Title.Font.Style = [fsBold]
-        Width = 103
+        Width = 50
       end
       item
         EditButtons = <>
-        FieldName = 'name'
+        FieldName = 'nomnar'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
@@ -79,128 +107,7 @@ object Form55: TForm55
         Font.Style = []
         Footers = <>
         Title.Alignment = taCenter
-        Title.Caption = #1053#1040#1048#1052#1045#1053#1054#1042#1040#1053#1048#1045
-        Title.Font.Charset = DEFAULT_CHARSET
-        Title.Font.Color = clWindowText
-        Title.Font.Height = -13
-        Title.Font.Name = 'MS Sans Serif'
-        Title.Font.Style = [fsBold]
-        Width = 321
-      end
-      item
-        Alignment = taCenter
-        EditButtons = <>
-        FieldName = 'namek'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'MS Sans Serif'
-        Font.Style = []
-        Footers = <>
-        HighlightRequired = True
-        Layout = tlCenter
-        Title.Alignment = taCenter
-        Title.Caption = #1045#1044'.'#1048#1047#1052'.'
-        Title.Font.Charset = DEFAULT_CHARSET
-        Title.Font.Color = clWindowText
-        Title.Font.Height = -13
-        Title.Font.Name = 'MS Sans Serif'
-        Title.Font.Style = [fsBold]
-        Width = 63
-      end
-      item
-        Alignment = taCenter
-        EditButtons = <>
-        FieldName = 'kolr'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'MS Sans Serif'
-        Font.Style = []
-        Footers = <>
-        Layout = tlCenter
-        Title.Alignment = taCenter
-        Title.Caption = #1055#1054#1058#1056'-'#1058#1068' '#1057' '#1056#1054#1057#1057#1067#1055#1068#1070
-        Title.Font.Charset = DEFAULT_CHARSET
-        Title.Font.Color = clWindowText
-        Title.Font.Height = -13
-        Title.Font.Name = 'MS Sans Serif'
-        Title.Font.Style = [fsBold]
-        Width = 80
-      end
-      item
-        Alignment = taCenter
-        EditButtons = <>
-        FieldName = 'kolnr'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'MS Sans Serif'
-        Font.Style = []
-        Footers = <>
-        Layout = tlCenter
-        Title.Alignment = taCenter
-        Title.Caption = #1055#1054#1058#1056'-'#1058#1068' '#1041#1045#1047' '#1056#1054#1057#1057#1067#1055#1048
-        Title.Font.Charset = DEFAULT_CHARSET
-        Title.Font.Color = clWindowText
-        Title.Font.Height = -13
-        Title.Font.Name = 'MS Sans Serif'
-        Title.Font.Style = [fsBold]
-        Width = 80
-      end
-      item
-        Alignment = taCenter
-        EditButtons = <>
-        FieldName = 'kolp'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'MS Sans Serif'
-        Font.Style = []
-        Footers = <>
-        Layout = tlCenter
-        Title.Alignment = taCenter
-        Title.Caption = #1055#1054#1058#1056'-'#1058#1068' '#1055#1054' '#1057#1055
-        Title.Font.Charset = DEFAULT_CHARSET
-        Title.Font.Color = clWindowText
-        Title.Font.Height = -13
-        Title.Font.Name = 'MS Sans Serif'
-        Title.Font.Style = [fsBold]
-        Width = 80
-      end
-      item
-        Alignment = taCenter
-        EditButtons = <>
-        FieldName = 'koli'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'MS Sans Serif'
-        Font.Style = []
-        Footers = <>
-        Layout = tlCenter
-        Title.Alignment = taCenter
-        Title.Caption = #1048#1047#1043#1054#1058#1054#1042#1051#1045#1053#1054
-        Title.Font.Charset = DEFAULT_CHARSET
-        Title.Font.Color = clWindowText
-        Title.Font.Height = -13
-        Title.Font.Name = 'MS Sans Serif'
-        Title.Font.Style = [fsBold]
-        Width = 80
-      end
-      item
-        Alignment = taCenter
-        EditButtons = <>
-        FieldName = 'kols'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'MS Sans Serif'
-        Font.Style = []
-        Footers = <>
-        Layout = tlCenter
-        Title.Alignment = taCenter
-        Title.Caption = #1042#1067#1044#1040#1053#1054
+        Title.Caption = #8470' '#1053#1040#1056#1071#1044#1040
         Title.Font.Charset = DEFAULT_CHARSET
         Title.Font.Color = clWindowText
         Title.Font.Height = -13
@@ -210,143 +117,232 @@ object Form55: TForm55
       end
       item
         EditButtons = <>
-        FieldName = 'tn'
+        FieldName = 'zak'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
         Font.Name = 'MS Sans Serif'
         Font.Style = []
         Footers = <>
-        HighlightRequired = True
-        Layout = tlCenter
         Title.Alignment = taCenter
-        Title.Caption = #1058#1053
+        Title.Caption = #1047#1040#1042'.'#8470
         Title.Font.Charset = DEFAULT_CHARSET
         Title.Font.Color = clWindowText
         Title.Font.Height = -13
         Title.Font.Name = 'MS Sans Serif'
         Title.Font.Style = [fsBold]
-        Width = 120
+        Width = 80
       end
       item
         EditButtons = <>
-        FieldName = 'sp'
+        FieldName = 'godu'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
         Font.Name = 'MS Sans Serif'
         Font.Style = []
         Footers = <>
-        HighlightRequired = True
-        Layout = tlCenter
+        MaxWidth = 166
         Title.Alignment = taCenter
-        Title.Caption = #1057#1055
+        Title.Caption = #1043#1054#1044' '#1059#1044#1040#1051'.'
         Title.Font.Charset = DEFAULT_CHARSET
         Title.Font.Color = clWindowText
         Title.Font.Height = -13
         Title.Font.Name = 'MS Sans Serif'
         Title.Font.Style = [fsBold]
-        Width = 255
+        Width = 80
       end
       item
         EditButtons = <>
-        FieldName = 'sp1'
+        FieldName = 'mesu'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
         Font.Name = 'MS Sans Serif'
         Font.Style = []
         Footers = <>
-        HighlightRequired = True
-        Layout = tlCenter
+        MaxWidth = 166
         Title.Alignment = taCenter
-        Title.Caption = #1057#1055'1'
+        Title.Caption = #1052#1045#1057#1071#1062' '#1059#1044#1040#1051'.'
         Title.Font.Charset = DEFAULT_CHARSET
         Title.Font.Color = clWindowText
         Title.Font.Height = -13
         Title.Font.Name = 'MS Sans Serif'
         Title.Font.Style = [fsBold]
-        Width = 255
+        Width = 100
       end
       item
         EditButtons = <>
-        FieldName = 'sp2'
+        FieldName = 'dayu'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
         Font.Name = 'MS Sans Serif'
         Font.Style = []
         Footers = <>
-        HighlightRequired = True
-        Layout = tlCenter
+        MaxWidth = 166
         Title.Alignment = taCenter
-        Title.Caption = #1057#1055'2'
+        Title.Caption = #1044#1045#1053#1068' '#1059#1044#1040#1051'.'
         Title.Font.Charset = DEFAULT_CHARSET
         Title.Font.Color = clWindowText
         Title.Font.Height = -13
         Title.Font.Name = 'MS Sans Serif'
         Title.Font.Style = [fsBold]
-        Width = 255
+        Width = 100
       end
       item
         EditButtons = <>
-        FieldName = 'sp3'
+        FieldName = 'vremu'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
         Font.Name = 'MS Sans Serif'
         Font.Style = []
         Footers = <>
-        HighlightRequired = True
-        Layout = tlCenter
+        MaxWidth = 166
         Title.Alignment = taCenter
-        Title.Caption = #1057#1055'3'
+        Title.Caption = #1042#1056#1045#1052#1071' '#1059#1044#1040#1051'.'
         Title.Font.Charset = DEFAULT_CHARSET
         Title.Font.Color = clWindowText
         Title.Font.Height = -13
         Title.Font.Name = 'MS Sans Serif'
         Title.Font.Style = [fsBold]
-        Width = 255
+        Width = 105
       end
       item
-        Alignment = taCenter
         EditButtons = <>
-        FieldName = 'prizn'
+        FieldName = 'avtoru'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
         Font.Name = 'MS Sans Serif'
         Font.Style = []
         Footers = <>
-        Title.Caption = #1055#1056#1048#1047#1053#1040#1050
+        Title.Alignment = taCenter
+        Title.Caption = #1059#1044#1040#1051#1048#1051
         Title.Font.Charset = DEFAULT_CHARSET
         Title.Font.Color = clWindowText
         Title.Font.Height = -13
         Title.Font.Name = 'MS Sans Serif'
         Title.Font.Style = [fsBold]
-        Width = 20
+        Width = 200
       end
       item
         EditButtons = <>
-        FieldName = 'idsprav'
+        FieldName = 'godi'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
         Font.Name = 'MS Sans Serif'
         Font.Style = []
         Footers = <>
+        MaxWidth = 166
+        Title.Alignment = taCenter
+        Title.Caption = #1043#1054#1044' '#1057#1054#1047#1044'.'
         Title.Font.Charset = DEFAULT_CHARSET
         Title.Font.Color = clWindowText
         Title.Font.Height = -13
         Title.Font.Name = 'MS Sans Serif'
         Title.Font.Style = [fsBold]
-        Visible = False
-        Width = 0
+        Width = 80
+      end
+      item
+        EditButtons = <>
+        FieldName = 'mesi'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        Footers = <>
+        MaxWidth = 166
+        Title.Alignment = taCenter
+        Title.Caption = #1052#1045#1057#1071#1062' '#1057#1054#1047#1044'.'
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 105
+      end
+      item
+        EditButtons = <>
+        FieldName = 'dayi'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        Footers = <>
+        MaxWidth = 166
+        Title.Alignment = taCenter
+        Title.Caption = #1044#1045#1053#1068' '#1057#1054#1047#1044'.'
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 95
+      end
+      item
+        EditButtons = <>
+        FieldName = 'vremi'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        Footers = <>
+        MaxWidth = 166
+        Title.Alignment = taCenter
+        Title.Caption = #1042#1056#1045#1052#1071' '#1057#1054#1047#1044'.'
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 105
+      end
+      item
+        EditButtons = <>
+        FieldName = 'avtori'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        Footers = <>
+        Title.Alignment = taCenter
+        Title.Caption = #1057#1054#1047#1044#1040#1051
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 200
+      end
+      item
+        EditButtons = <>
+        FieldName = 'proekt'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        Footers = <>
+        Title.Alignment = taCenter
+        Title.Caption = #1055#1056#1054#1045#1050#1058
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 200
       end>
   end
   object Edit1: TEdit
-    Left = 513
-    Top = 174
+    Left = 474
+    Top = 59
     Width = 247
     Height = 21
     TabOrder = 1
@@ -354,8 +350,8 @@ object Form55: TForm55
     Visible = False
   end
   object Edit2: TEdit
-    Left = 496
-    Top = 46
+    Left = 457
+    Top = 171
     Width = 249
     Height = 21
     TabOrder = 2
@@ -363,8 +359,8 @@ object Form55: TForm55
     Visible = False
   end
   object Button1: TButton
-    Left = 40
-    Top = 654
+    Left = 1
+    Top = 539
     Width = 75
     Height = 25
     Caption = 'Excel'
@@ -378,63 +374,107 @@ object Form55: TForm55
     OnClick = Button1Click
   end
   object Edit3: TEdit
-    Left = 512
-    Top = 78
+    Left = 193
+    Top = 123
     Width = 121
     Height = 21
     TabOrder = 4
     Text = 'Edit3'
     Visible = False
   end
+  object DateTimePicker1: TDateTimePicker
+    Left = 485
+    Top = 0
+    Width = 124
+    Height = 28
+    Date = 43405.428657766210000000
+    Time = 43405.428657766210000000
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 5
+    OnChange = DateTimePicker1Change
+  end
+  object Button2: TButton
+    Left = 805
+    Top = 0
+    Width = 129
+    Height = 28
+    Caption = #1042#1067#1041#1056#1040#1058#1068
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 6
+    OnClick = Button2Click
+  end
+  object DateTimePicker2: TDateTimePicker
+    Left = 650
+    Top = 0
+    Width = 124
+    Height = 28
+    Date = 43405.428657766210000000
+    Time = 43405.428657766210000000
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 7
+    OnChange = DateTimePicker2Change
+  end
   object OraQuery1: TOraQuery
     Session = Form1.OraSession1
     ReadOnly = True
     Left = 1032
     Top = 104
-    object OraQuery1kod: TStringField
-      FieldName = 'kod'
+    object OraQuery1cex: TStringField
+      FieldName = 'cex'
     end
-    object OraQuery1name: TStringField
-      FieldName = 'name'
+    object OraQuery1nomnar: TStringField
+      FieldName = 'nomnar'
     end
-    object OraQuery1namek: TStringField
-      FieldName = 'namek'
+    object OraQuery1zak: TStringField
+      FieldName = 'zak'
     end
-    object OraQuery1kolr: TFloatField
-      FieldName = 'kolr'
+    object OraQuery1godu: TStringField
+      FieldName = 'godu'
     end
-    object OraQuery1kolnr: TFloatField
-      FieldName = 'kolnr'
+    object OraQuery1mesu: TStringField
+      FieldName = 'mesu'
     end
-    object OraQuery1kolp: TFloatField
-      FieldName = 'kolp'
+    object OraQuery1dayu: TStringField
+      FieldName = 'dayu'
     end
-    object OraQuery1koli: TFloatField
-      FieldName = 'koli'
+    object OraQuery1vremu: TStringField
+      FieldName = 'vremu'
     end
-    object OraQuery1kols: TFloatField
-      FieldName = 'kols'
+    object OraQuery1avtoru: TStringField
+      FieldName = 'avtoru'
     end
-    object OraQuery1tn: TStringField
-      FieldName = 'tn'
+    object OraQuery1godi: TStringField
+      FieldName = 'godi'
     end
-    object OraQuery1sp: TStringField
-      FieldName = 'sp'
+    object OraQuery1mesi: TStringField
+      FieldName = 'mesi'
     end
-    object OraQuery1sp1: TStringField
-      FieldName = 'sp1'
+    object OraQuery1dayi: TStringField
+      FieldName = 'dayi'
     end
-    object OraQuery1sp2: TStringField
-      FieldName = 'sp2'
+    object OraQuery1vremi: TStringField
+      FieldName = 'vremi'
     end
-    object OraQuery1sp3: TStringField
-      FieldName = 'sp3'
+    object OraQuery1avtori: TStringField
+      FieldName = 'avtori'
     end
-    object OraQuery1prizn: TFloatField
-      FieldName = 'prizn'
-    end
-    object OraQuery1idsprav: TFloatField
-      FieldName = 'idsprav'
+    object OraQuery1proekt: TStringField
+      FieldName = 'proekt'
     end
   end
   object OraDataSource1: TOraDataSource

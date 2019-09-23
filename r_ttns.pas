@@ -29,8 +29,8 @@ type
   procedure FormClose(Sender: TObject; var Action: TCloseAction);
   procedure dataBufferAfterEdit(DataSet: TDataSet);
   procedure chkallClick(Sender: TObject);
-  procedure eAbsClick(Sender: TObject);
   procedure clearClick(Sender: TObject);
+    procedure eAbsClick(Sender: TObject);
 
 private
   { Private declarations }
@@ -280,12 +280,14 @@ begin
   begin
     with DBGridEh1.DataSource.DataSet do
     begin
-      SQL := 'INSERT INTO TRONIX.DEFICIT_MAIN_NOMEN (KOD_ID, VYD_ID, TTN_ID, TYPE_TTN_ID, TEXKOMPL_ID, DOCUMENT_ID, CHK_FLD, UZAK_ID, CEH_ID) '
+      SQL := 'INSERT INTO TRONIX.DEFICIT_MAIN_NOMEN (KOD_ID, VYD_ID, TTN_ID, TYPE_TTN_ID, TEXKOMPL_ID, DOCUMENT_ID, CHK_FLD, UZAK_ID, CEH_ID, USER_PRIKAZ_ID) '
       + 'VALUES (' + char(39) + fieldByName('KOD_ID').asString + char(39) + ', ' + char(39) + fieldByName('VYD_ID').asString + char(39) + ', '
       + char(39) + fieldByName('TTN_ID').asString + char(39) + ', ' + char(39) + fieldByName('TYPE_TTN_ID').asString + char(39) + ', '
       + char(39) + fieldByName('TEXKOMPL_ID').asString + char(39) + ', ' + char(39) + fieldByName('DOCUMENT_ID').asString + char(39) + ', '
       + char(39) + '1'(*NEW_CHK_FLD*) + char(39) + ', ' + char(39) + fieldByName('UZAK_ID').asString + char(39) + ', '
-      + char(39) + fieldByName('CEH_ID').asString + char(39) + ')';
+      + char(39) + fieldByName('CEH_ID').asString + char(39) + ', '
+      + '(select pii.prikaz_id from kadry_prikaz pii, kadry_type_prikaz tpp where pii.ts_number=USER and pii.escape_date is null and '
+      + 'pii.type_prikaz_type_prikaz_id=tpp.type_prikaz_id and tpp.kod = 1))';
     end;
 
     //showmessage(SQL);
@@ -314,6 +316,12 @@ var
 newCheck, newCheckStr : string;
 changedCount : integer;
 begin
+
+  if DBGridEh1.DataSource.DataSet.RecordCount = 0 then
+  begin
+    showmessage('string-list is null');
+    exit;
+  end;
 
   changedCount := 0;
 
@@ -358,134 +366,6 @@ begin
   SelectTTNs;
 end;
 
-procedure Tdefttns.eAbsClick(Sender: TObject);
-var
-SQL : string;
-FExcel, Sheet : OleVariant;
-startNum, strNum : integer;
-begin
-
-  SQL := 'SELECT z.zak, c.nomer, afull.full, afull.omto, round(decode(afull.omto, 0, 0, ((afull.omto / afull.full) * 100)), 0) as OMTO_percent, '
-  + 'afull.USH, round(decode(afull.ush, 0, 0, ((afull.ush / afull.full) * 100)), 0) as USH_percent from (SELECT ttn.DEP_DEP_ID_TO as CEH, '
-  + 'ttn.UZAK_UZAK_ID as UZAK_ID, count(mn.TTN_ID) as full, sum(decode(ttn.user_date2, null, 0, 1)) as OMTO, sum(decode(ttn.date_ins, null, 0, 1)) as USH '
-  + 'from (select src.TTN_ID from TRONIX.DEFICIT_MAIN_NOMEN src WHERE src.CHK_FLD = ' + char(39) + '1' + char(39) + ' GROUP BY src.TTN_ID) mn, '
-  + 'TRONIX.TTN ttn WHERE mn.TTN_ID = ttn.TTN_ID(+) group by ttn.DEP_DEP_ID_TO, ttn.UZAK_UZAK_ID) afull, kadry_dep c, tronix.zakaz z '
-  + 'where afull.ceh = c.dep_id(+) and afull.uzak_id = z.nn(+)';
-
-  form1.execQuery(OraInsertQuery, SQL, false);
-  if OraInsertQuery.RecordCount < 1 then
-    exit
-  else
-    OraInsertQuery.First;
-
-  FExcel := CreateOleObject('Excel.Application');
-  FExcel.EnableEvents := False;
-  FExcel.Visible := false;
-
-  FExcel.Workbooks.Add('\\Ser1\s1sys2\PROG\FOX_WIN\SHABLON_MAINTTNS.xlsx');
-  FExcel.Workbooks[1].WorkSheets[1].Name := 'Основная номенклатура';
-  Sheet:=FExcel.Workbooks[1].WorkSheets['Основная номенклатура'];
-
-  startNum := 4;
-  strNum := startNum;
-  
-  while not OraInsertQuery.Eof do
-  begin
-    Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum, 18]].Font.Size := 14;
-    Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 18]].borders.linestyle := xlContinuous;
-
-    Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 2]].MergeCells := true;
-    Sheet.range[Sheet.cells[strNum, 3], Sheet.cells[strNum, 4]].MergeCells := true;
-    Sheet.range[Sheet.cells[strNum, 5], Sheet.cells[strNum, 6]].MergeCells := true;
-    Sheet.range[Sheet.cells[strNum, 7], Sheet.cells[strNum, 9]].MergeCells := true;
-    Sheet.range[Sheet.cells[strNum, 10], Sheet.cells[strNum, 12]].MergeCells := true;
-    Sheet.range[Sheet.cells[strNum, 13], Sheet.cells[strNum, 15]].MergeCells := true;
-    Sheet.range[Sheet.cells[strNum, 16], Sheet.cells[strNum, 18]].MergeCells := true;
-
-    //CEH
-    Sheet.Cells[strNum, 1].Value := OraInsertQuery.FieldByName('NOMER').asString;
-    Sheet.Cells[strNum, 1].WrapText := true;
-    Sheet.Cells[strNum, 1].HorizontalAlignment := xlCenter;
-    Sheet.Cells[strNum, 1].VerticalAlignment := xlCenter;
-
-    //Zakaz
-    Sheet.Cells[strNum, 3].Value := OraInsertQuery.FieldByName('ZAK').asString;
-    Sheet.Cells[strNum, 3].WrapText := true;
-    Sheet.Cells[strNum, 3].HorizontalAlignment := xlCenter;
-    Sheet.Cells[strNum, 3].VerticalAlignment := xlCenter;
-
-    //Vsego documentov
-    Sheet.Cells[strNum, 5].Value := OraInsertQuery.FieldByName('FULL').asString;
-    Sheet.Cells[strNum, 5].WrapText := true;
-    Sheet.Cells[strNum, 5].HorizontalAlignment := xlCenter;
-    Sheet.Cells[strNum, 5].VerticalAlignment := xlCenter;
-
-    //Vypolneno snabjeniem
-    Sheet.Cells[strNum, 7].Value := OraInsertQuery.FieldByName('OMTO').asString;
-    Sheet.Cells[strNum, 7].WrapText := true;
-    Sheet.Cells[strNum, 7].HorizontalAlignment := xlCenter;
-    Sheet.Cells[strNum, 7].VerticalAlignment := xlCenter;
-
-    //v procentah  /\
-    Sheet.Cells[strNum, 10].Value := OraInsertQuery.FieldByName('OMTO_PERCENT').asString;
-    Sheet.Cells[strNum, 10].WrapText := true;
-    Sheet.Cells[strNum, 10].HorizontalAlignment := xlCenter;
-    Sheet.Cells[strNum, 10].VerticalAlignment := xlCenter;
-
-    //Vypolneno USH (zakryto)
-    Sheet.Cells[strNum, 13].Value := OraInsertQuery.FieldByName('USH').asString;
-    Sheet.Cells[strNum, 13].WrapText := true;
-    Sheet.Cells[strNum, 13].HorizontalAlignment := xlCenter;
-    Sheet.Cells[strNum, 13].VerticalAlignment := xlCenter;
-
-    //v procentah /\
-    Sheet.Cells[strNum, 16].Value := OraInsertQuery.FieldByName('USH_PERCENT').asString;
-    Sheet.Cells[strNum, 16].WrapText := true;
-    Sheet.Cells[strNum, 16].HorizontalAlignment := xlCenter;
-    Sheet.Cells[strNum, 16].VerticalAlignment := xlCenter;
-
-    inc(strNum);
-    OraInsertQuery.Next;
-  end;
-
-  inc(strNum);
-
-  Sheet.Range[Sheet.Cells[strNum, 5], Sheet.Cells[strNum, 18]].Font.Size := 16;
-  Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 18]].borders.linestyle := xlContinuous;
-
-  Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 4]].MergeCells := true;
-  Sheet.range[Sheet.cells[strNum, 5], Sheet.cells[strNum, 6]].MergeCells := true;
-  Sheet.range[Sheet.cells[strNum, 7], Sheet.cells[strNum, 9]].MergeCells := true;
-  Sheet.range[Sheet.cells[strNum, 10], Sheet.cells[strNum, 12]].MergeCells := true;
-  Sheet.range[Sheet.cells[strNum, 13], Sheet.cells[strNum, 15]].MergeCells := true;
-  Sheet.range[Sheet.cells[strNum, 16], Sheet.cells[strNum, 18]].MergeCells := true;
-
-  Sheet.Cells[strNum, 1].Font.Bold := True;
-  Sheet.Cells[strNum, 1].Font.Size := 16;
-  Sheet.Cells[strNum, 1].NumberFormat := '@';
-  Sheet.Cells[strNum, 1].Value := 'ИТОГО: ';
-  Sheet.Cells[strNum, 1].HorizontalAlignment := xlRight;
-  Sheet.Cells[strNum, 1].VerticalAlignment := xlCenter;
-
-  Sheet.Cells[strNum, 5].NumberFormat := '';
-  Sheet.Cells[strNum, 5].Formula := '=SUM(E' + inttostr(startNum) + ':E' + inttostr((strNum - 2)) + ')';
-  Sheet.Cells[strNum, 5].HorizontalAlignment := xlCenter;
-  Sheet.Cells[strNum, 5].VerticalAlignment := xlCenter;
-
-  Sheet.Cells[strNum, 7].NumberFormat := '';
-  Sheet.Cells[strNum, 7].Formula := '=SUM(G' + inttostr(startNum) + ':G' + inttostr((strNum - 2)) + ')';
-  Sheet.Cells[strNum, 7].HorizontalAlignment := xlCenter;
-  Sheet.Cells[strNum, 7].VerticalAlignment := xlCenter;
-
-  Sheet.Cells[strNum, 13].NumberFormat := '';
-  Sheet.Cells[strNum, 13].Formula := '=SUM(M' + inttostr(startNum) + ':M' + inttostr((strNum - 2)) + ')';
-  Sheet.Cells[strNum, 13].HorizontalAlignment := xlCenter;
-  Sheet.Cells[strNum, 13].VerticalAlignment := xlCenter;
-
-  OraInsertQuery.Close;
-  FExcel.Visible := true;
-end;
-
 procedure Tdefttns.clearClick(Sender: TObject);
 var password, takepw, SQL : string;
 begin
@@ -512,6 +392,11 @@ begin
   end
   else
     showmessage('Неверный пароль! Обратитесь в АСУ');
+end;
+
+procedure Tdefttns.eAbsClick(Sender: TObject);
+begin
+  form9.Show_MainNomenDetails;
 end;
 
 end.

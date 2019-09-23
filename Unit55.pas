@@ -14,10 +14,17 @@ type
     OraQuery1kod: TStringField;
     OraQuery1name: TStringField;
     OraQuery1namek: TStringField;
+    OraQuery1kolr: TFloatField;
+    OraQuery1kolnr: TFloatField;
     OraQuery1kolp: TFloatField;
-    OraQuery1kol: TFloatField;
     OraQuery1koli: TFloatField;
     OraQuery1kols: TFloatField;
+    OraQuery1tn: TStringField;
+    OraQuery1sp: TStringField;
+    OraQuery1sp1: TStringField;
+    OraQuery1sp2: TStringField;
+    OraQuery1sp3: TStringField;
+    OraQuery1prizn: TFloatField;
     OraQuery1idsprav: TFloatField;
     Edit1: TEdit;
     Edit2: TEdit;
@@ -31,9 +38,9 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Button1Click(Sender: TObject);
-    procedure DBGridEh1DblClick(Sender: TObject);
     procedure DBGridEh1DrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumnEh; State: TGridDrawState);
+ //   procedure DBGridEh1DblClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -45,7 +52,7 @@ var
 
 implementation
 
-uses Unit9,Unit56;
+uses Unit9;
 
 {$R *.dfm}
 
@@ -57,53 +64,84 @@ begin
 //Edit2.Text:='4011';
 //ShowMessage(Edit2.Text);
 
-tx:='select ll.kod kod,ll.name name,ll.namek,ll.idsprav,';
-tx:=tx+' decode(ll.namek,''ÿ“'',round(ll.kolp,0),round(ll.kolp,1)) kolp,';
-tx:=tx+' decode(ll.namek,''ÿ“'',round(ll.kol,0),round(ll.kol,1)) kol,';
-tx:=tx+' decode(ll.namek,''ÿ“'',round(ll.koli,0),round(ll.koli,1)) koli,';
-tx:=tx+' decode(ll.namek,''ÿ“'',round(ll.kols,0),round(ll.kols,1)) kols';
+tx:='';
+tx:='select tt.kod as kod,tt.name as name,tt.namek as namek,';
+tx:=tx+' decode(tt.namek,''ÿ“'',round(tt.kolr,0),round(tt.kolr,1)) as kolr,';
+tx:=tx+' decode(tt.namek,''ÿ“'',round(tt.kolnr,0),round(tt.kolnr,1)) as kolnr,';
+tx:=tx+' decode(tt.namek,''ÿ“'',round(tt.kolp,0),round(tt.kolp,1)) as kolp,';
+tx:=tx+' decode(tt.namek,''ÿ“'',round(tt.koli,0),round(tt.koli,1)) as koli,';
+tx:=tx+' decode(tt.namek,''ÿ“'',round(tt.kols,0),round(tt.kols,1)) as kols,';
+
+tx:=tx+' (substr(rtrim(tt.tn),1,255)) as tn,(substr(rtrim(tt.tn),256,254)) as tn1,';
+
+tx:=tx+' (substr(rtrim(tt.sp),1,255)) as sp,(substr(rtrim(tt.sp),256,254)) as sp1,';
+tx:=tx+' (substr(rtrim(tt.sp),510,254)) as sp2,(substr(rtrim(tt.sp),764,254)) as sp3,';
+tx:=tx+' tt.prizn as prizn,tt.idsprav as idsprav';
 tx:=tx+' from (';
 
-tx:=tx+'select l.kod kod,l.name name,sum(l.kol) kol,l.namek namek,l.spravid idsprav,';
-tx:=tx+'(round(nordsy.get_msc_work(''POTR'',l.spravid,l.projectid,l.kodedid),1)) kolp,';
-tx:=tx+'(round(nordsy.get_msc_work(''WORK'',l.spravid,l.projectid,l.kodedid),1)) koli,';
-tx:=tx+'(round(nordsy.get_msc_work(''VYD'',l.spravid,l.projectid,l.kodedid),1)) kols';
-tx:=tx+' from ( ';
+tx:=tx+' select ll.kod kod,ll.namek namek,ll.ids idsprav,ll.prizn prizn,';
+tx:=tx+' nordsy.get_msc_work(''IZG_ALL'',ll.ids,ll.idpro,ll.ided) kolr,';
+tx:=tx+' nordsy.get_msc_work(''IZG'',ll.ids,ll.idpro,ll.ided) kolnr,';
+tx:=tx+' nordsy.get_msc_work(''POTR'',ll.ids,ll.idpro,ll.ided) kolp,';
+tx:=tx+' nordsy.get_msc_work(''WORK'',ll.ids,ll.idpro,ll.ided) koli,';
+tx:=tx+' nordsy.get_msc_work(''VYD'',ll.ids,ll.idpro,ll.ided) kols,';
+tx:=tx+' (replace(replace(tronix.sp_name(ll.ids), CHR(13)||CHR(10),'' ''),chr(39), '' '')) name,';
+tx:=tx+' (rtrim(NORDSY.KOL_TN_POZ(ll.ids,ll.idpro))) as tn,';
+tx:=tx+' (rtrim(tronix.sp_poz_koli(ll.ids,ll.idpro))) as sp';
+tx:=tx+' from';
+tx:=tx+' (';
 
-tx:=tx+'Select tm.kol kol,';
-//tx:=tx+'(Select nomer from tx_texkompl where texkompl_id=tex_texkompl_id) nomer,';
-tx:=tx+'(Select kod from tronix.sprav where sprav_id=sprav_sprav_id) kod,';
-tx:=tx+'tm.sprav_sprav_id spravid,tm.koded_koded_id kodedid,tx.project_project_id projectid,';
-tx:=tx+'kd.namek namek,tronix.sp_name(tm.sprav_sprav_id) name';
+tx:=tx+' select s.sprav_id ids,dd.koded_id ided,z.id_project idpro,1 prizn,s.kod kod,dd.namek namek';
 
-tx:=tx+' from nordsy.tx_mat tm, nordsy.texkompl tx, tronix.koded kd, feb_zakaz z';
-tx:=tx+' where type_relation_type_relation_id=9';
+tx:=tx+' from nordsy.tx_mat tm,nordsy.texkompl tx,tronix.sprav s,tronix.koded dd,feb_zakaz z';
+
+tx:=tx+' where tm.type_relation_type_relation_id=9';
 tx:=tx+' and tm.tex_texkompl_id=tx.texkompl_id(+)';
-//tx:=tx+' and substr(tx.nomer,3,1)<>''*''';
-tx:=tx+' and tm.koded_koded_id=kd.koded_id';
-tx:=tx+' and tx.project_project_id='+edit1.text;
 tx:=tx+' and nordsy.uzak_tx(tx.texkompl_id)=z.nn';
-tx:=tx+' and upper(z.zak) like (''%Ã—◊%'')';
-//tx:=tx+' and rownum<5';
-tx:=tx+' order by kod';
-tx:=tx+' ) l';
-tx:=tx+' group by l.kod,l.name,l.namek,l.spravid,round(nordsy.get_msc_work(''POTR'',l.spravid,l.projectid,l.kodedid),1),';
-tx:=tx+' round(nordsy.get_msc_work(''WORK'',l.spravid,l.projectid,l.kodedid),1),';
-tx:=tx+' round(nordsy.get_msc_work(''VYD'',l.spravid,l.projectid,l.kodedid),1)';
-//tx:=tx+' order by l.kod';
+tx:=tx+' and z.id_project='+edit1.text;
+tx:=tx+' and upper(z.zak) like (''%%(Ã—◊)%%'')';
+tx:=tx+' and tm.sprav_sprav_id=s.sprav_id(+)';
+tx:=tx+' and tm.koded_koded_id=dd.koded_id(+)';
+//tx:=tx+' and s.kod in (''15550430050'',''9747151290'',''02030563199'',''1689013158'',''96881611613'',''10410314467'',''1685010748'',''1685010749'')';
+
+tx:=tx+' union';
+tx:=tx+' select sp.id_sprav ids, dd.koded_id ided,d.id_project idpro,0 prizn,s.kod kod,dd.namek namek';
+
+tx:=tx+' from tronix.document d,kart_sp sp,tronix.sprav s,tronix.koded dd';
+
+tx:=tx+' where nvl(s.can_do_self,0)=1';
+//tx:=tx+' and s.kod in (''15550430050'',''9747151290'',''02030563199'',''1689013158'',''96881611613'',''10410314467'',''1685010748'',''1685010749'')';
+tx:=tx+' and sp.nnn=d.document_id';
+tx:=tx+' and d.id_project='+edit1.text;
+tx:=tx+' and sp.id_sprav=s.sprav_id';
+tx:=tx+' and decode(sp.kode_tx,null,decode(sp.kode,null,sp.kode_pr,sp.kode),sp.kode_tx)=dd.koded';
+tx:=tx+' and 0=(select nvl(count(*),0) from nordsy.texkompl t,nordsy.tx_mat m';
+tx:=tx+' where t.project_project_id='+edit1.text;
+tx:=tx+' and t.texkompl_id=m.TEX_TEXKOMPL_ID and m.sprav_sprav_id=s.sprav_id and m.type_relation_type_relation_id=9)';
+
 tx:=tx+' ) ll';
+tx:=tx+' ) tt';
+tx:=tx+' order by tt.kod';
 
 //ShowMEssage(tx);
+
   With OraQuery1 Do
      begin
-        FieldByName('kod').DisplayLAbel:=' Œƒ ';
-        FieldByName('name').DisplayLAbel:='Õ¿»Ã≈ÕŒ¬¿Õ»≈ ';
-        FieldByName('namek').DisplayLAbel:='≈ƒ.»«Ã. ';
-        FieldByName('kolp').DisplayLAbel:='œŒ“–≈¡ÕŒ—“‹ œŒ —œ ';
-        FieldByName('kol').DisplayLAbel:='»«√Œ“Œ¬»“‹ œŒ “Õ ';
+        FieldByName('kod').DisplayLAbel:=' Œƒ';
+        FieldByName('name').DisplayLAbel:='Õ¿»Ã≈ÕŒ¬¿Õ»≈';
+        FieldByName('namek').DisplayLAbel:='≈ƒ.»«Ã.';
+        FieldByName('kolr').DisplayLAbel:='œŒ“–-“‹ — –Œ——€œ‹ﬁ';
+        FieldByName('kolnr').DisplayLAbel:='œŒ“–-“‹ ¡≈« –Œ——€œ»';
+        FieldByName('kolp').DisplayLAbel:='œŒ“–-“‹ œŒ —œ ';
         FieldByName('koli').DisplayLAbel:='»«√Œ“Œ¬À≈ÕŒ';
         FieldByName('kols').DisplayLAbel:='¬€ƒ¿ÕŒ';
-        FieldByName('idsprav').DisplayLAbel:='idsprav';
+        FieldByName('tn').DisplayLAbel:='“Õ';
+        FieldByName('sp').DisplayLAbel:='—œ';
+        FieldByName('sp1').DisplayLAbel:='—œ1';
+        FieldByName('sp2').DisplayLAbel:='—œ2';
+        FieldByName('sp3').DisplayLAbel:='—œ3';
+        FieldByName('prizn').DisplayLAbel:='œ–»«Õ¿  ';
+        FieldByName('idsprav').DisplayLAbel:='IDSPRAV';
      end;
 
    OraQuery1.SQL.Text:=tx;
@@ -147,39 +185,27 @@ end;
 
 end;
 
-procedure TForm55.DBGridEh1DblClick(Sender: TObject);
-begin
-  Form55.edit2.Text:=oraQuery1.FieldByName('idsprav').asString;
-//  ShowMessage(Form55.edit2.Text);
-//  ShowMessage(Form55.edit1.Text);
-  Application.CreateForm(TForm56, Form56);
-  Form56.Edit1.Text:=Form55.Edit1.Text;
-//  ShowMessage(Form56.Edit1.Text);
-  Form56.Edit2.Text:=Form55.Edit2.Text;
-  Form56.Edit3.Text:=oraQuery1.FieldByName('namek').asString;
-    Form56.Caption:=' ÓÎË˜ÂÒÚ‚Ó ËÁ‰ÂÎËÈ Ã—◊ ÔÓ: '+Form9.oraQuery1.FieldByName('name').asString;
-//  if  Form55.EDIT2.TEXT<>'All' then
- Form56.Caption:=Form56.Caption+'   Œƒ='+oraQuery1.FieldByName('kod').asString+'  '+oraQuery1.FieldByName('name').asString;
-  Form56.ShowModal();
-  Form56.Free;
-end;
-
 procedure TForm55.DBGridEh1DrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumnEh;
   State: TGridDrawState);
 begin
-      if (Column.FieldName='kolp') and (Column.Field.Dataset.FieldByName('kolp').AsFloat > 0) then
+
+    if (Column.FieldName='kolr') and (Column.Field.Dataset.FieldByName('kolr').AsFloat > 0) then
     TDBGridEh(Sender).Canvas.Font.Style:=[fsbold];
 
-    if (Column.FieldName='kol') and (Column.Field.Dataset.FieldByName('kol').AsFloat > 0) then
+    if (Column.FieldName='kolnr') and (Column.Field.Dataset.FieldByName('kolnr').AsFloat > 0) then
+    TDBGridEh(Sender).Canvas.Font.Style:=[fsbold];
+
+     if (Column.FieldName='kolp') and (Column.Field.Dataset.FieldByName('kolp').AsFloat > 0) then
     TDBGridEh(Sender).Canvas.Font.Style:=[fsbold];
 
     if (Column.FieldName='koli') and (Column.Field.Dataset.FieldByName('koli').AsFloat > 0) then
     TDBGridEh(Sender).Canvas.Font.Style:=[fsbold];
 
-    if (Column.FieldName='kols') and (Column.Field.Dataset.FieldByName('kols').AsFloat > 0) then
+        if (Column.FieldName='kols') and (Column.Field.Dataset.FieldByName('kols').AsFloat > 0) then
     TDBGridEh(Sender).Canvas.Font.Style:=[fsbold];
 
- TDBGridEh(Sender).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+TDBGridEh(Sender).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
+
 end.

@@ -71,6 +71,15 @@ type
     N44: TMenuItem;
     N45: TMenuItem;
     N46: TMenuItem;
+    N47: TMenuItem;
+    N70: TMenuItem;
+    N73: TMenuItem;
+    N48: TMenuItem;
+    N49: TMenuItem;
+    N50: TMenuItem;
+    N51: TMenuItem;
+    N02: TMenuItem;
+    N52: TMenuItem;
     procedure N3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure tn1Click(Sender: TObject);
@@ -122,15 +131,26 @@ type
     procedure N44Click(Sender: TObject);
     procedure N45Click(Sender: TObject);
     procedure N46Click(Sender: TObject);
+    procedure N47Click(Sender: TObject);
+    procedure N70Click(Sender: TObject);
+    procedure N73Click(Sender: TObject);
+    procedure N48Click(Sender: TObject);
+    procedure N49Click(Sender: TObject);
+    procedure N50Click(Sender: TObject);
+    procedure N51Click(Sender: TObject);
+    procedure N02Click(Sender: TObject);
+    procedure N52Click(Sender: TObject);
   private
     { Private declarations }
   public
+    { Public declarations }
     errorStatusReturn : boolean;
     function SCAlive : boolean;
     function ServerRequest(s : string) : string;
     function execQuery(Q : TOraQuery; S : string; T : boolean) : boolean;
     function showError(H : string; B : string) : boolean;
-    { Public declarations }
+
+    function inUserList(s, d, e : string) : boolean;
   end;
 
 var
@@ -139,16 +159,37 @@ var
 
 const
 
-VERSION = '2.0.0';
+VERSION = '2.0.1';
 
 SERVER_ADDR = 'http://192.168.10.15:7777/server/tronix_otch/';
 SERVER_FILE_PART = '.sql';
 
 implementation
 
-uses Unit2, Unit7, Unit8, Unit9, Unit12, Unit17, Unit23, Unit32, Unit34, cpct, r_dates, r_ttns, t_error;
+uses Unit2, Unit7, Unit8, Unit9, Unit12, Unit17, Unit23, Unit32, Unit34, cpct, r_dates, r_ttns, t_error,
+  r_leftovers_nomen,Reestr_doc_sklad;
 
 {$R *.dfm}
+
+function strtok(Str: WideString; Delimiter: string): TStringList;
+var
+  tmpStrList: TStringList;
+  tmpString, tmpVal: WideString;
+  DelimPos: LongInt;
+begin
+  tmpStrList := TStringList.Create;
+  TmpString := Str;
+  DelimPos := 1;
+  while DelimPos > 0 do
+  begin
+    DelimPos := LastDelimiter(Delimiter, TmpString);
+    tmpVal := Copy(TmpString, DelimPos + 1, Length(TmpString));
+    if tmpVal <> '' then
+      tmpStrList.Add(tmpVal);
+    Delete(TmpString, DelimPos, Length(TmpString));
+  end;
+  strtok := tmpStrList;
+end;
 
 procedure TForm1.N3Click(Sender: TObject);
 begin
@@ -279,6 +320,14 @@ procedure TForm1.N69Click(Sender: TObject);
 begin
   Application.CreateForm(TForm9, Form9);
   Form9.Caption:='Отёт по привязке ПУЕ к УДП по проекту. Выберите проект';
+  Form9.ShowModal();
+  Form9.Free;
+end;
+
+procedure TForm1.N70Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='УДП по проекту: тр-ть норма,факт,остаток,процент выработки. Выберите проект';
   Form9.ShowModal();
   Form9.Free;
 end;
@@ -441,6 +490,14 @@ begin
   Form9.Free;
 end;
 
+ procedure TForm1.N73Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  form32.Caption:='Удалённые наряды. Выберите цех';
+  form32.ShowModal(); 
+  Form9.Free;
+end;
+
 procedure TForm1.N37Click(Sender: TObject);
 begin
   Application.CreateForm(TForm9, Form9);
@@ -521,6 +578,25 @@ begin
   Form9.Free;
 end;
 
+function TForm1.inUserList(s, d, e : string) : boolean;
+var
+userList : string;
+parseUserList : TStringList;
+x : integer;
+begin
+  userList := ServerRequest(s);
+  parseUserList := strtok(userList, d);
+
+  inUserList := false;
+  for x := 0 to (parseUserList.Count - 1) do
+    if parseUserList[x] = e then
+    begin
+      inUserList := true;
+      exit;
+    end;
+
+end;
+
 procedure TForm1.N41Click(Sender: TObject);
 var takepw, password : string;
 begin
@@ -572,7 +648,6 @@ end;
 end;
 
 function TForm1.execQuery(Q : TOraQuery; S : string; T : boolean) : boolean;
-var E : exception;
 begin   //remake to custom form with backup input data and SQL print.
 
   execQuery := true;
@@ -626,17 +701,24 @@ begin
   Form9.Free;
 end;
 
+procedure TForm1.N47Click(Sender: TObject);
+begin
+  Application.CreateForm(Tleftovers, leftovers);
+  leftovers.Showmodal();
+  leftovers.Free;
+end;
+
 procedure TForm1.N44Click(Sender: TObject);
 var name : string;
 begin
-  //exit;
-
+  (*
   name := OraSession1.Username;
-  if (name <> '20043') and (name <> '84007') and (name <> '15008') and (name <> '20078') and (name <> '10156') then
+  if (name <> '20043') and (name <> '84007') and (name <> '15008') and (name <> '20078') and (name <> '10156') and (name <> '02019') then
   begin
     showmessage('У вас нет прав для работы с данным модулем!');
     exit;
   end;
+  *)
 
   Application.CreateForm(TForm9, Form9);
   form9.Caption := 'Основная номенклатура по дефициту';
@@ -678,5 +760,51 @@ begin
     showmessage('Неверный пароль! Обратитесь в АСУ');
 end;
 
+procedure TForm1.N48Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='ОТК: УДП по проекту. Выберите проект';
+  Form9.ShowModal();
+  Form9.Free;
+end;
+
+procedure TForm1.N49Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='УДП: Незакрытые ТК-ПТК в закрытых УДП по проекту. Выберите проект';
+  form9.ShowModal();
+  Form9.Free;
+end;
+
+procedure TForm1.N50Click(Sender: TObject);
+begin
+  Application.CreateForm(TFReestr_doc_sklad, FReestr_doc_sklad);
+  FReestr_doc_sklad.Caption:='УДП: Незакрытые ТК-ПТК в закрытых УДП по проекту. Выберите проект';
+  FReestr_doc_sklad.ShowModal();
+  FReestr_doc_sklad.Free;
+end;
+
+procedure TForm1.N51Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='ПДО: Отчёт по УДП по проекту. Выберите проект';
+  form9.ShowModal();
+  Form9.Free;
+end;
+
+procedure TForm1.N02Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='ПУЕ с трудоёмкостью 0 с привязкой к УДП по проекту. Выберите проект';
+  form9.ShowModal();
+  Form9.Free;
+end;
+
+procedure TForm1.N52Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  form9.Show_MainNomenDetails;
+  Form9.Free;
+end;
 
 end.

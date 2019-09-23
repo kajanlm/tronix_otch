@@ -70,7 +70,8 @@ uses
   r_dates in 'r_dates.pas' {request_date},
   r_ttns in 'r_ttns.pas' {defttns},
   r_ttns_filters in 'r_ttns_filters.pas' {defttns_fltrs},
-  t_error in 't_error.pas' {errorForm};
+  t_error in 't_error.pas' {errorForm},
+  r_leftovers_nomen in 'r_leftovers_nomen.pas' {leftovers};
 
 {$R *.res}
 

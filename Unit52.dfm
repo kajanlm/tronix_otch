@@ -22,7 +22,7 @@ object Form52: TForm52
   TextHeight = 13
   object Label1: TLabel
     Left = 692
-    Top = 33
+    Top = 17
     Width = 184
     Height = 20
     Alignment = taRightJustify
@@ -329,7 +329,7 @@ object Form52: TForm52
   end
   object DateTimePicker1: TDateTimePicker
     Left = 877
-    Top = 28
+    Top = 12
     Width = 124
     Height = 28
     Date = 43405.428657766210000000
@@ -344,8 +344,8 @@ object Form52: TForm52
     OnChange = DateTimePicker1Change
   end
   object Button2: TButton
-    Left = 1096
-    Top = 28
+    Left = 776
+    Top = 60
     Width = 129
     Height = 28
     Caption = #1042#1067#1041#1056#1040#1058#1068

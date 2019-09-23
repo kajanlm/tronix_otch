@@ -72,7 +72,7 @@ tx:=tx+' from nordsy.texkompl tx, nordsy.texkompl tk, feb_zakaz z, tronix_projec
 
 tx:=tx+' where tx.type_tex_type_tex_id in (12,14) and tx.project_project_id=pr.project_id(+)';
 tx:=tx+' and pr.project_id=z.id_project and z.id_project='+edit1.text;
-tx:=tx+' and nordsy.uzak_tx(tx.texkompl_id)=z.nn';
+tx:=tx+' and nordsy.uzak_tx(tx.texkompl_id)=z.nn and upper(z.zak)  not like (''%ляв%'')';
 tx:=tx+' and nvl(nordsy.go_in_tk(tx.texkompl_texkompl_id,''осе'',''TYPE''),tx.texkompl_texkompl_id)=tk.texkompl_id';
 tx:=tx+' and tx.dep_dep_id=de.dep_id(+) and dd.dep_id='+edit2.text+' and dd.dep_id in (tx.dep_dep_id,de.dep_dep_id)';
 tx:=tx+' and to_char(tx.otk_end,''YYYYMMDD'') is null';
@@ -86,7 +86,7 @@ tx:=tx+' from  nordsy.texkompl tk, feb_zakaz z,tronix_project_list pr,kadry_dep 
 
 tx:=tx+' where tk.type_tex_type_tex_id in (7,8) and tk.project_project_id=pr.project_id(+)';
 tx:=tx+' and pr.project_id=z.id_project and z.id_project='+edit1.text;
-tx:=tx+' and nordsy.uzak_tx(tk.texkompl_id)=z.nn';
+tx:=tx+' and nordsy.uzak_tx(tk.texkompl_id)=z.nn and upper(z.zak)  not like (''%ляв%'')';
 tx:=tx+' and tk.dep_dep_id=de.dep_id(+) and dd.dep_id='+edit2.text+' and dd.dep_id in (tk.dep_dep_id,de.dep_dep_id)';
 tx:=tx+' and to_char(tk.otk_end,''YYYYMMDD'') is null';
 tx:=tx+') t';

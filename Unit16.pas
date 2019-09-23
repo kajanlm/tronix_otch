@@ -35,12 +35,8 @@ type
     cb_podr: TComboBox;
     Edit1: TEdit;
     Panel1: TPanel;
-    DBGrid1: TDBGrid;
     OraDataSource1: TOraDataSource;
     OraQueryS: TOraQuery;
-    Edit2: TEdit;
-    Button2: TButton;
-    Button3: TButton;
     cb_invi_typepodr: TComboBox;
     cb_invi_podr: TComboBox;
     cb_invi_podr_name: TComboBox;
@@ -56,8 +52,6 @@ type
     OraQueryDEFICIT_UCHET: TStringField;
     procedure Button1Click(Sender: TObject);
     procedure CalcDeficit(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure cb_typepodrChange(Sender: TObject);
     procedure cb_podrChange(Sender: TObject);
@@ -227,18 +221,6 @@ LOCK_BOX.Visible := true;
 OraQueryS.Close;
 OraQueryS.SQL.Text := SQL;
 OraQueryS.Open;
-end;
-
-procedure TDIF_OTCH_FORM.Button3Click(Sender: TObject);
-begin
-OraQueryS.Close;
-OraQueryS.SQL.Text := Edit2.Text;
-OraQueryS.Open;
-end;
-
-procedure TDIF_OTCH_FORM.Button2Click(Sender: TObject);
-begin
-edit2.text := '';
 end;
 
 procedure TDIF_OTCH_FORM.FormShow(Sender: TObject);

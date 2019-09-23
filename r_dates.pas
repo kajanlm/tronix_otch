@@ -45,6 +45,9 @@ type
     procedure DBGridEh1DblClick(Sender: TObject);
     procedure Image2Click(Sender: TObject);
     procedure aCloseClick(Sender: TObject);
+    procedure fnomerKeyPress(Sender: TObject; var Key: Char);
+    procedure DBGridEh1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
     procedure SelectRequests;
@@ -56,6 +59,8 @@ var
   request_date: Trequest_date;
 
 implementation
+
+uses Unit1;
 
 {$R *.dfm}
 
@@ -72,7 +77,6 @@ var SQL, DATE_FILTER, NOMER_FILTER, ALLOW_CLOSE_FILTER : string;
 const DATE_MASK = 'DD.MM.YYYY';
 begin
   Query.Close;
-
 
   if datefilter.Checked then
     DATE_FILTER := '(tn.DATE_DOK between to_date(' + char(39) + datetostr(datefrom.date) + char(39) + ', ' + char(39) + DATE_MASK + char(39) + ') AND to_date(' + char(39) + datetostr(dateto.date) + char(39) + ', ' + char(39) + DATE_MASK + char(39) + '))'
@@ -157,6 +161,49 @@ end;
 procedure Trequest_date.aCloseClick(Sender: TObject);
 begin
   SelectRequests;
+end;
+
+procedure Trequest_date.fnomerKeyPress(Sender: TObject; var Key: Char);
+begin
+  if key = #13 then
+    if (length(fnomer.Text) > 3) then
+      SelectRequests;
+end;
+
+procedure Trequest_date.DBGridEh1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var
+D3
+: string;
+begin
+  if key = VK_DELETE then
+  begin
+
+    if form1.OraSession1.UserName <> '09012' then
+      exit;
+
+    D3 := Dbgrideh1.DataSource.DataSet.FieldByName('DATE3').AsString;
+
+    if D3 = '' then
+    begin
+      showmessage('Данный документ не получен обеспечением!');
+      exit;
+    end;
+
+    if MessageDlg('Удалить дату "Документ в УСХ" у документа ' + dbgrideh1.DataSource.DataSet.FieldByName('NOMER').asString + '?',
+    mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+    begin
+      OraInsert.Close;
+      OraInsert.SQL.Text := 'UPDATE tronix.ttn SET USER_DATE4 = NULL, USER_NAME4 = NULL WHERE TTN_ID = '
+      + dbgrideh1.DataSource.DataSet.FieldByName('id').asString;
+      OraInsert.ExecSQL;
+    end
+    else
+      exit;
+
+    SelectRequests;
+
+  end;
 end;
 
 end.

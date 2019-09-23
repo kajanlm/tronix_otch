@@ -9,7 +9,6 @@ uses
 
 type
   TForm9 = class(TForm)
-	//button1: tButton;
     OraQuery1: TOraQuery;
     Label1: TLabel;
     DBGridEh1: TDBGridEh;
@@ -40,9 +39,10 @@ type
   private
     { Private declarations }
     temp_priz:integer;
-    function excelFloat(s : string) : real;
   public
     { Public declarations }
+  procedure Show_MainNomenDetails;
+	function excelFloat(s : string) : real;
   end;
 
 var
@@ -52,9 +52,136 @@ implementation
 
 uses Unit10, Unit15, Unit16, Unit20, Unit21, Unit22, Unit23, Unit25, Unit26, clipbrd,
   Unit27, Unit35, Unit36, Unit37, Unit38, Unit43, Unit45, Unit46, Unit34, ftrnomen, r_ttns,
-  Unit47, Unit49, Unit50, Unit52, Unit53, Unit55, Unit57, Unit60, Unit61, Unit63, Unit64, Unit65, Unit66, Unit67, Unit69, Unit32, Unit1;
+  Unit47, Unit49, Unit50, Unit52, Unit53, Unit55, Unit57, Unit60, Unit61, Unit63, Unit64, Unit65, Unit66,
+  Unit67, Unit69, Unit70, Unit74, Unit75, Unit76, Unit77,Unit32, Unit1;
 
 {$R *.dfm}
+
+procedure TForm9.Show_MainNomenDetails;
+var
+SQL : string;
+FExcel, Sheet : OleVariant;
+startNum, strNum : integer;
+begin
+
+  (*
+  SQL := 'SELECT z.zak, c.nomer, afull.full, afull.omto, round(decode(afull.omto, 0, 0, ((afull.omto / afull.full) * 100)), 0) as OMTO_percent, '
+  + 'afull.USH, round(decode(afull.ush, 0, 0, ((afull.ush / afull.omto) * 100)), 0) as USH_percent from (SELECT ttn.DEP_DEP_ID_TO as CEH, '
+  + 'ttn.UZAK_UZAK_ID as UZAK_ID, count(mn.TTN_ID) as full, sum(decode(ttn.user_date2, null, 0, 1)) as OMTO, sum(decode(ttn.date_ins, null, 0, 1)) as USH '
+  + 'from (select src.TTN_ID from TRONIX.DEFICIT_MAIN_NOMEN src WHERE src.CHK_FLD = ' + char(39) + '1' + char(39) + ' GROUP BY src.TTN_ID) mn, '
+  + 'TRONIX.TTN ttn WHERE mn.TTN_ID = ttn.TTN_ID(+) group by ttn.DEP_DEP_ID_TO, ttn.UZAK_UZAK_ID) afull, kadry_dep c, tronix.zakaz z '
+  + 'where afull.ceh = c.dep_id(+) and afull.uzak_id = z.nn(+)';
+  *)
+  
+  SQL := 'SELECT z.zak, decode(c.type_dep_type_dep_id, 2, c.nomer, ct.nomer) as nomer, afull.full, afull.to_omto, afull.omto, '
+  + 'decode(afull.to_omto, 0, 0, round(decode(afull.omto, 0, 0, ((afull.omto / afull.to_omto) * 100)), 0)) as OMTO_percent, '
+  + '(afull.OMTO - afull.IN_USH) as uncomplete, afull.IN_USH as complete, afull.USH, '
+  + 'decode(afull.in_ush, 0, 0, round(decode(afull.ush, 0, 0, ((afull.ush / afull.in_ush) * 100)), 0)) as USH_percent from '
+  + '(SELECT ttn.DEP_DEP_ID_TO as CEH, ttn.UZAK_UZAK_ID as UZAK_ID, count(mn.TTN_ID) as full, sum(decode(ttn.user_date1, null, 0, 1)) as TO_OMTO, '
+  + 'sum(decode(ttn.user_date2, null, 0, 1)) as OMTO, sum(decode(ttn.user_date4, null, 0, 1)) as IN_USH, sum(decode(ttn.date_ins, null, 0, 1)) as USH '
+  + 'from (select src.TTN_ID from TRONIX.DEFICIT_MAIN_NOMEN src WHERE src.CHK_FLD = ' + char(39) + '1' + char(39) + ' GROUP BY src.TTN_ID) mn, TRONIX.TTN ttn WHERE '
+  + 'mn.TTN_ID = ttn.TTN_ID(+) and ttn.TTN_ID is not null group by ttn.DEP_DEP_ID_TO, ttn.UZAK_UZAK_ID) afull, kadry_dep c, kadry_dep ct, tronix.zakaz z where '
+  + 'afull.ceh = c.dep_id(+) and c.dep_dep_id = ct.dep_id(+) and afull.uzak_id = z.nn(+)';
+
+  form1.execQuery(OraQuery3, SQL, false);
+  if OraQuery3.RecordCount < 1 then
+    exit
+  else
+    OraQuery3.First;
+
+  FExcel := CreateOleObject('Excel.Application');
+  FExcel.EnableEvents := False;
+  FExcel.Visible := false;
+
+  FExcel.Workbooks.Add('\\Ser1\s1sys2\PROG\FOX_WIN\SHABLON_MAINTTNS.xlsx');
+  FExcel.Workbooks[1].WorkSheets[1].Name := 'Основная номенклатура';
+  Sheet:=FExcel.Workbooks[1].WorkSheets['Основная номенклатура'];
+
+  startNum := 2;
+  strNum := startNum;
+
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OraQuery3.RecordCount - 1), 10]].Font.Size := 14;
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OraQuery3.RecordCount - 1), 10]].borders.linestyle := xlContinuous;
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OraQuery3.RecordCount - 1), 10]].HorizontalAlignment := xlCenter;
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OraQuery3.RecordCount - 1), 10]].VerticalAlignment := xlCenter;
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OraQuery3.RecordCount - 1), 10]].WrapText := true;
+  while not OraQuery3.Eof do
+  begin
+    //Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum, 10]].Font.Size := 14;
+    //Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 10]].borders.linestyle := xlContinuous;
+
+    (*
+    Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 2]].MergeCells := true;
+    Sheet.range[Sheet.cells[strNum, 3], Sheet.cells[strNum, 4]].MergeCells := true;
+    Sheet.range[Sheet.cells[strNum, 5], Sheet.cells[strNum, 6]].MergeCells := true;
+    Sheet.range[Sheet.cells[strNum, 7], Sheet.cells[strNum, 9]].MergeCells := true;
+    Sheet.range[Sheet.cells[strNum, 10], Sheet.cells[strNum, 12]].MergeCells := true;
+    Sheet.range[Sheet.cells[strNum, 13], Sheet.cells[strNum, 15]].MergeCells := true;
+    Sheet.range[Sheet.cells[strNum, 16], Sheet.cells[strNum, 18]].MergeCells := true;
+    *)
+
+    //CEH
+    Sheet.Cells[strNum, 1].Value := OraQuery3.FieldByName('NOMER').asString;
+    //Zakaz
+    Sheet.Cells[strNum, 2].Value := OraQuery3.FieldByName('ZAK').asString;
+    //Vsego documentov
+    Sheet.Cells[strNum, 3].Value := OraQuery3.FieldByName('FULL').asString;
+    //Otpravleno v snabjenie
+    Sheet.Cells[strNum, 4].Value := OraQuery3.FieldByName('TO_OMTO').asString;
+    //Vypolneno snabjeniem
+    Sheet.Cells[strNum, 5].Value := OraQuery3.FieldByName('OMTO').asString;
+    //v procentah  /\
+    Sheet.Cells[strNum, 6].Value := OraQuery3.FieldByName('OMTO_PERCENT').asString;
+    //Trebovaniya bez bumagi
+    Sheet.Cells[strNum, 7].Value := OraQuery3.FieldByName('UNCOMPLETE').asString;
+    //Trebovaniya s bumajnim variantom
+    Sheet.Cells[strNum, 8].Value := OraQuery3.FieldByName('COMPLETE').asString;
+    //Vypolneno USH (zakryto)
+    Sheet.Cells[strNum, 9].Value := OraQuery3.FieldByName('USH').asString;
+    //v procentah /\
+    Sheet.Cells[strNum, 10].Value := OraQuery3.FieldByName('USH_PERCENT').asString;
+
+    inc(strNum);
+    OraQuery3.Next;
+  end;
+
+  inc(strNum);
+
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum, 10]].Font.Size := 16;
+  Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 10]].borders.linestyle := xlContinuous;
+  Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 10]].HorizontalAlignment := xlCenter;
+  Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 10]].VerticalAlignment := xlCenter;
+  Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 2]].MergeCells := true;
+  
+  Sheet.Cells[strNum, 1].Font.Bold := True;
+  Sheet.Cells[strNum, 1].Font.Size := 16;
+  Sheet.Cells[strNum, 1].NumberFormat := '@';
+  Sheet.Cells[strNum, 1].Value := 'ИТОГО: ';
+  Sheet.Cells[strNum, 1].HorizontalAlignment := xlRight;
+  Sheet.Cells[strNum, 1].VerticalAlignment := xlCenter;
+
+  Sheet.Cells[strNum, 3].NumberFormat := '';
+  Sheet.Cells[strNum, 3].Formula := '=SUM(C' + inttostr(startNum) + ':C' + inttostr((strNum - 2)) + ')';
+
+  Sheet.Cells[strNum, 4].NumberFormat := '';
+  Sheet.Cells[strNum, 4].Formula := '=SUM(D' + inttostr(startNum) + ':D' + inttostr((strNum - 2)) + ')';
+
+  Sheet.Cells[strNum, 5].NumberFormat := '';
+  Sheet.Cells[strNum, 5].Formula := '=SUM(E' + inttostr(startNum) + ':E' + inttostr((strNum - 2)) + ')';
+
+  Sheet.Cells[strNum, 7].NumberFormat := '';
+  Sheet.Cells[strNum, 7].Formula := '=SUM(G' + inttostr(startNum) + ':G' + inttostr((strNum - 2)) + ')';
+
+  Sheet.Cells[strNum, 8].NumberFormat := '';
+  Sheet.Cells[strNum, 8].Formula := '=SUM(H' + inttostr(startNum) + ':H' + inttostr((strNum - 2)) + ')';
+
+  Sheet.Cells[strNum, 9].NumberFormat := '';
+  Sheet.Cells[strNum, 9].Formula := '=SUM(I' + inttostr(startNum) + ':I' + inttostr((strNum - 2)) + ')';
+
+  OraQuery3.Close;
+  FExcel.Visible := true;
+end;
+
 
 procedure TForm9.DBGridEh2DblClick(Sender: TObject);
 
@@ -63,27 +190,39 @@ TTN_TYPE_ARRAY = '43, 44';
 
 var
 SQL,
-DEP_ID : string;
+DEP_ID,
+CEH,
+tSheetName : string;
 
 FExcel,
-WorkBook,
-SheetActive,
 Sheet,
-Colum,
 Range : OleVariant;
 
 x : integer;
 
 begin
-label2.Caption:=OraQuery2.FieldByName('nn').AsString;
-if form9.caption='Отчет по нарядам' then
+label2.Caption := OraQuery2.FieldByName('nn').AsString;
+if form9.caption = 'Отчет по нарядам' then
 begin
-Form10.Caption:='Отчет по нарядам';
+Form10.Caption := 'Отчет по нарядам';
 Form10.ShowModal();
 end;
 
 if (self.Caption = 'Основная номенклатура по дефициту') then
 begin
+  (*
+  if MessageDlg('Перейти к составлению основной номенклатуры или показать отчет?' + #10#13
+  + 'ДА - основная номенклатура' + #10#13
+  + 'НЕТ - отчет по основной номенклатуре',
+  mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+  begin
+    Application.CreateForm(Tdefttns, defttns);
+    defttns.Showmodal();
+    defttns.Free;
+  end
+  else
+    Show_MainNomenDetails;
+  *)
   Application.CreateForm(Tdefttns, defttns);
   defttns.Showmodal();
   defttns.Free;
@@ -94,44 +233,86 @@ begin
   Form15.Showmodal();
 end;
 
-if form9.caption='Отчет по трудоемкости (Новый)' then
+if form9.caption = 'Отчет по трудоемкости (Новый)' then
 begin
 Form10.Caption:='Отчет по трудоемкости (Новый)';
 Form10.ShowModal();
 end;
 
- if (form9.caption='Выберите что сравниваем') then
+ if (form9.caption = 'Выберите что сравниваем') then
 begin
 Form23.EDIT1.Text:= OraQuery1.FieldByName('name').AsString;
 Form23.Label1.Caption:= OraQuery2.FieldByName('nn').AsString;
 Form9.Close();
 end;
 
- if (form9.caption='Выберите с чем сравниваем') then
+ if (form9.caption = 'Выберите с чем сравниваем') then
 begin
 Form23.EDIT2.Text:= OraQuery1.FieldByName('name').AsString;
 Form23.Label2.Caption:= OraQuery2.FieldByName('nn').AsString;
 Form9.Close();
 end;
 
-if form9.caption='Отчет по материальной ведомости' then
+if form9.caption = 'Отчет по материальной ведомости' then
 begin
   exit;
 end;
 
 if (self.caption = 'Требования по дефициту') then
 begin
+  //may need multi dep
 
-  //DEP_ID := '-1';
-  DEP_ID := '8024';
-  //dep_id answer
+  CEH := '';
+  CEH := InputBox('ПОДРАЗДЕЛЕНИЕ', 'Введите номер цеха', '');
+  if CEH = '' then
+  begin
+    showmessage('Введите номер цеха!');
+    exit;
+  end;
 
+  SQL := 'SELECT DEP_ID FROM KADRY_DEP where ROWNUM = 1 AND type_dep_type_dep_id = 2 AND nomer = '
+  + char(39) + CEH + char(39);
+  if not form1.execQuery(OraQuery3, SQL, false) then
+    exit;
+
+  if OraQuery3.RecordCount <> 1 then
+  begin
+    showmessage('Цех с номером ' + char(39) + CEH + char(39) + ' не найден!');
+    exit;
+  end;
+  DEP_ID := OraQuery3.FieldByName('DEP_ID').asString;
+
+  SQL := 'SELECT ZAK FROM TRONIX.ZAKAZ WHERE NN = ' + form9.Label2.Caption;
+  if not form1.execQuery(OraQuery3, SQL, false) then
+    exit;
+
+  if OraQuery3.RecordCount <> 1 then
+  begin
+    showmessage('Ошибка проекта!');
+    exit;
+  end;
+
+  if MessageDlg('Сформировать отчет по требованиями дефицита для ЗАКАЗА = ' + OraQuery3.FieldByName('ZAK').asString
+  + '; ЦЕХА = ' + CEH + '???', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+    exit;
+
+  tSheetName := 'deficit_' + OraQuery3.FieldByName('ZAK').asString + '_' + CEH + '_' + FormatDateTime('dd.mm.yyyy', Date);
+
+  CEH := '(1 = 1)';
+  if MessageDlg('Включить требования, которые не отправлены в снабжение (находятся в цеху)?', mtConfirmation,
+  [mbYes, mbNo], 0) = mrNo then
+    CEH := 'tn.USER_DATE1 is not null';
+
+  SQL := '';
   if form1.SCAlive then
-    SQL := form1.ServerRequest('TR_TTNS_FROM_DEFICIT');
+    SQL := form1.ServerRequest('TR_TTNS_FROM_DEFICIT')
+  else
+    exit;
 
   SQL := StringReplace(SQL, '<UZAK_ID>', form9.Label2.Caption, [rfReplaceAll, rfIgnoreCase]);
   SQL := StringReplace(SQL, '<DEP_ID>', DEP_ID, [rfReplaceAll, rfIgnoreCase]);
   SQL := StringReplace(SQL, '<TTN_TYPE>', TTN_TYPE_ARRAY, [rfReplaceAll, rfIgnoreCase]);
+  SQL := StringReplace(SQL, '<INIT_STATE>', CEH, [rfReplaceAll, rfIgnoreCase]);
 
   if not form1.execQuery(OraQuery3, SQL, false) then
     exit;
@@ -141,10 +322,9 @@ begin
   FExcel.Visible := false;
 
   FExcel.Workbooks.Add('\\Ser1\s1sys2\PROG\FOX_WIN\SHABLON_TRTTNS_DEFICIT.xlsx');
-  FExcel.Workbooks[1].WorkSheets[1].Name := 'Требования по дефициту';
-  Colum := FExcel.Workbooks[1].WorkSheets['Требования по дефициту'].Columns;
+  FExcel.Workbooks[1].WorkSheets[1].Name := tSheetName;
 
-  Sheet:=FExcel.Workbooks[1].WorkSheets['Требования по дефициту'];
+  Sheet := FExcel.Workbooks[1].WorkSheets[tSheetName];
   Range := Sheet.Columns;
   Range.NumberFormat := '@';
 
@@ -157,6 +337,7 @@ begin
   Sheet.range[Sheet.cells[x, 1], Sheet.cells[(OraQuery3.RecordCount + (x - 1)), 1]].Font.Bold := true;
   // + 2 font-size for COLUMN: KOD
   // HorizontalAlignment = xlLeft  for MTR_NAME
+  //take from ttn_mat ONE "KOL" with KODED -> convert in result "KOL" to 2 koded's like a POTR
 
   while not OraQuery3.Eof do
   begin
@@ -194,7 +375,6 @@ end;
 
 
 procedure TForm9.FormShow(Sender: TObject);
-var tx: string;
 begin
  OraQuery2.Open;
   OraQuery1.Open;
@@ -219,6 +399,11 @@ or  (form9.Caption='Остатки трудоёмкости по МСЧ. Выберите проект')
 or  (form9.Caption='Количество изделий МСЧ по проекту. Выберите проект')
 or  (form9.Caption='Количество покупных изделий с привязкой к ТН,позиции СП по проекту. Выберите проект')
 or  (form9.Caption='Отёт по привязке ПУЕ к УДП по проекту. Выберите проект')
+or  (form9.Caption='УДП по проекту: тр-ть норма,факт,остаток,процент выработки. Выберите проект')
+or  (form9.Caption='ОТК: УДП по проекту. Выберите проект')
+or  (form9.Caption='УДП: Незакрытые ТК-ПТК в закрытых УДП по проекту. Выберите проект')
+or  (form9.Caption='ПДО: Отчёт по УДП по проекту. Выберите проект')
+or  (form9.Caption='ПУЕ с трудоёмкостью 0 с привязкой к УДП по проекту. Выберите проект')
 or  (form9.Caption='Оборудование из комплектной поставки для склада ЗИП по проекту. Выберите проект')
 or  (form9.Caption='СП Ведомости снабжения группы 237 по проекту. Выберите проект')
 or  (form9.Caption='Перечень закрытой оснастки по проекту. Выберите проект')
@@ -284,7 +469,7 @@ procedure TForm9.DBGridEh1DblClick(Sender: TObject);
 var
 tx,zak, uzak,part1,part2, SQL: string;
 e, INC_POS: integer;
-FExcel, WorkBook, SheetActive, Sheet, Colum : OleVariant;
+FExcel, Sheet, Colum : OleVariant;
 begin
 
 if form9.caption='Выгружаем транспортный файл.' then
@@ -771,7 +956,7 @@ begin
 			Sheet.Cells[e, 6].VerticalAlignment := xlCenter;
 
 			//kod ed izm osn
-      Sheet.Cells[e, 7].NumberFormat:= '@';
+			Sheet.Cells[e, 7].NumberFormat:= '@';
 			Sheet.Cells[e, 7].Value := OraQuery3.FieldByName('CED').AsString;
 			Sheet.Cells[e, 7].WrapText := true;
 			Sheet.Cells[e, 7].HorizontalAlignment := xlCenter;
@@ -784,38 +969,38 @@ begin
 			Sheet.Cells[e, 8].VerticalAlignment := xlCenter;
 
 			//kod ed izm uchet
-      Sheet.Cells[e, 9].NumberFormat:= '@';
+			Sheet.Cells[e, 9].NumberFormat:= '@';
 			Sheet.Cells[e, 9].Value := OraQuery3.FieldByName('CED_UCHET').AsString;
 			Sheet.Cells[e, 9].WrapText := true;
 			Sheet.Cells[e, 9].HorizontalAlignment := xlCenter;
 			Sheet.Cells[e, 9].VerticalAlignment := xlCenter;
 
 			//norma v osn
-      Sheet.Cells[e, 10].Value := excelFloat(OraQuery3.FieldbyName('POTR').asString);
+			Sheet.Cells[e, 10].Value := excelFloat(OraQuery3.FieldbyName('POTR').asString);
 			Sheet.Cells[e, 10].WrapText := true;
 			Sheet.Cells[e, 10].HorizontalAlignment := xlCenter;
 			Sheet.Cells[e, 10].VerticalAlignment := xlCenter;
 
 			//norma v uchet
-      Sheet.Cells[e, 11].Value := excelFloat(OraQuery3.FieldByName('POTR_UCHET').asString);
+			Sheet.Cells[e, 11].Value := excelFloat(OraQuery3.FieldByName('POTR_UCHET').asString);
 			Sheet.Cells[e, 11].WrapText := true;
 			Sheet.Cells[e, 11].HorizontalAlignment := xlCenter;
 			Sheet.Cells[e, 11].VerticalAlignment := xlCenter;
 
 			//massa
-      Sheet.Cells[e, 12].Value := excelFloat(OraQuery3.FieldByName('kof_isp').asString);
+			Sheet.Cells[e, 12].Value := excelFloat(OraQuery3.FieldByName('kof_isp').asString);
 			Sheet.Cells[e, 12].WrapText := true;
 			Sheet.Cells[e, 12].HorizontalAlignment := xlCenter;
 			Sheet.Cells[e, 12].VerticalAlignment := xlCenter;
 
 			//koeficient
-      Sheet.Cells[e, 13].Value := excelFloat(OraQuery3.FieldByName('defkof').asString);
+			Sheet.Cells[e, 13].Value := excelFloat(OraQuery3.FieldByName('defkof').asString);
 			Sheet.Cells[e, 13].WrapText := true;
 			Sheet.Cells[e, 13].HorizontalAlignment := xlCenter;
 			Sheet.Cells[e, 13].VerticalAlignment := xlCenter;
 
 			//massa specificaciya
-      Sheet.Cells[e, 15].Value := excelFloat(OraQuery3.FieldByName('MASS').asString);
+			Sheet.Cells[e, 15].Value := excelFloat(OraQuery3.FieldByName('MASS').asString);
 			Sheet.Cells[e, 15].WrapText := true;
 			Sheet.Cells[e, 15].HorizontalAlignment := xlCenter;
 			Sheet.Cells[e, 15].VerticalAlignment := xlCenter;
@@ -1124,7 +1309,57 @@ begin
   Form69.Free;
 end;
 
-     if form9.caption='Количество изделий МСЧ по проекту. Выберите проект' then
+     if form9.caption='УДП по проекту: тр-ть норма,факт,остаток,процент выработки. Выберите проект' then
+begin
+  Application.CreateForm(TForm70, Form70);
+  Form70.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
+  Form70.Edit2.Text:=oraQuery1.FieldByName('zavn').asString;
+  Form70.Caption:='УДП по проекту: '+oraQuery1.FieldByName('name').asString;
+  Form70.ShowModal();
+  Form70.Free;
+end;
+
+      if form9.caption='ОТК: УДП по проекту. Выберите проект' then
+begin
+  Application.CreateForm(TForm74, Form74);
+  Form74.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
+  Form74.Edit2.Text:=oraQuery1.FieldByName('zavn').asString;
+  Form74.Caption:='УДП по проекту: '+oraQuery1.FieldByName('name').asString;
+  Form74.ShowModal();
+  Form74.Free;
+end;
+
+       if form9.caption='УДП: Незакрытые ТК-ПТК в закрытых УДП по проекту. Выберите проект' then
+begin
+  Application.CreateForm(TForm75, Form75);
+  Form75.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
+  Form75.Edit2.Text:=oraQuery1.FieldByName('zavn').asString;
+  Form75.Caption:='Незакрытые ТК-ПТК в закрытых УДП по проекту: '+oraQuery1.FieldByName('name').asString;
+  Form75.ShowModal();
+  Form75.Free;
+end;
+
+       if form9.caption='ПДО: Отчёт по УДП по проекту. Выберите проект' then
+begin
+  Application.CreateForm(TForm76, Form76);
+  Form76.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
+  Form76.Edit2.Text:=oraQuery1.FieldByName('zavn').asString;
+  Form76.Caption:='Отчёт по УДП по проекту: '+oraQuery1.FieldByName('name').asString;
+  Form76.ShowModal();
+  Form76.Free;
+end;
+
+      if form9.caption='ПУЕ с трудоёмкостью 0 с привязкой к УДП по проекту. Выберите проект' then
+begin
+  Application.CreateForm(TForm77, Form77);
+  Form77.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
+  Form77.Caption:='Проект: '+Form9.oraQuery1.FieldByName('name').asString;
+  Form77.Caption:=Form77.Caption+'  ПУЕ с трудоёмкостью 0';
+  Form77.ShowModal();
+  Form77.Free;
+end;
+
+    if form9.caption='Количество изделий МСЧ по проекту. Выберите проект' then
 begin
   Application.CreateForm(TForm55, Form55);
   Form55.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;

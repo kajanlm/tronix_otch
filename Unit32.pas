@@ -28,7 +28,7 @@ var
 
 implementation
 
-uses Unit9, Unit38,Unit58,Unit52,Unit62;
+uses Unit9, Unit38,Unit58,Unit52,Unit62,Unit73;
 
 {$R *.dfm}
 
@@ -80,7 +80,17 @@ begin
   form9.ShowModal();
      end;
 
-   if form32.Caption='Остатки трудоёмкости по МСЧ. Выберите цех' then
+   if form32.Caption='Удалённые наряды. Выберите цех' then
+     begin
+  Application.CreateForm(TForm73, Form73);
+  form73.Caption:='Удалённые наряды';
+  form73.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
+  form73.Caption:='Удалённые наряды:'+'  ЦЕХ='+Form32.oraQuery1.FieldByName('nomer').asString;
+  form73.ShowModal();
+  Form73.Free;
+     end;
+
+  if form32.Caption='Остатки трудоёмкости по МСЧ. Выберите цех' then
      begin
   form9.Caption:='Остатки трудоёмкости по МСЧ';
   form9.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
@@ -158,7 +168,16 @@ begin
   form58.Edit1.text:='All';
   form58.ShowModal();
   Form58.Free;
- end
+ end;
+
+ if form32.Caption='Удалённые наряды. Выберите цех' then
+ begin
+  Application.CreateForm(TForm73, Form73);
+  form73.Caption:='Удалённые наряды по всем цехам';
+  form73.Edit1.text:='All';
+  form73.ShowModal();
+  Form73.Free;
+  end;
 
 end;
 

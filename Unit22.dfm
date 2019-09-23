@@ -123,18 +123,26 @@ object Form22: TForm22
       end
       item
         EditButtons = <>
-        FieldName = 'tndateins'
-        Footers = <>
-        ReadOnly = True
-        Title.Caption = #1044#1040#1058#1040' '#1047#1040#1050#1056#1067#1058#1048#1071
-        Width = 60
-      end
-      item
-        EditButtons = <>
         FieldName = 'tndatedok2'
         Footers = <>
         ReadOnly = True
         Title.Caption = #1044#1072#1090#1072' '#1054#1052#1058#1054
+        Width = 60
+      end
+      item
+        EditButtons = <>
+        FieldName = 'tndatedok4'
+        Footers = <>
+        ReadOnly = True
+        Title.Caption = #1044#1072#1090#1072' '#1059#1057#1061
+        Width = 60
+      end
+      item
+        EditButtons = <>
+        FieldName = 'tndateins'
+        Footers = <>
+        ReadOnly = True
+        Title.Caption = #1044#1040#1058#1040' '#1047#1040#1050#1056#1067#1058#1048#1071
         Width = 60
       end
       item
@@ -203,8 +211,8 @@ object Form22: TForm22
     Session = Form1.OraSession1
     ReadOnly = True
     OnCalcFields = OraQuery1CalcFields
-    Left = 944
-    Top = 8
+    Left = 936
+    Top = 128
     object OraQuery1Field: TStringField
       FieldName = 'zavn'
     end
@@ -263,17 +271,20 @@ object Form22: TForm22
     object OraQuery1tndatedok2: TStringField
       FieldName = 'tndatedok2'
     end
+    object OraQuery1tndatedok4: TStringField
+      FieldName = 'tndatedok4'
+    end
   end
   object OraDataSource1: TOraDataSource
     DataSet = OraQuery1
-    Left = 904
-    Top = 8
+    Left = 760
+    Top = 88
   end
   object OraQuery2: TOraQuery
     Session = Form1.OraSession1
     ReadOnly = True
-    Left = 864
-    Top = 8
+    Left = 832
+    Top = 56
   end
   object ExcelApplication1: TExcelApplication
     AutoConnect = False
