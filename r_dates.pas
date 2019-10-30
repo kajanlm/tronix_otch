@@ -57,6 +57,7 @@ type
 
 var
   request_date: Trequest_date;
+  WRITE_PERMISSIONS, BACKUP_PERMISSIONS : boolean;
 
 implementation
 
@@ -65,9 +66,36 @@ uses Unit1;
 {$R *.dfm}
 
 procedure Trequest_date.FormShow(Sender: TObject);
+var
+user, PERMISSIONS_STRING : string;
 begin
+  if not form1.SCAlive then
+    exit;
+
   datefrom.Date := now;
   dateto.Date := now;
+
+  WRITE_PERMISSIONS := false;
+  BACKUP_PERMISSIONS := false;
+
+  user := form1.OraSession1.Username;
+
+  PERMISSIONS_STRING := 'Ваши права в этом модуле: ';
+  PERMISSIONS_STRING := PERMISSIONS_STRING + #10#13 + '- Просмотр';
+
+  if (form1.inUserList('[USER]TRTTNS_DATES', '#', user)) then
+  begin
+    WRITE_PERMISSIONS := true;
+    PERMISSIONS_STRING := PERMISSIONS_STRING + #10#13 + '- Запись даты "Получено в УСХ"';
+  end;
+
+  if (form1.inUserList('[USER]TRTTNS_DATES_BACKUP', '#', user)) then
+  begin
+    BACKUP_PERMISSIONS := true;
+    PERMISSIONS_STRING := PERMISSIONS_STRING + #10#13 + '- Откат даты "Получено в УСХ"';
+  end;
+
+  showmessage(PERMISSIONS_STRING);
 
   SelectRequests;
 end;
@@ -114,6 +142,9 @@ D3,
 DC
 : string;
 begin
+
+  if not WRITE_PERMISSIONS then
+    exit;
 
   D1 := Dbgrideh1.DataSource.DataSet.FieldByName('DATE1').AsString;
   D2 := Dbgrideh1.DataSource.DataSet.FieldByName('DATE2').AsString;
@@ -179,7 +210,7 @@ begin
   if key = VK_DELETE then
   begin
 
-    if form1.OraSession1.UserName <> '09012' then
+    if not BACKUP_PERMISSIONS then
       exit;
 
     D3 := Dbgrideh1.DataSource.DataSet.FieldByName('DATE3').AsString;

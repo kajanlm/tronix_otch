@@ -61,7 +61,7 @@ procedure Tdefttns.SelectTTNs;
 
 const
   FIELDS_SIZE = 28;
-  TTN_TYPE_ARRAY = '43, 44, 26, 59, 11';
+  TTN_TYPE_ARRAY = '5, 43, 44, 26, 59, 11';
 
 var
   fields : array [1..FIELDS_SIZE] of string;
@@ -396,7 +396,7 @@ end;
 
 procedure Tdefttns.eAbsClick(Sender: TObject);
 begin
-  form9.Show_MainNomenDetails;
+  //form9.Show_MainNomenDetails;
 end;
 
 end.

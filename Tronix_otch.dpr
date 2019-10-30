@@ -71,7 +71,9 @@ uses
   r_ttns in 'r_ttns.pas' {defttns},
   r_ttns_filters in 'r_ttns_filters.pas' {defttns_fltrs},
   t_error in 't_error.pas' {errorForm},
-  r_leftovers_nomen in 'r_leftovers_nomen.pas' {leftovers};
+  r_leftovers_nomen in 'r_leftovers_nomen.pas' {leftovers},
+  r_over_tmc in 'r_over_tmc.pas' {over_tmc},
+  r_calendar in 'r_calendar.pas' {f_calendar};
 
 {$R *.res}
 
@@ -129,5 +131,6 @@ begin
   Application.CreateForm(TForm55, Form55);
   Application.CreateForm(TForm60, Form60);
   Application.CreateForm(TForm61, Form61);
+  //Application.CreateForm(Tover_tmc, over_tmc);
   Application.Run;
 end.

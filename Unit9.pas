@@ -41,7 +41,8 @@ type
     temp_priz:integer;
   public
     { Public declarations }
-  procedure Show_MainNomenDetails;
+  procedure Show_TTRTN_Details(date_filter_month : string; date_filter_year : string; main_nomen : boolean);
+  //procedure Show_MainNomenDetails;
 	function excelFloat(s : string) : real;
   end;
 
@@ -53,10 +54,186 @@ implementation
 uses Unit10, Unit15, Unit16, Unit20, Unit21, Unit22, Unit23, Unit25, Unit26, clipbrd,
   Unit27, Unit35, Unit36, Unit37, Unit38, Unit43, Unit45, Unit46, Unit34, ftrnomen, r_ttns,
   Unit47, Unit49, Unit50, Unit52, Unit53, Unit55, Unit57, Unit60, Unit61, Unit63, Unit64, Unit65, Unit66,
-  Unit67, Unit69, Unit70, Unit74, Unit75, Unit76, Unit77,Unit32, Unit1;
+  Unit67, Unit69, Unit70, Unit74, Unit75, Unit76, Unit77,Unit32, Unit1, r_over_tmc,Equipment;
 
 {$R *.dfm}
 
+procedure TForm9.Show_TTRTN_Details(date_filter_month : string; date_filter_year : string; main_nomen : boolean);
+const
+DD_MASK = char(39) + 'DD' + char(39);
+MM_MASK = char(39) +  'MM' + char(39);
+DM_MASK = char(39) + 'mm.YYYY' + char(39);
+TYPE_TTN_ARRAY = '5, 44';
+var
+SQL, D_MONTH, D_YEAR : string;
+FExcel, Sheet : OleVariant;
+startNum, strNum : integer;
+begin
+
+  (*
+  D_YEAR := '';
+  D_YEAR := InputBox('ОТЧЕТ', 'Введите год; формат: 1999, 2005, 2015, 2020...', '');
+  if ((D_YEAR = '') or (length(D_YEAR) > 4)) then
+  begin
+    showmessage('Неверный формат года!');
+    exit;
+  end;
+
+  D_MONTH := '';
+  D_MONTH := InputBox('ОТЧЕТ', 'Введите месяц; формат: 01, 3, 12, 08...', '');
+  if ((D_MONTH = '') or (strtoint(D_MONTH) > 12) or (length(D_MONTH) > 2)) then
+  begin
+    showmessage('Неверный формат месяца!');
+    exit;
+  end;
+
+  if length(D_MONTH) = 1 then
+    D_MONTH := '0' + D_MONTH;
+  *)
+  
+  SQL := 'SELECT DECODE(a.COMPLETE, 0, 100, (CASE WHEN a.USH_PERCENT > 100 THEN 100 ELSE a.USH_PERCENT END)) as USH_PERCENT, a.* FROM (SELECT z.zak, '
+  + 'decode(c.type_dep_type_dep_id, 2, c.nomer, decode(ct.type_dep_type_dep_id, 2, ct.nomer, c.nomer)) as nomer, afull.full, afull.to_omto, afull.omto, '
+  + 'decode(afull.to_omto, 0, 0, round(decode(afull.omto, 0, 0, ((afull.omto / afull.to_omto) * 100)), 0)) as OMTO_percent, '
+  + '(afull.OMTO - afull.IN_USH) as uncomplete, (afull.IN_USH - afull.in_month) as complete, afull.IN_MONTH, afull.USH, '
+  + 'decode(afull.in_ush, 0, 0, round(decode(afull.ush, 0, 0, ((afull.ush / (afull.in_ush - afull.in_month)) * 100)), 0)) as USH_percent from '
+  + '(SELECT ttn.DEP_DEP_ID_TO as CEH, ttn.UZAK_UZAK_ID as UZAK_ID, count(ttn.TTN_ID) as full, sum(decode(ttn.user_date1, null, 0, 1)) as TO_OMTO, '
+  + 'sum(decode(ttn.user_date2, null, 0, 1)) as OMTO, sum(decode(ttn.user_date4, null, 0, 1)) as IN_USH, sum(decode(ttn.date_ins, null, 0, 1)) as USH, '
+  + 'sum (  CASE WHEN (ttn.date_ins is null) THEN CASE WHEN (ttn.user_date4 is null) THEN 0 ELSE (CASE WHEN (TO_NUMBER(TO_CHAR(ttn.user_date4, ' + DD_MASK + ')) > '
+  + '(TO_NUMBER(to_char(last_day(ttn.user_date2),' + DD_MASK + ')) - 3)) THEN 1 ELSE 0 END) END ELSE 0 END) as IN_MONTH from TRONIX.TTN ttn WHERE '
+  + '<MAIN_NOMEN> and ttn.type_ttn_type_ttn_id in (' + TYPE_TTN_ARRAY + ') and (to_char(ttn.user_date<DATE_INDEX>, ' + DM_MASK + ') = <MONTH_YEAR> or '
+  + '(TO_CHAR(ttn.user_date4, ' + MM_MASK + ') = TO_CHAR((to_date(<MONTH_YEAR>, ' + DM_MASK + ') - interval ' + char(39) + '1' + char(39) + ' month), ' + MM_MASK + ') AND '
+  + '(ttn.user_date4 > (last_day(to_date(<MONTH_YEAR>, ' + DM_MASK + ') - interval ' + char(39) + '1' + char(39) + ' month) - interval ' + char(39) + '3' + char(39) + ' day) ) AND '
+  + '(ttn.date_ins is null or TO_CHAR(ttn.date_ins, ' + MM_MASK + ') = <MONTH_NUM>))) group by ttn.DEP_DEP_ID_TO, ttn.UZAK_UZAK_ID) afull, kadry_dep c, kadry_dep ct, '
+  + 'tronix.zakaz z where afull.ceh = c.dep_id(+) and c.dep_dep_id = ct.dep_id(+) and afull.uzak_id = z.nn(+)) a order by A.nomer, A.zak, A.full';
+
+  //нужна дополнительная группировка в коде (есть дубликаты) ???? (ВОЗМОЖНО ИЗ-ЗА ПРИВЯЗОК К НЕ ЦЕХОВЫМ ПОДРАЗДЕЛЕНИЯМИ ОДНОГО РОДИТЕЛЯ)
+  //прогнать user_date4 = null для user_date2 is null, для 5 и 44 типов где user_date4 is not null
+  //просуммировать все значения с группировкой по ЦЕХ и ЗАКАЗ
+  //в обычном отчете по user_date2 появляются не 100% скорее всего из-за user_date2 is null and user_date4 is not null)
+  //переписать запрос!!!
+
+  SQL := StringReplace(SQL, '<MONTH_NUM>', char(39) + date_filter_month + char(39), [rfReplaceAll, rfIgnoreCase]);
+  SQL := StringReplace(SQL, '<MONTH_YEAR>', char(39) + date_filter_month + '.' + date_filter_year + char(39), [rfReplaceAll, rfIgnoreCase]);
+
+  if main_nomen then
+  begin
+    SQL := StringReplace(SQL, '<MAIN_NOMEN>', 'ttn.ttn_id in (select src.TTN_ID from TRONIX.DEFICIT_MAIN_NOMEN src WHERE src.CHK_FLD = '
+    + char(39) + '1' + char(39) + ' GROUP BY src.TTN_ID)', [rfReplaceAll, rfIgnoreCase]);
+    SQL := StringReplace(SQL, '<DATE_INDEX>', '1', [rfReplaceAll, rfIgnoreCase]);
+  end
+  else
+  begin
+    SQL := StringReplace(SQL, '<MAIN_NOMEN>', '(1 = 1)', [rfReplaceAll, rfIgnoreCase]);
+    SQL := StringReplace(SQL, '<DATE_INDEX>', '2', [rfReplaceAll, rfIgnoreCase]);
+  end;
+
+  //showmessage(SQL);
+  //exit;
+  form1.execQuery(OraQuery3, SQL, false);
+  if OraQuery3.RecordCount < 1 then
+    exit
+  else
+    OraQuery3.First;
+
+  FExcel := CreateOleObject('Excel.Application');
+  FExcel.EnableEvents := False;
+  FExcel.Visible := false;
+
+  FExcel.Workbooks.Add('\\Ser1\s1sys2\PROG\FOX_WIN\SHABLON_TTRTTNS.xlsx');
+  FExcel.Workbooks[1].WorkSheets[1].Name := 'Отчет по требованиям';
+  Sheet:=FExcel.Workbooks[1].WorkSheets['Отчет по требованиям'];
+
+  Sheet.Cells[1, 1].Value := 'Отчет за ' + date_filter_month + '.' + date_filter_year;
+  if main_nomen then
+    Sheet.Cells[1, 1].Value := Sheet.Cells[1, 1].Text + ' (Основная номенклатура)';
+
+  startNum := 3;
+  strNum := startNum;
+
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OraQuery3.RecordCount - 1), 11]].Font.Size := 14;
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OraQuery3.RecordCount - 1), 11]].borders.linestyle := xlContinuous;
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OraQuery3.RecordCount - 1), 11]].HorizontalAlignment := xlCenter;
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OraQuery3.RecordCount - 1), 11]].VerticalAlignment := xlCenter;
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OraQuery3.RecordCount - 1), 11]].WrapText := true;
+
+  while not OraQuery3.Eof do
+  begin
+    //CEH
+    Sheet.Cells[strNum, 1].Value := OraQuery3.FieldByName('NOMER').asString;
+    //Zakaz
+    Sheet.Cells[strNum, 2].NumberFormat := '@';
+    Sheet.Cells[strNum, 2].Value := OraQuery3.FieldByName('ZAK').asString;
+    //Vsego documentov
+    Sheet.Cells[strNum, 3].Value := OraQuery3.FieldByName('FULL').asString;
+    //Otpravleno v snabjenie
+    Sheet.Cells[strNum, 4].Value := OraQuery3.FieldByName('TO_OMTO').asString;
+    //Vypolneno snabjeniem
+    Sheet.Cells[strNum, 5].Value := OraQuery3.FieldByName('OMTO').asString;
+    //v procentah  /\
+    Sheet.Cells[strNum, 6].Value := OraQuery3.FieldByName('OMTO_PERCENT').asString;
+    //Trebovaniya bez bumagi
+    Sheet.Cells[strNum, 7].Value := OraQuery3.FieldByName('UNCOMPLETE').asString;
+    //Trebovaniya s bumajnim variantom
+    Sheet.Cells[strNum, 8].Value := OraQuery3.FieldByName('COMPLETE').asString;
+    //za 3 dnya do konca mesyaca
+    Sheet.Cells[strNum, 9].Value := OraQuery3.FieldByName('IN_MONTH').asString;
+    //Vypolneno USH (zakryto)
+    Sheet.Cells[strNum, 10].Value := OraQuery3.FieldByName('USH').asString;
+    //v procentah /\
+    Sheet.Cells[strNum, 11].Value := OraQuery3.FieldByName('USH_PERCENT').asString;
+
+    inc(strNum);
+    OraQuery3.Next;
+  end;
+
+  inc(strNum);
+
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum, 11]].Font.Size := 16;
+  Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 11]].borders.linestyle := xlContinuous;
+  Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 11]].HorizontalAlignment := xlCenter;
+  Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 11]].VerticalAlignment := xlCenter;
+  Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 2]].MergeCells := true;
+  
+  Sheet.Cells[strNum, 1].Font.Bold := True;
+  Sheet.Cells[strNum, 1].Font.Size := 16;
+  Sheet.Cells[strNum, 1].NumberFormat := '@';
+  Sheet.Cells[strNum, 1].Value := 'ИТОГО: ';
+  Sheet.Cells[strNum, 1].HorizontalAlignment := xlRight;
+  Sheet.Cells[strNum, 1].VerticalAlignment := xlCenter;
+
+  Sheet.Cells[strNum, 3].NumberFormat := '';
+
+  Sheet.Cells[strNum, 4].NumberFormat := '';
+  Sheet.Cells[strNum, 4].Formula := '=SUM(D' + inttostr(startNum) + ':D' + inttostr((strNum - 2)) + ')';
+
+  Sheet.Cells[strNum, 5].NumberFormat := '';
+  Sheet.Cells[strNum, 5].Formula := '=SUM(E' + inttostr(startNum) + ':E' + inttostr((strNum - 2)) + ')';
+
+  Sheet.Cells[strNum, 6].Formula := '=((E' + inttostr(strNum) + '/D' + inttostr((strNum)) + ') * 100)';
+
+  Sheet.Cells[strNum, 7].NumberFormat := '';
+  Sheet.Cells[strNum, 7].Formula := '=SUM(G' + inttostr(startNum) + ':G' + inttostr((strNum - 2)) + ')';
+
+  Sheet.Cells[strNum, 8].NumberFormat := '';
+  Sheet.Cells[strNum, 8].Formula := '=SUM(H' + inttostr(startNum) + ':H' + inttostr((strNum - 2)) + ')';
+
+  Sheet.Cells[strNum, 9].NumberFormat := '';
+  Sheet.Cells[strNum, 9].Formula := '=SUM(I' + inttostr(startNum) + ':I' + inttostr((strNum - 2)) + ')';
+
+  Sheet.Cells[strNum, 10].NumberFormat := '';
+  Sheet.Cells[strNum, 10].Formula := '=SUM(J' + inttostr(startNum) + ':J' + inttostr((strNum - 2)) + ')';
+
+  Sheet.Cells[strNum, 11].NumberFormat := '';
+  //Sheet.Cells[strNum, 11].Formula := '=IF(((J' + inttostr(strNum) + '/H' + inttostr((strNum)) + ') * 100) > 100, 100, K' + inttostr(strNum) + ')';
+  Sheet.Cells[strNum, 11].Formula := '=IF(((J' + inttostr(strNum) + '/H' + inttostr((strNum)) + ') * 100) > 100, 100, ((J' + inttostr(strNum) + '/H' + inttostr((strNum)) + ') * 100))';
+
+  OraQuery3.Close;
+  FExcel.Visible := true;
+
+  FExcel := Unassigned;
+end;
+
+(*
 procedure TForm9.Show_MainNomenDetails;
 var
 SQL : string;
@@ -64,25 +241,19 @@ FExcel, Sheet : OleVariant;
 startNum, strNum : integer;
 begin
 
-  (*
-  SQL := 'SELECT z.zak, c.nomer, afull.full, afull.omto, round(decode(afull.omto, 0, 0, ((afull.omto / afull.full) * 100)), 0) as OMTO_percent, '
-  + 'afull.USH, round(decode(afull.ush, 0, 0, ((afull.ush / afull.omto) * 100)), 0) as USH_percent from (SELECT ttn.DEP_DEP_ID_TO as CEH, '
-  + 'ttn.UZAK_UZAK_ID as UZAK_ID, count(mn.TTN_ID) as full, sum(decode(ttn.user_date2, null, 0, 1)) as OMTO, sum(decode(ttn.date_ins, null, 0, 1)) as USH '
-  + 'from (select src.TTN_ID from TRONIX.DEFICIT_MAIN_NOMEN src WHERE src.CHK_FLD = ' + char(39) + '1' + char(39) + ' GROUP BY src.TTN_ID) mn, '
-  + 'TRONIX.TTN ttn WHERE mn.TTN_ID = ttn.TTN_ID(+) group by ttn.DEP_DEP_ID_TO, ttn.UZAK_UZAK_ID) afull, kadry_dep c, tronix.zakaz z '
-  + 'where afull.ceh = c.dep_id(+) and afull.uzak_id = z.nn(+)';
-  *)
-  
-  SQL := 'SELECT z.zak, decode(c.type_dep_type_dep_id, 2, c.nomer, ct.nomer) as nomer, afull.full, afull.to_omto, afull.omto, '
+  SQL := 'SELECT (CASE WHEN a.USH_PERCENT > 100 THEN 100 ELSE a.USH_PERCENT END) as USH_PERCENT, a.* FROM (SELECT z.zak, '
+  + 'decode(c.type_dep_type_dep_id, 2, c.nomer, decode(ct.type_dep_type_dep_id, 2, ct.nomer, c.nomer)) as nomer, afull.full, afull.to_omto, afull.omto, '
   + 'decode(afull.to_omto, 0, 0, round(decode(afull.omto, 0, 0, ((afull.omto / afull.to_omto) * 100)), 0)) as OMTO_percent, '
   + '(afull.OMTO - afull.IN_USH) as uncomplete, afull.IN_USH as complete, afull.USH, '
   + 'decode(afull.in_ush, 0, 0, round(decode(afull.ush, 0, 0, ((afull.ush / afull.in_ush) * 100)), 0)) as USH_percent from '
   + '(SELECT ttn.DEP_DEP_ID_TO as CEH, ttn.UZAK_UZAK_ID as UZAK_ID, count(mn.TTN_ID) as full, sum(decode(ttn.user_date1, null, 0, 1)) as TO_OMTO, '
   + 'sum(decode(ttn.user_date2, null, 0, 1)) as OMTO, sum(decode(ttn.user_date4, null, 0, 1)) as IN_USH, sum(decode(ttn.date_ins, null, 0, 1)) as USH '
   + 'from (select src.TTN_ID from TRONIX.DEFICIT_MAIN_NOMEN src WHERE src.CHK_FLD = ' + char(39) + '1' + char(39) + ' GROUP BY src.TTN_ID) mn, TRONIX.TTN ttn WHERE '
-  + 'mn.TTN_ID = ttn.TTN_ID(+) and ttn.TTN_ID is not null group by ttn.DEP_DEP_ID_TO, ttn.UZAK_UZAK_ID) afull, kadry_dep c, kadry_dep ct, tronix.zakaz z where '
-  + 'afull.ceh = c.dep_id(+) and c.dep_dep_id = ct.dep_id(+) and afull.uzak_id = z.nn(+)';
+  + 'mn.TTN_ID = ttn.TTN_ID(+) and ttn.TTN_ID is not null and to_char(ttn.user_date2, ' + char(39) + 'mm' + char(39) + ') = ' + char(39) + '09' + char(39) + ' '
+  + 'group by ttn.DEP_DEP_ID_TO, ttn.UZAK_UZAK_ID) afull, kadry_dep c, kadry_dep ct, tronix.zakaz z where '
+  + 'afull.ceh = c.dep_id(+) and c.dep_dep_id = ct.dep_id(+) and afull.uzak_id = z.nn(+)) a order by A.nomer, A.zak, A.full';
 
+  //showmessage(SQL);
   form1.execQuery(OraQuery3, SQL, false);
   if OraQuery3.RecordCount < 1 then
     exit
@@ -107,22 +278,10 @@ begin
   Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OraQuery3.RecordCount - 1), 10]].WrapText := true;
   while not OraQuery3.Eof do
   begin
-    //Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum, 10]].Font.Size := 14;
-    //Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 10]].borders.linestyle := xlContinuous;
-
-    (*
-    Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 2]].MergeCells := true;
-    Sheet.range[Sheet.cells[strNum, 3], Sheet.cells[strNum, 4]].MergeCells := true;
-    Sheet.range[Sheet.cells[strNum, 5], Sheet.cells[strNum, 6]].MergeCells := true;
-    Sheet.range[Sheet.cells[strNum, 7], Sheet.cells[strNum, 9]].MergeCells := true;
-    Sheet.range[Sheet.cells[strNum, 10], Sheet.cells[strNum, 12]].MergeCells := true;
-    Sheet.range[Sheet.cells[strNum, 13], Sheet.cells[strNum, 15]].MergeCells := true;
-    Sheet.range[Sheet.cells[strNum, 16], Sheet.cells[strNum, 18]].MergeCells := true;
-    *)
-
     //CEH
     Sheet.Cells[strNum, 1].Value := OraQuery3.FieldByName('NOMER').asString;
     //Zakaz
+    Sheet.Cells[strNum, 2].NumberFormat := '@';
     Sheet.Cells[strNum, 2].Value := OraQuery3.FieldByName('ZAK').asString;
     //Vsego documentov
     Sheet.Cells[strNum, 3].Value := OraQuery3.FieldByName('FULL').asString;
@@ -169,6 +328,9 @@ begin
   Sheet.Cells[strNum, 5].NumberFormat := '';
   Sheet.Cells[strNum, 5].Formula := '=SUM(E' + inttostr(startNum) + ':E' + inttostr((strNum - 2)) + ')';
 
+  Sheet.Cells[strNum, 6].NumberFormat := '';
+  Sheet.Cells[strNum, 6].Formula := '=((E' + inttostr(strNum) + '/D' + inttostr((strNum)) + ') * 100)';
+
   Sheet.Cells[strNum, 7].NumberFormat := '';
   Sheet.Cells[strNum, 7].Formula := '=SUM(G' + inttostr(startNum) + ':G' + inttostr((strNum - 2)) + ')';
 
@@ -178,15 +340,20 @@ begin
   Sheet.Cells[strNum, 9].NumberFormat := '';
   Sheet.Cells[strNum, 9].Formula := '=SUM(I' + inttostr(startNum) + ':I' + inttostr((strNum - 2)) + ')';
 
+  Sheet.Cells[strNum, 10].NumberFormat := '';
+  Sheet.Cells[strNum, 10].Formula := '=((I' + inttostr(strNum) + '/(G' + inttostr(strNum) + '+H' + inttostr((strNum)) + ')) * 100)';
+
   OraQuery3.Close;
   FExcel.Visible := true;
+  
+  FExcel := Unassigned;
 end;
-
+*)
 
 procedure TForm9.DBGridEh2DblClick(Sender: TObject);
 
 const
-TTN_TYPE_ARRAY = '43, 44';
+TTN_TYPE_ARRAY = '5, 43, 44';
 
 var
 SQL,
@@ -226,6 +393,13 @@ begin
   Application.CreateForm(Tdefttns, defttns);
   defttns.Showmodal();
   defttns.Free;
+end;
+
+if (self.Caption = 'Излишки ТМЦ') then
+begin
+  Application.CreateForm(Tover_tmc, over_tmc);
+  over_tmc.ShowModal();
+  over_tmc.free;
 end;
 
 if (self.caption = 'Дефицит по номенклатуре (старый)') then
@@ -406,6 +580,7 @@ or  (form9.Caption='ПДО: Отчёт по УДП по проекту. Выберите проект')
 or  (form9.Caption='ПУЕ с трудоёмкостью 0 с привязкой к УДП по проекту. Выберите проект')
 or  (form9.Caption='Оборудование из комплектной поставки для склада ЗИП по проекту. Выберите проект')
 or  (form9.Caption='СП Ведомости снабжения группы 237 по проекту. Выберите проект')
+or  (form9.Caption='Оборудование по проекту. Выберите проект')
 or  (form9.Caption='Перечень закрытой оснастки по проекту. Выберите проект')
 or  (form9.caption='Формрование ведомости комплектации запуска.')
 or  (form9.Caption='Изделия с незаполненой трудоемкостью ТНа')
@@ -423,7 +598,8 @@ begin
   Form9.Button1.Visible:=true;
 end;
 
-if ((self.Caption = 'Основная номенклатура по дефициту') or (self.caption = 'Требования по дефициту')) then
+if ((self.Caption = 'Основная номенклатура по дефициту') or (self.caption = 'Требования по дефициту')
+or (self.Caption = 'Излишки ТМЦ')) then
   Button1.Visible := false;
 
 if (self.caption = 'Отчет по материальной ведомости') then
@@ -1386,6 +1562,15 @@ begin
   Form60.Free;
 end;
 
+    if form9.caption='Оборудование по проекту. Выберите проект' then
+begin
+  Application.CreateForm(TFEquipment, FEquipment);
+  FEquipment.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
+  FEquipment.Caption:='Оборудование по проекту: '+oraQuery1.FieldByName('name').asString;
+  FEquipment.ShowModal();
+  FEquipment.Free;
+end;
+
     if form9.caption='Перечень закрытой оснастки по проекту. Выберите проект' then
 begin
   Application.CreateForm(TForm61, Form61);
@@ -1761,7 +1946,7 @@ begin
   + 'where tx.sprav_sprav_id = sp.sprav_id(+) and tx.uzak_uzak_id in (' + uzak + ')) tt group by tt.sprav_id, tt.koded_potr, tt.koded_uchet) src ) defa '
   + 'where (defa.d > 0 or defa.d_u > 0)) deficit, TRONIX_SPRAV SPRAVA, TRONIX_SPRAV SPRAVO, TRONIX.TYPE_TTN TP, TRONIX.TTN TN, TRONIX.TTN_MAT TNMAT, '
   + 'KADRY_DEP DPO, KADRY_DEP DPT, KADRY_DEP DPP, TRONIX.SP SPG, TRONIX.DOCUMENT DCG, TX_TEXKOMPL TXK WHERE TN.UZAK_UZAK_ID in (' + uzak + ') AND TN.TYPE_TTN_TYPE_TTN_ID in '
-  + '(43, 44, 26, 59, 11) '
+  + '(5, 43, 44, 26, 59, 11) '
   + 'AND TNMAT.TTN_TTN_ID = TN.TTN_ID AND ((TNMAT.SPRAV_SPRAV_ID = deficit.sprav_id AND TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB is null) OR '
   + 'TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB = deficit.sprav_id) AND DECODE(TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB, null, TNMAT.SPRAV_SPRAV_ID, TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB) '
   + '= SPRAVA.SPRAV_ID(+) AND TNMAT.TEXKOMPL_TEXKOMPL_ID = TXK.TEXKOMPL_ID(+) AND TNMAT.SPRAV_SPRAV_ID = SPRAVO.SPRAV_ID(+) AND TN.DEP_DEP_ID_TO = DPO.DEP_ID(+) AND DPO.DEP_DEP_ID = DPT.DEP_ID(+) AND '

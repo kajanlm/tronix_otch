@@ -80,6 +80,9 @@ type
     N51: TMenuItem;
     N02: TMenuItem;
     N52: TMenuItem;
+    N53: TMenuItem;
+    N54: TMenuItem;
+    N55: TMenuItem;
     procedure N3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure tn1Click(Sender: TObject);
@@ -140,6 +143,9 @@ type
     procedure N51Click(Sender: TObject);
     procedure N02Click(Sender: TObject);
     procedure N52Click(Sender: TObject);
+    procedure N53Click(Sender: TObject);
+    procedure N54Click(Sender: TObject);
+    procedure N55Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -159,7 +165,7 @@ var
 
 const
 
-VERSION = '2.0.1';
+VERSION = '2.1.0';
 
 SERVER_ADDR = 'http://192.168.10.15:7777/server/tronix_otch/';
 SERVER_FILE_PART = '.sql';
@@ -167,7 +173,7 @@ SERVER_FILE_PART = '.sql';
 implementation
 
 uses Unit2, Unit7, Unit8, Unit9, Unit12, Unit17, Unit23, Unit32, Unit34, cpct, r_dates, r_ttns, t_error,
-  r_leftovers_nomen,Reestr_doc_sklad;
+  r_leftovers_nomen,Reestr_doc_sklad, r_calendar;
 
 {$R *.dfm}
 
@@ -703,7 +709,10 @@ end;
 
 procedure TForm1.N47Click(Sender: TObject);
 begin
+  exit;
+  
   Application.CreateForm(Tleftovers, leftovers);
+  leftovers.selectType := true;
   leftovers.Showmodal();
   leftovers.Free;
 end;
@@ -711,53 +720,19 @@ end;
 procedure TForm1.N44Click(Sender: TObject);
 var name : string;
 begin
-  (*
-  name := OraSession1.Username;
-  if (name <> '20043') and (name <> '84007') and (name <> '15008') and (name <> '20078') and (name <> '10156') and (name <> '02019') then
-  begin
-    showmessage('У вас нет прав для работы с данным модулем!');
-    exit;
-  end;
-  *)
-
   Application.CreateForm(TForm9, Form9);
   form9.Caption := 'Основная номенклатура по дефициту';
 
   form9.ShowModal();
   Form9.Free;
-
-  (*
-  Application.CreateForm(TForm9, Form9);
-  form9.Caption := 'Требования по дефициту';
-
-  form9.ShowModal();
-  Form9.Free;
-  *)
 end;
 
 procedure TForm1.N45Click(Sender: TObject);
 var password, takepw : string;
 begin
-  if not SCAlive then
-    exit;
-
-  password := ServerRequest('[PASS]REQ_DATES');
-
-  takepw := InputBox('ДОСТУП', 'Введите пароль для данной операции', '');
-  if takepw = '' then
-  begin
-    showmessage('ПОЛЕ НЕ ЗАПОЛНЕНО. Введите пароль!');
-    exit;
-  end;
-
-  if takepw = password then
-  begin
-    Application.CreateForm(Trequest_date, request_date);
-    request_date.ShowModal();
-    request_date.Free;
-  end
-  else
-    showmessage('Неверный пароль! Обратитесь в АСУ');
+  Application.CreateForm(Trequest_date, request_date);
+  request_date.ShowModal();
+  request_date.Free;
 end;
 
 procedure TForm1.N48Click(Sender: TObject);
@@ -802,9 +777,43 @@ end;
 
 procedure TForm1.N52Click(Sender: TObject);
 begin
+  Application.CreateForm(Tf_calendar, f_calendar);
   Application.CreateForm(TForm9, Form9);
-  form9.Show_MainNomenDetails;
+
+  f_calendar.Showmodal();
+  form9.Show_TTRTN_Details(f_calendar.result_month, f_calendar.result_year, true);
+
   Form9.Free;
+  f_calendar.Free;
+end;
+
+procedure TForm1.N53Click(Sender: TObject);
+begin
+  Application.CreateForm(Tleftovers, leftovers);
+  leftovers.selectType := false;
+  leftovers.Showmodal();
+  leftovers.Free;
+end;
+
+procedure TForm1.N54Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Оборудование по проекту. Выберите проект';
+  form9.ShowModal();
+  form9.Free;
+
+end;
+
+procedure TForm1.N55Click(Sender: TObject);
+begin
+  Application.CreateForm(Tf_calendar, f_calendar);
+  Application.CreateForm(TForm9, Form9);
+
+  f_calendar.Showmodal();
+  form9.Show_TTRTN_Details(f_calendar.result_month, f_calendar.result_year, false);
+
+  Form9.Free;
+  f_calendar.Free;
 end;
 
 end.
