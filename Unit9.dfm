@@ -46,6 +46,14 @@ object Form9: TForm9
     Caption = #1055#1086#1082#1072#1079#1072#1090#1100':'
     Visible = False
   end
+  object deps_label: TLabel
+    Left = 192
+    Top = 240
+    Width = 25
+    Height = 13
+    Caption = #1062#1045#1061':'
+    Visible = False
+  end
   object DBGridEh1: TDBGridEh
     Left = 8
     Top = 25
@@ -216,10 +224,20 @@ object Form9: TForm9
     TabOrder = 9
     Visible = False
   end
+  object Deps: TComboBox
+    Left = 248
+    Top = 240
+    Width = 145
+    Height = 22
+    Style = csOwnerDrawVariable
+    ItemHeight = 16
+    TabOrder = 10
+    Visible = False
+  end
   object OraQuery1: TOraQuery
     Session = Form1.OraSession1
     SQL.Strings = (
-      'Select Zavn, name, project_id from Tronix.Project_list '
+      'Select Zavn, name, project_id,proekt from Tronix.Project_list '
       'where date_end is null'
       'order by zavn')
     ReadOnly = True

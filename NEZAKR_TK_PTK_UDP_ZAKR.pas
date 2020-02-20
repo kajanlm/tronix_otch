@@ -1,4 +1,4 @@
-unit Unit75;
+unit NEZAKR_TK_PTK_UDP_ZAKR;
 
 interface
 
@@ -8,14 +8,18 @@ uses
   OleServer, GridsEh, ComObj;
 
 type
-  TForm75 = class(TForm)
+  TFNEZAKR_TK_PTK_UDP_ZAKR = class(TForm)
     OraQuery1: TOraQuery;
     OraDataSource1: TOraDataSource;
     OraQuery1udp: TStringField;
     OraQuery1udpdateotk: TStringField;
     OraQuery1tk: TStringField;
+    OraQuery1cextk: TStringField;
+    OraQuery1tkflbeg: TStringField;
     OraQuery1tkdatotk: TStringField;
     OraQuery1tx: TStringField;
+    OraQuery1cextx: TStringField;
+    OraQuery1txflbeg: TStringField;
     OraQuery1txotk: TStringField;
     OraQuery1txdatotk: TStringField;
     OraQuery1trnorm: TFloatField;
@@ -44,7 +48,7 @@ type
   end;
 
 var
-  Form75: TForm75;
+  FNEZAKR_TK_PTK_UDP_ZAKR: TFNEZAKR_TK_PTK_UDP_ZAKR;
 
 implementation
 
@@ -52,13 +56,13 @@ implementation
 
 {$R *.dfm}
 
-procedure TForm75.FormShow(Sender: TObject);
+procedure TFNEZAKR_TK_PTK_UDP_ZAKR.FormShow(Sender: TObject);
 var tx:string;
 FExcel,Sheet,Range: OleVariant;
 Udpp:string;
 Nn: integer;
 Nk: integer;
-//Nd: integer;
+nd: integer;
 //Kd: integer;
 begin
 //Edit1.Text:='458';
@@ -67,15 +71,20 @@ begin
 //ShowMessage(Edit2.Text);
 
 tx:=' ';
-tx:=tx+' select ll.udp as udp,ll.tk as tk,ll.tkdatotk as tkdatotk,ll.tx as tx,ll.txotk as txotk,ll.txdatotk as txdatotk,';
+tx:=tx+' select ll.udp as udp,ll.tk as tk,ll.cextk as cextk,ll.tkflbeg as tkflbeg,ll.tkdatotk as tkdatotk,';
+tx:=tx+' ll.tx as tx,ll.cextx as cextx,ll.txflbeg as txflbeg,ll.txotk as txotk,ll.txdatotk as txdatotk,';
 tx:=tx+' ll.trnorm as trnorm,ll.trzakr as trzakr,ll.trost as trost,(decode(ll.trzakr,0,0,round((ll.trzakr/ll.trnorm)*100,2))) as procent,';
 tx:=tx+' ll.zavn as zavn,ll.zak as zak,ll.proekt as proekt,ll.abrudp as abrudp,ll.udpdateotk as udpdateotk,';
 tx:=tx+' ll.tkname as tkname,ll.txname as txname';
 tx:=tx+' from(';
 
 tx:=tx+' select l.txdic udp,l.abrudp abrudp,nordsy.tx_nomer(l.tkid) tk,TO_CHAR(l.tkdatotk,''DD.MM.YYYY'') tkdatotk,l.tkname tkname,';
+tx:=tx+' TO_CHAR((select tk.fl_end_beg from nordsy.texkompl tk where tk.texkompl_id=l.tkid),''DD.MM.YYYY'') tkflbeg,';
+tx:=tx+' (select nordsy.dep_nomer(tk.dep_dep_id) from nordsy.texkompl tk where tk.texkompl_id=l.tkid) cextk,';
 tx:=tx+' (select TO_CHAR(tx.otk_end,''DD.MM.YYYY'') from nordsy.texkompl tx where tx.texkompl_id=l.txid) txotk,';
 tx:=tx+' (select tx.name from nordsy.texkompl tx where tx.texkompl_id=l.txid) txname,';
+tx:=tx+' (select nordsy.dep_nomer(tx.dep_dep_id) from nordsy.texkompl tx where tx.texkompl_id=l.txid) cextx,';
+tx:=tx+' TO_CHAR((select tx.fl_end_beg from nordsy.texkompl tx where tx.texkompl_id=l.txid),''DD.MM.YYYY'') txflbeg,';
 tx:=tx+' decode(instr(l.abrudp,'';'',1),0,(select to_char(co.date_otk,''DD.MM.YYYY'') from dic_concept co where co.concept_id=tronix_up_tk_dic_id(l.txid)),'''') udpdateotk,';
 tx:=tx+' nordsy.tx_nomer(l.txid) tx,TO_CHAR(nordsy.get_date_tx_from_ptx(l.txid,''OTK_END''),''DD.MM.YYYY'') txdatotk,';
 tx:=tx+' l.zavn zavn,l.zak zak,l.proekt proekt,';
@@ -112,8 +121,12 @@ tx:=tx+' order by nordsy.sort_char_number(ll.abrudp), ll.tk,ll.tx';
         FieldByName('udp').DisplayLAbel:='”ƒœ';
         FieldByName('udpdateotk').DisplayLAbel:='”ƒœ «¿ –€“Œ';
         FieldByName('tk').DisplayLAbel:=' “ ';
+        FieldByName('cextk').DisplayLAbel:='÷≈’ “ ';
+        FieldByName('tkflbeg').DisplayLAbel:='ƒ¿“¿ √¿À » “  “≈’ÕŒÀŒ√¿';
         FieldByName('tkdatotk').DisplayLAbel:='ƒ¿“¿ Œ“◊®“¿ “ ';
         FieldByName('tx').DisplayLAbel:=' œ“ ';
+        FieldByName('cextx').DisplayLAbel:='÷≈’ œ“ ';
+        FieldByName('txflbeg').DisplayLAbel:='ƒ¿“¿ √¿À » œ“  “≈’ÕŒÀŒ√¿';
         FieldByName('txotk').DisplayLAbel:='œ“  «¿ –€“Œ';
         FieldByName('txdatotk').DisplayLAbel:='ƒ¿“¿ Œ“◊®“¿ œ“  ÔÓ Õ¿–ﬂƒ¿Ã';
         FieldByName('trnorm').DisplayLAbel:='“–-“‹ ÕŒ–Ã. œ“ ';
@@ -135,7 +148,7 @@ tx:=tx+' order by nordsy.sort_char_number(ll.abrudp), ll.tk,ll.tx';
 Udpp:='';
 nn := 0;
 nk := 2;
-//nd:=0;
+nd:=0;
 //kd:=0;
 
 FExcel:=CreateOleObject('Excel.Application');
@@ -149,6 +162,8 @@ FExcel.Workbooks[1].WorkSheets[1].Name := '«‡Í˚Ú˚Â ”ƒœ Ò ÌÂÁ‡Í˚Ú. “ -œ“ ';
 sheet:=FExcel.Workbooks[1].WorkSheets[1];
 //Sheet.Cells[1,1 ].Value:='Õ≈«¿ –€“€≈ “ -œ“  ¬ «¿ –€“€’ ”ƒœ:      '+ Form9.oraQuery1.FieldByName('name').asString;
 Sheet.Range[Sheet.Cells[1,1],Sheet.Cells[1,11]].Value:='Õ≈«¿ –€“€≈ “ -œ“  ¬ «¿ –€“€’ ”ƒœ:      '+ Form9.oraQuery1.FieldByName('name').asString;
+Sheet.Range[Sheet.Cells[nk,1],Sheet.Cells[1,11]].Font.Size:=12;
+Sheet.Range[Sheet.Cells[1,1],Sheet.Cells[1,11]].Font.Bold:=true;
 
 OraQuery1.First;
 
@@ -162,48 +177,54 @@ Begin
 If udpp <> '' then
 Begin
 
-Sheet.Range[Sheet.Cells[nk,1],Sheet.Cells[nk,7]].MergeCells:=true;
+//07.10.2019 Sheet.Range[Sheet.Cells[nk,1],Sheet.Cells[nk,11]].MergeCells:=true;
 
-Sheet.Cells[nk,8].Formula:='=SUM(h' + inttostr(nn) + ':h' + inttostr((nk - 1)) + ')';
-Sheet.Cells[nk,9].Formula:='=SUM(i' + inttostr(nn) + ':i' + inttostr((nk - 1)) + ')';
-Sheet.Cells[nk,10].Formula:='=SUM(j' + inttostr(nn) + ':j' + inttostr((nk - 1)) + ')';
+Sheet.Cells[nk,14].Formula:='=SUM(n' + inttostr(nn) + ':n' + inttostr((nk - 1)) + ')';
+Sheet.Cells[nk,15].Formula:='=SUM(o' + inttostr(nn) + ':o' + inttostr((nk - 1)) + ')';
+Sheet.Cells[nk,16].Formula:='=SUM(p' + inttostr(nn) + ':p' + inttostr((nk - 1)) + ')';
 
-Sheet.Cells[nk,11].Formula:='=ROUND(((i' + inttostr(nk) + '/h' + inttostr(nk) + ') * 100), 2)';
+Sheet.Cells[nk,17].Formula:='=ROUND(((o' + inttostr(nk) + '/n' + inttostr(nk) + ') * 100), 2)';
 
-Sheet.Range[Sheet.Cells[nk,8],Sheet.Cells[nk+1,11]].Font.Size:=12;
-Sheet.Range[Sheet.Cells[nk,8],Sheet.Cells[nk+1,11]].Font.Bold:=true;
+Sheet.Range[Sheet.Cells[nk,14],Sheet.Cells[nk+1,17]].Font.Size:=12;
+Sheet.Range[Sheet.Cells[nk,14],Sheet.Cells[nk+1,17]].Font.Bold:=true;
 //inc(nk);
 
-//Sheet.Range[Sheet.Cells[nk,1],Sheet.Cells[nk,12]].MergeCells:=true;
+//Sheet.Range[Sheet.Cells[nk,1],Sheet.Cells[nk,15]].MergeCells:=true;
 End;
 
 inc(nk);
 
-Sheet.Cells[nk,1].Value:=OraQuery1.FieldByName('udp').asString+': «‡Í˚ÚÓ '+OraQuery1.FieldByName('udpdateotk').asString;
-Sheet.Range[Sheet.Cells[nk,1],Sheet.Cells[nk,11]].MergeCells:=true;
-Sheet.Range[Sheet.Cells[nk,1],Sheet.Cells[nk,11]].Font.Size:=12;
-Sheet.Range[Sheet.Cells[nk,1],Sheet.Cells[nk,11]].Font.Bold:=true;
-
+Sheet.Cells[nk,2].Value:=OraQuery1.FieldByName('abrudp').asString;
+Sheet.Cells[nk,3].Value:=OraQuery1.FieldByName('udp').asString+': «‡Í˚ÚÓ '+OraQuery1.FieldByName('udpdateotk').asString;
+//07.10.2019 Sheet.Range[Sheet.Cells[nk,1],Sheet.Cells[nk,15]].MergeCells:=true;
+Sheet.Range[Sheet.Cells[nk,1],Sheet.Cells[nk,17]].Font.Size:=12;
+Sheet.Range[Sheet.Cells[nk,1],Sheet.Cells[nk,17]].Font.Bold:=true;
+nd:=nk;
 Udpp:=OraQuery1.FieldByName('abrudp').asString;
 inc(nk);
 nn := nk;
-//nd:=0;
 //kd:=nk;
 End;
 
-Sheet.Cells[nk,1].Value:=OraQuery1.FieldByName('tk').asString;
-Sheet.Cells[nk,2].Value:=OraQuery1.FieldByName('tkname').asString;
-Sheet.Cells[nk,3].Value:=OraQuery1.FieldByName('tkdatotk').asString;
+Sheet.Cells[nk,1].Formula:='=ROW()-'+inttostr(nd);
+Sheet.Cells[nk,2].Value:=OraQuery1.FieldByName('abrudp').asString;
+Sheet.Cells[nk,3].Value:=OraQuery1.FieldByName('tk').asString;
+Sheet.Cells[nk,4].Value:=OraQuery1.FieldByName('tkname').asString;
+Sheet.Cells[nk,5].Value:=OraQuery1.FieldByName('cextk').asString;
+Sheet.Cells[nk,6].Value:=OraQuery1.FieldByName('tkflbeg').asString;
+Sheet.Cells[nk,7].Value:=OraQuery1.FieldByName('tkdatotk').asString;
 
-Sheet.Cells[nk,4].Value:=OraQuery1.FieldByName('tx').asString;
-Sheet.Cells[nk,5].Value:=OraQuery1.FieldByName('txname').asString;
-Sheet.Cells[nk,6].Value:=OraQuery1.FieldByName('txotk').asString;
-Sheet.Cells[nk,7].Value:=OraQuery1.FieldByName('txdatotk').asString;
+Sheet.Cells[nk,8].Value:=OraQuery1.FieldByName('tx').asString;
+Sheet.Cells[nk,9].Value:=OraQuery1.FieldByName('txname').asString;
+Sheet.Cells[nk,10].Value:=OraQuery1.FieldByName('cextx').asString;
+Sheet.Cells[nk,11].Value:=OraQuery1.FieldByName('txflbeg').asString;
+Sheet.Cells[nk,12].Value:=OraQuery1.FieldByName('txotk').asString;
+Sheet.Cells[nk,13].Value:=OraQuery1.FieldByName('txdatotk').asString;
 
-Sheet.Cells[nk,8].Value:=Form9.excelFloat(OraQuery1.FieldByName('trnorm').asString);
-Sheet.Cells[nk,9].Value:=Form9.excelFloat(OraQuery1.FieldByName('trzakr').asString);
-Sheet.Cells[nk,10].Value:=Form9.excelFloat(OraQuery1.FieldByName('trost').asString);
-Sheet.Cells[nk,11].Value:=Form9.excelFloat(OraQuery1.FieldByName('procent').asString);
+Sheet.Cells[nk,14].Value:=Form9.excelFloat(OraQuery1.FieldByName('trnorm').asString);
+Sheet.Cells[nk,15].Value:=Form9.excelFloat(OraQuery1.FieldByName('trzakr').asString);
+Sheet.Cells[nk,16].Value:=Form9.excelFloat(OraQuery1.FieldByName('trost').asString);
+Sheet.Cells[nk,17].Value:=Form9.excelFloat(OraQuery1.FieldByName('procent').asString);
 
 Inc(nk);
 
@@ -211,27 +232,27 @@ oraQuery1.Next;
 
 End;
 
-Sheet.Range[Sheet.Cells[nk,1],Sheet.Cells[nk,7]].MergeCells:=true;
+//07.10.2019 Sheet.Range[Sheet.Cells[nk,1],Sheet.Cells[nk,11]].MergeCells:=true;
 
-Sheet.Cells[nk,8].Formula:='=SUM(h' + inttostr(nn) + ':j' + inttostr((nk - 1)) + ')';
-Sheet.Cells[nk,9].Formula:='=SUM(i' + inttostr(nn) + ':i' + inttostr((nk - 1)) + ')';
-Sheet.Cells[nk,10].Formula:='=SUM(j' + inttostr(nn) + ':j' + inttostr((nk - 1)) + ')';
+Sheet.Cells[nk,14].Formula:='=SUM(n' + inttostr(nn) + ':n' + inttostr((nk - 1)) + ')';
+Sheet.Cells[nk,15].Formula:='=SUM(o' + inttostr(nn) + ':o' + inttostr((nk - 1)) + ')';
+Sheet.Cells[nk,16].Formula:='=SUM(p' + inttostr(nn) + ':p' + inttostr((nk - 1)) + ')';
 
-Sheet.Cells[nk,11].Value(*Formula*):='=ROUND(((i' + inttostr(nk) + '/h' + inttostr(nk) + ') * 100), 2)';
+Sheet.Cells[nk,17].Value(*Formula*):='=ROUND(((o' + inttostr(nk) + '/n' + inttostr(nk) + ') * 100), 2)';
 //showmessage('=ROUND(((k' + inttostr(nk) + '/j' + inttostr(nk) + ') * 100); 2)');
 
-Sheet.Range[Sheet.Cells[nk,8],Sheet.Cells[nk+1,11]].Font.Size:=12;
-Sheet.Range[Sheet.Cells[nk,8],Sheet.Cells[nk+1,11]].Font.Bold:=true;
+Sheet.Range[Sheet.Cells[nk,14],Sheet.Cells[nk+1,17]].Font.Size:=12;
+Sheet.Range[Sheet.Cells[nk,14],Sheet.Cells[nk+1,17]].Font.Bold:=true;
 
-Sheet.Range[Sheet.Cells[2,1], Sheet.Cells[nk,11]].borders.linestyle:=xlContinuous;
+Sheet.Range[Sheet.Cells[2,1], Sheet.Cells[nk,17]].borders.linestyle:=xlContinuous;
 
 OraQuery1.First;
 FExcel.Visible:=True;
 OraQuery1.Close;
-Form75.Close;
+FNEZAKR_TK_PTK_UDP_ZAKR.Close;
 end;
 
-procedure TForm75.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFNEZAKR_TK_PTK_UDP_ZAKR.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
      OraQuery1.Close;
 end;

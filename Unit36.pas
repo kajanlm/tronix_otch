@@ -290,17 +290,28 @@ end;
 // button2.Enabled:=false;
 if Form9.Combobox1.text='Деревом' then
 begin
-tx:='  Select * from ( ';
+tx:='  Select d.* from ( ';
 tx:=tx+' Select  tx.nomer  ,tx.name, to_char(tx.pdate_beg,''DD.MM.YYYY'') pdate_beg,to_char(tx.pdate_end,''DD.MM.YYYY'') pdate_end,nordsy.SUM_TRUD(tx.texkompl_id) trudoem, tx.texkompl_id, tx.texkompl_texkompl_id,';
-tx:=tx+' (Select nomer from nordsy.dep where dep_id=tx.dep_dep_id) dep,';
+tx:=tx+' (Select nomer from nordsy.dep where dep_id=tx.dep_dep_id) as dep,';
 tx:=tx+' tx.type_tex_type_tex_id type_tex,to_char(tx.otk_end,''DD.MM.YYYY'') otk_end ,NORDSY.GET_CHERTEZH(tx.texkompl_id) doc, to_number(NORDSY.SUM_TRUD_PROF_TEXKOMPL(tx.texkompl_id,0)) nar, ';    //   NORDSY.SUM_TRUD_PROF_TEXKOMPL('+DBGrideh1.DataSource.DataSet.FieldByName('texkompl_id').AsString+',230)
 tx:=tx+'  tx.fl_end_trud fl_end_trud_beg ';
-tx:=tx+' from tx_texkompl tx';
+
+tx:=tx+' from (select * from tx_texkompl ';
+
+if Form9.Deps.ItemIndex <> -1 then
+  tx := tx + 'where texkompl_texkompl_id is null or dep_dep_id is null or dep_dep_id = 1 or dep_dep_id in '
+  + '(SELECT dep_id from KADRY_DEP where nomer like ' + char(39) + Form9.Deps.Items[Form9.Deps.ItemIndex] + '%' + char(39) + ')';
+
+tx := tx + ') tx';
+
 tx:=tx+' connect by prior tx.texkompl_id = tx.texkompl_texkompl_ID';
 tx:=tx+' start	with  tx.texkompl_ID in (Select texkompl_id from tx_texkompl';
 tx:=tx+' where texkompl_texkompl_id is null';
 tx:=tx+' and  project_project_id='+Edit1.text;
-tx:=tx+' )) ';
+tx:=tx+' )) d';
+
+//showmessage(tx);
+
 //where type_tex<>12';
 //tx:=tx+' and nsort=1)) where type_tex<>12';
 //tx:=tx+' order by nomer';
@@ -310,17 +321,22 @@ if  Form9.Combobox1.text='Списком' then
  begin
 button2.Enabled:=true;
 tx:=' Select tx.texkompl_id,tx.texkompl_texkompl_id, to_char(tx.otk_end,''DD.MM.YYYY'') otk_end, nordsy.SUM_TRUD(tx.texkompl_id) trudoem,';
-tx:=tx+' (Select nomer from nordsy.dep where dep_id=tx.dep_dep_id) dep,';
+tx:=tx+' (Select nomer from nordsy.dep where dep_id=tx.dep_dep_id) as dep,';
 tx:=tx+' tx.trudoem,tx.nomer,';
 tx:=tx+' to_char(tx.pdate_beg,''DD.MM.YYYY'') pdate_beg,to_char(tx.pdate_end,''DD.MM.YYYY'') pdate_end,';
 tx:=tx+' tx.name, NORDSY.GET_CHERTEZH(tx.texkompl_id) doc, tx.type_tex_type_tex_id type_tex , to_number(NORDSY.SUM_TRUD_PROF_TEXKOMPL(tx.texkompl_id,0)) nar, ';
 tx:=tx+'  tx.fl_end_trud fl_end_trud_beg ';
 tx:=tx+'   from tx_texkompl tx ';
 tx:=tx+'where tx.type_tex_type_tex_id in (7,12) ';
-tx:=tx+'and tx.project_project_id='+Edit1.text;
-tx:=tx+' order by nomer';
 
- end;
+if Form9.Deps.ItemIndex <> -1 then
+  tx := tx + ' and tx.dep_dep_id in (SELECT dep_id from KADRY_DEP where nomer like ' + char(39) + Form9.Deps.Items[Form9.Deps.ItemIndex] + '%' + char(39) + ')';
+
+tx:=tx+'and tx.project_project_id='+Edit1.text;
+tx:=tx+' order by nomer ';
+
+//showmessage(tx);
+end;
 
 
 if  Form9.Combobox1.text='Списком с планируемым исполнителем' then
@@ -356,6 +372,10 @@ tx:=tx+' to_char(tx.pdate_beg,''DD.MM.YYYY'') pdate_beg,to_char(tx.pdate_end,''D
 tx:=tx+' tx.name, NORDSY.GET_CHERTEZH(tx.texkompl_id) doc, tx.type_tex_type_tex_id type_tex , nordsy.summ_nar_tx(tx.texkompl_id,project_project_id) nar ';
 tx:=tx+'   from tx_texkompl tx ';
 tx:=tx+'where tx.type_tex_type_tex_id in (7,12) ';
+
+if Form9.Deps.ItemIndex <> -1 then
+  tx := tx + ' and tx.dep_dep_id in (SELECT dep_id from KADRY_DEP where nomer like ' + char(39) + Form9.Deps.Items[Form9.Deps.ItemIndex] + '%' + char(39) + ')';
+
 tx:=tx+'and tx.project_project_id='+Edit1.text;
 tx:=tx+' order by nomer';
 

@@ -73,7 +73,9 @@ uses
   t_error in 't_error.pas' {errorForm},
   r_leftovers_nomen in 'r_leftovers_nomen.pas' {leftovers},
   r_over_tmc in 'r_over_tmc.pas' {over_tmc},
-  r_calendar in 'r_calendar.pas' {f_calendar};
+  r_calendar in 'r_calendar.pas' {f_calendar},
+  r_set_mnomen in 'r_set_mnomen.pas' {set_mnomen},
+  r_set_mnomen_details in 'r_set_mnomen_details.pas' {set_mnomen_details};
 
 {$R *.res}
 
@@ -131,6 +133,8 @@ begin
   Application.CreateForm(TForm55, Form55);
   Application.CreateForm(TForm60, Form60);
   Application.CreateForm(TForm61, Form61);
+  Application.CreateForm(Tset_mnomen, set_mnomen);
+  Application.CreateForm(Tset_mnomen_details, set_mnomen_details);
   //Application.CreateForm(Tover_tmc, over_tmc);
   Application.Run;
 end.

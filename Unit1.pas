@@ -68,7 +68,6 @@ type
     N42: TMenuItem;
     N43: TMenuItem;
     N6: TMenuItem;
-    N44: TMenuItem;
     N45: TMenuItem;
     N46: TMenuItem;
     N47: TMenuItem;
@@ -79,10 +78,15 @@ type
     N50: TMenuItem;
     N51: TMenuItem;
     N02: TMenuItem;
-    N52: TMenuItem;
     N53: TMenuItem;
     N54: TMenuItem;
     N55: TMenuItem;
+    N56: TMenuItem;
+    N57: TMenuItem;
+    N59: TMenuItem;
+    N68: TMenuItem;
+    N71: TMenuItem;
+    N52: TMenuItem;
     procedure N3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure tn1Click(Sender: TObject);
@@ -146,6 +150,11 @@ type
     procedure N53Click(Sender: TObject);
     procedure N54Click(Sender: TObject);
     procedure N55Click(Sender: TObject);
+    procedure N56Click(Sender: TObject);
+    procedure N57Click(Sender: TObject);
+    procedure N58Click(Sender: TObject);
+    procedure N68Click(Sender: TObject);
+    procedure N71Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -173,7 +182,7 @@ SERVER_FILE_PART = '.sql';
 implementation
 
 uses Unit2, Unit7, Unit8, Unit9, Unit12, Unit17, Unit23, Unit32, Unit34, cpct, r_dates, r_ttns, t_error,
-  r_leftovers_nomen,Reestr_doc_sklad, r_calendar;
+  r_leftovers_nomen,Reestr_doc_sklad, r_calendar,Nomenklator;
 
 {$R *.dfm}
 
@@ -206,8 +215,8 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
- OraSession1.Connect;
- self.Caption := 'Отчеты к Tronix v' + VERSION;
+  OraSession1.Connect;
+  self.Caption := 'Отчеты к Tronix v' + VERSION;
 end;
 
 function TForm1.showError(H : string; B : string): boolean;
@@ -630,15 +639,15 @@ end;
 
 function TForm1.SCAlive : boolean;
 begin
-try 
-  idhttp1.Get(SERVER_ADDR + 'dummy');
-except
-  showError('Ошибка сети', 'Не удалось подключиться к серверу!');
-  SCAlive := false;
-  exit;
-end;
+  try 
+    idhttp1.Get(SERVER_ADDR + 'dummy');
+  except
+    showError('Ошибка сети', 'Не удалось подключиться к серверу!');
+    SCAlive := false;
+    exit;
+  end;
 
-SCAlive := true;
+  SCAlive := true;
 end;
 
 function TForm1.ServerRequest(s : string) : string;
@@ -718,8 +727,10 @@ begin
 end;
 
 procedure TForm1.N44Click(Sender: TObject);
-var name : string;
 begin
+  //osnovnaya nomenclature po deficity
+  exit;
+  
   Application.CreateForm(TForm9, Form9);
   form9.Caption := 'Основная номенклатура по дефициту';
 
@@ -728,7 +739,6 @@ begin
 end;
 
 procedure TForm1.N45Click(Sender: TObject);
-var password, takepw : string;
 begin
   Application.CreateForm(Trequest_date, request_date);
   request_date.ShowModal();
@@ -751,13 +761,15 @@ begin
   Form9.Free;
 end;
 
+
 procedure TForm1.N50Click(Sender: TObject);
 begin
   Application.CreateForm(TFReestr_doc_sklad, FReestr_doc_sklad);
-  FReestr_doc_sklad.Caption:='УДП: Незакрытые ТК-ПТК в закрытых УДП по проекту. Выберите проект';
+  FReestr_doc_sklad.Caption:='Реестр документов движения по складу за прериод';
   FReestr_doc_sklad.ShowModal();
   FReestr_doc_sklad.Free;
 end;
+
 
 procedure TForm1.N51Click(Sender: TObject);
 begin
@@ -811,6 +823,57 @@ begin
 
   f_calendar.Showmodal();
   form9.Show_TTRTN_Details(f_calendar.result_month, f_calendar.result_year, false);
+
+  Form9.Free;
+  f_calendar.Free;
+end;
+
+procedure TForm1.N56Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='УДП: Заказчик. Выберите проект';
+  Form9.ShowModal();
+  Form9.Free;
+
+end;
+
+procedure TForm1.N57Click(Sender: TObject);
+begin
+  Application.CreateForm(TFNomenklator, FNomenklator);
+  FNomenklator.Caption:='Номенклатор';
+  FNomenklator.ShowModal();
+  FNomenklator.Free;
+ end;
+
+procedure TForm1.N58Click(Sender: TObject);
+begin
+  //otchet po deficity osnovnoy nomenclature
+  exit;
+  
+  Application.CreateForm(TForm9, Form9);
+  Form9.Show_Deficit_MainNomen;
+  Form9.Free;
+end;
+
+procedure TForm1.N68Click(Sender: TObject);
+begin
+  //exit;
+
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='Установка основной номенклатуры';
+  Form9.showmodal();
+  Form9.Free;
+end;
+
+procedure TForm1.N71Click(Sender: TObject);
+begin
+  //exit;
+
+  Application.CreateForm(Tf_calendar, f_calendar);
+  Application.CreateForm(TForm9, Form9);
+
+  f_calendar.Showmodal();
+  Form9.main_nomenclature_list(f_calendar.result_month, f_calendar.result_year);
 
   Form9.Free;
   f_calendar.Free;
