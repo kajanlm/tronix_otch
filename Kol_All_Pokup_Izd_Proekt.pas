@@ -1,4 +1,4 @@
-unit Unit67;
+unit Kol_All_Pokup_Izd_Proekt;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   OleServer, GridsEh;
 
 type
-  TForm67 = class(TForm)
+  TFKol_All_Pokup_Izd_Proekt = class(TForm)
     OraQuery1: TOraQuery;
     OraDataSource1: TOraDataSource;
     OraQuery1kod: TStringField;
@@ -40,15 +40,15 @@ type
   end;
 
 var
-  Form67: TForm67;
+  FKol_All_Pokup_Izd_Proekt: TFKol_All_Pokup_Izd_Proekt;
 
 implementation
 
-uses Unit9, Unit68;
+uses Unit9, Kol_Pokup_Izd_TN_SP;
 
 {$R *.dfm}
 
-procedure TForm67.FormShow(Sender: TObject);
+procedure TFKol_All_Pokup_Izd_Proekt.FormShow(Sender: TObject);
 var tx:string;
 begin
 //Edit1.Text:='458';
@@ -91,12 +91,12 @@ tx:=tx+' order by s.kod';
 end;
 
 
-procedure TForm67.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFKol_All_Pokup_Izd_Proekt.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
      OraQuery1.Close;
 end;
 
-procedure TForm67.Button1Click(Sender: TObject);
+procedure TFKol_All_Pokup_Izd_Proekt.Button1Click(Sender: TObject);
 var
 ExcelApplication:TExcelApplication;
 Range, Sheet: VAriant;
@@ -124,7 +124,7 @@ end;
 end;
 
 
-procedure TForm67.DBGridEh1DrawColumnCell(Sender: TObject;
+procedure TFKol_All_Pokup_Izd_Proekt.DBGridEh1DrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumnEh;
   State: TGridDrawState);
 begin
@@ -135,24 +135,24 @@ begin
  TDBGridEh(Sender).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
-procedure TForm67.DBGridEh1DblClick(Sender: TObject);
+procedure TFKol_All_Pokup_Izd_Proekt.DBGridEh1DblClick(Sender: TObject);
 begin
-  Application.CreateForm(TForm68, Form68);
-  Form68.Edit1.Text:=Form67.Edit1.Text;
-  Form68.Edit2.Text:=oraQuery1.FieldByName('kod').asString;
-  Form68.Caption:=Form68.Caption+'  ЧЕРТЁЖ='+oraQuery1.FieldByName('tynomer').asString+' Количество='+oraQuery1.FieldByName('kol').asString+' '+oraQuery1.FieldByName('namek').asString;
-  Form68.ShowModal();
-  Form68.Free;
+  Application.CreateForm(TFKol_Pokup_Izd_TN_SP, FKol_Pokup_Izd_TN_SP);
+  FKol_Pokup_Izd_TN_SP.Edit1.Text:=FKol_All_Pokup_Izd_Proekt.Edit1.Text;
+  FKol_Pokup_Izd_TN_SP.Edit2.Text:=oraQuery1.FieldByName('kod').asString;
+  FKol_Pokup_Izd_TN_SP.Caption:=FKol_Pokup_Izd_TN_SP.Caption+'  ЧЕРТЁЖ='+oraQuery1.FieldByName('tynomer').asString+' Количество='+oraQuery1.FieldByName('kol').asString+' '+oraQuery1.FieldByName('namek').asString;
+  FKol_Pokup_Izd_TN_SP.ShowModal();
+  FKol_Pokup_Izd_TN_SP.Free;
 
 end;
 
-procedure TForm67.Button2Click(Sender: TObject);
+procedure TFKol_All_Pokup_Izd_Proekt.Button2Click(Sender: TObject);
 begin
-  Application.CreateForm(TForm68, Form68);
-   Form68.Edit1.Text:=Form67.Edit1.Text;
-   Form68.Edit2.text:='All';
-  form68.ShowModal();
-  Form68.Free;
+  Application.CreateForm(TFKol_Pokup_Izd_TN_SP, FKol_Pokup_Izd_TN_SP);
+  FKol_Pokup_Izd_TN_SP.Edit1.Text:=FKol_All_Pokup_Izd_Proekt.Edit1.Text;
+  FKol_Pokup_Izd_TN_SP.Edit2.text:='All';
+  FKol_Pokup_Izd_TN_SP.ShowModal();
+  FKol_Pokup_Izd_TN_SP.Free;
 end;
 
 end.

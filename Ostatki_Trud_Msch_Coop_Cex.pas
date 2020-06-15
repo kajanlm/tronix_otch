@@ -1,4 +1,4 @@
-unit Unit59;
+unit Ostatki_Trud_Msch_Coop_Cex;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   OleServer, GridsEh;
 
 type
-  TForm59 = class(TForm)
+  TFOstatki_Trud_Msch_Coop_Cex = class(TForm)
     DBGridEh1: TDBGridEh;
     OraQuery1: TOraQuery;
     OraDataSource1: TOraDataSource;
@@ -42,15 +42,15 @@ type
   end;
 
 var
-  Form59: TForm59;
+  FOstatki_Trud_Msch_Coop_Cex: TFOstatki_Trud_Msch_Coop_Cex;
 
 implementation
 
-uses Unit54;
+uses Ostatki_Trud_Msch_TN_Cex;
 
 {$R *.dfm}
 
-procedure TForm59.FormShow(Sender: TObject);
+procedure TFOstatki_Trud_Msch_Coop_Cex.FormShow(Sender: TObject);
 var tx:string;
 begin
 //Edit1.Text:='458';
@@ -142,12 +142,12 @@ tx:=tx+' order by lm.zak,lm.tknomer,lm.tkname,lm.txnomer,lm.koop';
 end;
 
 
-procedure TForm59.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFOstatki_Trud_Msch_Coop_Cex.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
      OraQuery1.Close;
 end;
 
-procedure TForm59.Button1Click(Sender: TObject);
+procedure TFOstatki_Trud_Msch_Coop_Cex.Button1Click(Sender: TObject);
 var
 ExcelApplication:TExcelApplication;
 Range, Sheet: VAriant;
@@ -177,7 +177,7 @@ end;
 end;
 
 
-procedure TForm59.DBGridEh1DrawColumnCell(Sender: TObject;
+procedure TFOstatki_Trud_Msch_Coop_Cex.DBGridEh1DrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumnEh;
   State: TGridDrawState);
 begin

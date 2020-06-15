@@ -1,4 +1,4 @@
-unit Unit60;
+unit SP_Snab_Group_237;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   OleServer, GridsEh;
 
 type
-  TForm60 = class(TForm)
+  TFSP_Snab_Group_237 = class(TForm)
     OraQuery1: TOraQuery;
     OraDataSource1: TOraDataSource;
     OraQuery1ident: TStringField;
@@ -40,7 +40,7 @@ type
   end;
 
 var
-  Form60: TForm60;
+  FSP_Snab_Group_237: TFSP_Snab_Group_237;
 
 implementation
 
@@ -48,7 +48,7 @@ uses Unit9;
 
 {$R *.dfm}
 
-procedure TForm60.FormShow(Sender: TObject);
+procedure TFSP_Snab_Group_237.FormShow(Sender: TObject);
 var tx:string;
 begin
 //Edit1.Text:='458';
@@ -92,12 +92,12 @@ tx:=tx+' order by d.ident,sp.poz,sp.podpoz';
 end;
 
 
-procedure TForm60.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFSP_Snab_Group_237.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
      OraQuery1.Close;
 end;
 
-procedure TForm60.Button1Click(Sender: TObject);
+procedure TFSP_Snab_Group_237.Button1Click(Sender: TObject);
 var
 ExcelApplication:TExcelApplication;
 Range, Sheet: VAriant;
@@ -125,7 +125,7 @@ end;
 end;
 
 
-procedure TForm60.DBGridEh1DrawColumnCell(Sender: TObject;
+procedure TFSP_Snab_Group_237.DBGridEh1DrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumnEh;
   State: TGridDrawState);
 begin

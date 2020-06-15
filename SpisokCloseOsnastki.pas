@@ -1,4 +1,4 @@
-unit Unit61;
+unit SpisokCloseOsnastki;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   OleServer, GridsEh, ComCtrls;
 
 type
-  TForm61 = class(TForm)
+  TFSpisokCloseOsnastki = class(TForm)
     OraQuery1: TOraQuery;
     OraDataSource1: TOraDataSource;
     OraQuery1zakaz: TStringField;
@@ -50,7 +50,7 @@ type
   end;
 
 var
-  Form61: TForm61;
+  FSpisokCloseOsnastki: TFSpisokCloseOsnastki;
 dt:string;
 
 implementation
@@ -59,7 +59,7 @@ uses Unit9;
 
 {$R *.dfm}
 
-procedure TForm61.FormShow(Sender: TObject);
+procedure TFSpisokCloseOsnastki.FormShow(Sender: TObject);
 var tx:string;
 begin
 //Edit1.Text:='458';
@@ -70,7 +70,7 @@ DateTimePicker1.DateTime:=date();
 dt:=FormatDateTime('yyyymmdd',DateTimePicker1.DateTime);
 end;
 
-procedure TForm61.Button2Click(Sender: TObject);
+procedure TFSpisokCloseOsnastki.Button2Click(Sender: TObject);
 var tx:string;
 begin
 
@@ -136,12 +136,12 @@ tx:=tx+' order by ll.zakaz,ll.podr,ll.nomer';
 end;
 
 
-procedure TForm61.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFSpisokCloseOsnastki.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
      OraQuery1.Close;
 end;
 
-procedure TForm61.Button1Click(Sender: TObject);
+procedure TFSpisokCloseOsnastki.Button1Click(Sender: TObject);
 var
 ExcelApplication:TExcelApplication;
 Range, Sheet: VAriant;
@@ -168,12 +168,12 @@ end;
 
 end;
 
-procedure TForm61.DateTimePicker1Change(Sender: TObject);
+procedure TFSpisokCloseOsnastki.DateTimePicker1Change(Sender: TObject);
 begin
 dt:=FormatDateTime('yyyymm',DateTimePicker1.DateTime);
 end;
 
-procedure TForm61.DBGridEh1DrawColumnCell(Sender: TObject;
+procedure TFSpisokCloseOsnastki.DBGridEh1DrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumnEh;
   State: TGridDrawState);
 begin

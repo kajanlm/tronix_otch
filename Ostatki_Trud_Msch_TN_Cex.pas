@@ -1,4 +1,4 @@
-unit Unit54;
+unit Ostatki_Trud_Msch_TN_Cex;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   OleServer, GridsEh;
 
 type
-  TForm54 = class(TForm)
+  TFOstatki_Trud_Msch_TN_Cex = class(TForm)
     DBGridEh1: TDBGridEh;
     OraQuery1: TOraQuery;
     OraDataSource1: TOraDataSource;
@@ -41,15 +41,15 @@ type
   end;
 
 var
-  Form54: TForm54;
+  FOstatki_Trud_Msch_TN_Cex: TFOstatki_Trud_Msch_TN_Cex;
 
 implementation
 
-uses Unit53,Unit59;
+uses Ostatki_Trud_Msch,Ostatki_Trud_Msch_Coop_Cex;
 
 {$R *.dfm}
 
-procedure TForm54.FormShow(Sender: TObject);
+procedure TFOstatki_Trud_Msch_TN_Cex.FormShow(Sender: TObject);
 var tx:string;
 begin
 //Edit1.Text:='458';
@@ -122,12 +122,12 @@ tx:=tx+' order by lm.zak,lm.tknomer,lm.tkname';
 end;
 
 
-procedure TForm54.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFOstatki_Trud_Msch_TN_Cex.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
      OraQuery1.Close;
 end;
 
-procedure TForm54.Button1Click(Sender: TObject);
+procedure TFOstatki_Trud_Msch_TN_Cex.Button1Click(Sender: TObject);
 var
 ExcelApplication:TExcelApplication;
 Range, Sheet: VAriant;
@@ -156,7 +156,7 @@ end;
 
 end;
 
-procedure TForm54.DBGridEh1DrawColumnCell(Sender: TObject;
+procedure TFOstatki_Trud_Msch_TN_Cex.DBGridEh1DrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumnEh;
   State: TGridDrawState);
 begin
@@ -175,17 +175,17 @@ begin
  TDBGridEh(Sender).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
-procedure TForm54.Button2Click(Sender: TObject);
+procedure TFOstatki_Trud_Msch_TN_Cex.Button2Click(Sender: TObject);
 begin
 //  ShowMessage(Form54.edit2.Text);
 //  ShowMessage(Form54.edit1.Text);
-  Application.CreateForm(TForm59, Form59);
-  Form59.Edit2.Text:=Form54.Edit2.Text;
-  Form59.Edit1.Text:=Form54.Edit1.Text;
+  Application.CreateForm(TFOstatki_Trud_Msch_Coop_Cex, FOstatki_Trud_Msch_Coop_Cex);
+  FOstatki_Trud_Msch_Coop_Cex.Edit2.Text:=FOstatki_Trud_Msch.Edit2.Text;
+  FOstatki_Trud_Msch_Coop_Cex.Edit1.Text:=FOstatki_Trud_Msch.Edit1.Text;
 //  ShowMessage(Form54.Edit1.Text);
-  Form59.Caption:=Form54.Caption;
-  Form59.ShowModal();
-  Form59.Free;
+  FOstatki_Trud_Msch_Coop_Cex.Caption:=FOstatki_Trud_Msch.Caption;
+  FOstatki_Trud_Msch_Coop_Cex.ShowModal();
+  FOstatki_Trud_Msch_Coop_Cex.Free;
 end;
 
 end.

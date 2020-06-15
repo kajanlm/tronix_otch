@@ -1,4 +1,4 @@
-unit Unit57;
+unit Reserve_Msch_Cks_Place;
 
 interface
 
@@ -8,17 +8,16 @@ uses
   OleServer, GridsEh;
 
 type
-  TForm57 = class(TForm)
+  TFReserve_Msch_Cks_Place = class(TForm)
     OraQuery1: TOraQuery;
     OraDataSource1: TOraDataSource;
-    OraQuery1ident: TStringField;
-    OraQuery1poz: TStringField;
-    OraQuery1podpoz: TStringField;
-    OraQuery1spname: TStringField;
+    OraQuery1place: TStringField;
     OraQuery1kod: TStringField;
+    OraQuery1zavn: TStringField;
     OraQuery1kol: TFloatField;
     OraQuery1namek: TStringField;
-    OraQuery1namespr: TStringField;
+    OraQuery1name: TStringField;
+    OraQuery1skl: TStringField;
     Edit1: TEdit;
     Edit2: TEdit;
     Button1: TButton;
@@ -40,48 +39,49 @@ type
   end;
 
 var
-  Form57: TForm57;
+  FReserve_Msch_Cks_Place: TFReserve_Msch_Cks_Place;
 
 implementation
 
-uses Unit9;
-
 {$R *.dfm}
 
-procedure TForm57.FormShow(Sender: TObject);
+procedure TFReserve_Msch_Cks_Place.FormShow(Sender: TObject);
 var tx:string;
 begin
 //Edit1.Text:='458';
 //ShowMessage(Edit1.Text);
-//Edit2.Text:='4011';
+//Edit2.Text:='All';
 //ShowMessage(Edit2.Text);
-tx:='select d.ident ident,sp.poz poz,sp.podpoz podpoz,replace(replace(sp.name, CHR(13)||CHR(10),'' ''),chr(39), '' '') spname,';
-tx:=tx+'s.kod kod,sp.kol kol,kd.namek namek,';
-tx:=tx+'replace(replace(tronix_sp_name(s.sprav_id),CHR(13)||CHR(10),'' ''),chr(39), '' '') namespr';
 
-tx:=tx+' from tronix.sp sp,tronix.document d,tronix.project_list pr,tronix.sprav s,';
-tx:=tx+' tronix.koded kd,tronix.document_type dt,tronix.document_group dg';
+tx:=' ';
+tx:=tx+'select l.place as place,l.kod as kod,l.zavn as zavn,l.kol as kol,l.namek as namek,l.name as name,l.skl as skl';
+tx:=tx+' FROM (';
+tx:=tx+' select d.nomer skl, S.kod kod, pr.zavn zavn,z.mesto place,';
+tx:=tx+' sum(round(z.kol_uchet,4)) kol,kd.namek namek,replace(replace(tronix_sp_name(s.sprav_id),CHR(13)||CHR(10),'' ''),chr(39), '' '') name';
+tx:=tx+' from tronix.sprav s,tronix_zapas z,tronix_koded kd,';
+tx:=tx+' tronix.project_list pr,feb_zakaz zk, kadry_dep d';
+tx:=tx+' WHERE z.sprav_sprav_id=s.sprav_id(+) and nvl(s.can_do_self,0)=1';
+tx:=tx+' and kd.koded_id=z.koded_koded_id_uchet and d.dep_id=z.dep_dep_id(+)';
+tx:=tx+' and d.nomer=''жйя-25'' and z.uzak_uzak_id=zk.nn(+) and zk.id_project=pr.project_id(+)';
 
-tx:=tx+' where d.document_id=sp.nnn and d.id_project=pr.project_id(+) and pr.project_id='+edit1.text;
-tx:=tx+' and sp.id_sp_work=3 and sp.id_sprav=s.sprav_id and substr(s.kod,1,1)>''0''';
-tx:=tx+' and d.id_document_type=dt.document_type_id and dt.document_type_id in (18,20)';
-tx:=tx+' and d.id_document_group=dg.document_group_id and dg.ident<>''360237'' and kd.koded=sp.kode';
-//     and rownum<11
-tx:=tx+' order by d.ident,sp.poz,sp.podpoz';
+if edit1.text<>'All' then
+tx:=tx+' and pr.project_id='+edit1.text;
 
+tx:=tx+' group by d.nomer,z.mesto,s.kod, pr.zavn, kd.namek, replace(replace(tronix_sp_name(s.sprav_id),CHR(13)||CHR(10),'' ''),chr(39), '' '')';
+tx:=tx+' ) l';
 
 //ShowMEssage(tx);
+
   With OraQuery1 Do
      begin
-        FieldByName('ident').DisplayLAbel:='мюхлемнбюмхе ';
-        FieldByName('poz').DisplayLAbel:='ед.хгл. ';
-        FieldByName('podpoz').DisplayLAbel:='мюхлемнбюмхе ';
-        FieldByName('spname').DisplayLAbel:='ед.хгл. ';
-        FieldByName('kod').DisplayLAbel:='йнд ';
-        FieldByName('kol').DisplayLAbel:='хгцнрнбхрэ он рм ';
+        FieldByName('place').DisplayLAbel:='ъвеийю ';
+        FieldByName('kod').DisplayLAbel:='йнд хгд-хъ';
+        FieldByName('zavn').DisplayLAbel:='гюб.╧ ';
+        FieldByName('kol').DisplayLAbel:='йнк-бн ';
         FieldByName('namek').DisplayLAbel:='ед.хгл. ';
-        FieldByName('namespr').DisplayLAbel:='мюхлемнбюмхе ';
-     end;
+        FieldByName('name').DisplayLAbel:='мюхлемнбюмхе хгдекхъ ляв';
+        FieldByName('skl').DisplayLAbel:='яйкюд ';
+    end;
 
    OraQuery1.SQL.Text:=tx;
 
@@ -90,12 +90,12 @@ tx:=tx+' order by d.ident,sp.poz,sp.podpoz';
 end;
 
 
-procedure TForm57.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFReserve_Msch_Cks_Place.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
      OraQuery1.Close;
 end;
 
-procedure TForm57.Button1Click(Sender: TObject);
+procedure TFReserve_Msch_Cks_Place.Button1Click(Sender: TObject);
 var
 ExcelApplication:TExcelApplication;
 Range, Sheet: VAriant;
@@ -108,10 +108,8 @@ ExcelWorkbook1.ConnectTo(ExcelApplication.Workbooks.Add(EmptyParam,LOCALE_USER_D
 ExcelWorkBook1.Activate(LOCALE_USER_DEFAULT);
 ExcelWorksheet1.ConnectTo(ExcelApplication.ActiveWorkbook.ActiveSheet as ExcelWorkSheet);
 
-
   Sheet := ExcelWorkbook1.Sheets[1];
   Range := Sheet.Columns;
-
 
  with SaveDialog1 do
   begin
@@ -125,7 +123,7 @@ end;
 end;
 
 
-procedure TForm57.DBGridEh1DrawColumnCell(Sender: TObject;
+procedure TFReserve_Msch_Cks_Place.DBGridEh1DrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumnEh;
   State: TGridDrawState);
 begin
@@ -134,4 +132,5 @@ begin
 
  TDBGridEh(Sender).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
+
 end.

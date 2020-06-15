@@ -1,4 +1,4 @@
-unit Unit53;
+unit Ostatki_Trud_Msch;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   OleServer, GridsEh;
 
 type
-  TForm53 = class(TForm)
+  TFOstatki_Trud_Msch = class(TForm)
     OraQuery1: TOraQuery;
     OraDataSource1: TOraDataSource;
     Edit1: TEdit;
@@ -40,21 +40,22 @@ type
   end;
 
 var
-  Form53: TForm53;
+  FOstatki_Trud_Msch: TFOstatki_Trud_Msch;
 
 implementation
 
-uses Unit9,Unit54;
+uses Unit9,Ostatki_Trud_Msch_TN_Cex;
 
 {$R *.dfm}
 
-procedure TForm53.FormShow(Sender: TObject);
+procedure TFOstatki_Trud_Msch.FormShow(Sender: TObject);
 var tx:string;
 begin
 //Edit1.Text:='458';
 //ShowMessage(Edit1.Text);
 //Edit2.Text:='4011';
 //ShowMessage(Edit2.Text);
+
 tx:='select lm.zak zak,lm.denomer denomer,lm.tktrud tktrud,lm.trudz trudz,lm.osttrud osttrud,lm.trudnz trudnz,lm.iddenomer iddenomer';
 tx:=tx+' from (';
 tx:=tx+' select distinct l.zak,l.denomer,max(l.tktrud) tktrud,max(l.trudz ) trudz,max(trudnz) trudnz,(max(l.tktrud)-max(l.trudz)) osttrud,l.iddenomer iddenomer';
@@ -103,12 +104,12 @@ tx:=tx+' ) lm';
 end;
 
 
-procedure TForm53.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFOstatki_Trud_Msch.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
      OraQuery1.Close;
 end;
 
-procedure TForm53.Button1Click(Sender: TObject);
+procedure TFOstatki_Trud_Msch.Button1Click(Sender: TObject);
 var
 ExcelApplication:TExcelApplication;
 Range, Sheet: VAriant;
@@ -137,23 +138,19 @@ end;
 
 end;
 
-procedure TForm53.DBGridEh1DblClick(Sender: TObject);
+procedure TFOstatki_Trud_Msch.DBGridEh1DblClick(Sender: TObject);
 begin
-  Form53.edit2.Text:=oraQuery1.FieldByName('iddenomer').asString;
-//  ShowMessage(Form53.edit2.Text);
-//  ShowMessage(Form53.edit1.Text);
-  Application.CreateForm(TForm54, Form54);
-  Form54.Edit1.Text:=Form53.Edit1.Text;
-//  ShowMessage(Form54.Edit1.Text);
-  Form54.Edit2.Text:=Form53.Edit2.Text;
-  Form54.Caption:='Остатки трудоёмкости по МСЧ: '+Form9.oraQuery1.FieldByName('name').asString;
-//  if  Form53.EDIT2.TEXT<>'All' then
- Form54.Caption:=Form54.Caption+'  ЦЕХ='+oraQuery1.FieldByName('denomer').asString;
-  Form54.ShowModal();
-  Form54.Free;
+  FOstatki_Trud_Msch.edit2.Text:=oraQuery1.FieldByName('iddenomer').asString;
+  Application.CreateForm(TFOstatki_Trud_Msch_TN_Cex, FOstatki_Trud_Msch_TN_Cex);
+  FOstatki_Trud_Msch_TN_Cex.Edit1.Text:=FOstatki_Trud_Msch.Edit1.Text;
+  FOstatki_Trud_Msch_TN_Cex.Edit2.Text:=FOstatki_Trud_Msch.Edit2.Text;
+  FOstatki_Trud_Msch_TN_Cex.Caption:='Остатки трудоёмкости по МСЧ: '+Form9.oraQuery1.FieldByName('name').asString;
+  FOstatki_Trud_Msch_TN_Cex.Caption:=FOstatki_Trud_Msch_TN_Cex.Caption+'  ЦЕХ='+oraQuery1.FieldByName('denomer').asString;
+  FOstatki_Trud_Msch_TN_Cex.ShowModal();
+  FOstatki_Trud_Msch_TN_Cex.Free;
 end;
 
-procedure TForm53.DBGridEh1DrawColumnCell(Sender: TObject;
+procedure TFOstatki_Trud_Msch.DBGridEh1DrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumnEh;
   State: TGridDrawState);
 begin

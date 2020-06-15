@@ -1,4 +1,4 @@
-unit Unit66;
+unit No_Close_Pue_Cex_Proekt;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   OleServer, GridsEh, ComCtrls, ExtCtrls;
 
 type
-  TForm66 = class(TForm)
+  TFNo_Close_Pue_Cex_Proekt = class(TForm)
     DBGridEh1: TDBGridEh;
     OraQuery1: TOraQuery;
     OraDataSource1: TOraDataSource;
@@ -39,14 +39,14 @@ type
   end;
 
 var
-  Form66: TForm66;
+  FNo_Close_Pue_Cex_Proekt: TFNo_Close_Pue_Cex_Proekt;
 implementation
 
 uses Unit9;
 
 {$R *.dfm}
 
-procedure TForm66.FormShow(Sender: TObject);
+procedure TFNo_Close_Pue_Cex_Proekt.FormShow(Sender: TObject);
 var tx:string;
 begin
 //Edit1.Text:='458';
@@ -114,12 +114,12 @@ tx:=tx+' order by tt.zak,tt.nomertk,tt.nomertx';
 
  end;
 
-procedure TForm66.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFNo_Close_Pue_Cex_Proekt.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
      OraQuery1.Close;
 end;
 
-procedure TForm66.Button1Click(Sender: TObject);
+procedure TFNo_Close_Pue_Cex_Proekt.Button1Click(Sender: TObject);
 var
 ExcelApplication:TExcelApplication;
 Range, Sheet: VAriant;

@@ -1,4 +1,4 @@
-unit Unit63;
+unit Naryd_UKR_Pue;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   OleServer, GridsEh;
 
 type
-  TForm63 = class(TForm)
+  TFNaryd_UKR_Pue = class(TForm)
     OraQuery1: TOraQuery;
     OraDataSource1: TOraDataSource;
     OraQuery1podr: TStringField;
@@ -50,7 +50,7 @@ type
   end;
 
 var
-  Form63: TForm63;
+  FNaryd_UKR_Pue: TFNaryd_UKR_Pue;
 
 implementation
 
@@ -58,13 +58,14 @@ uses Unit9;
 
 {$R *.dfm}
 
-procedure TForm63.FormShow(Sender: TObject);
+procedure TFNaryd_UKR_Pue.FormShow(Sender: TObject);
 var tx:string;
 begin
 //Edit1.Text:='458';
 //ShowMessage(Edit1.Text);
 //Edit2.Text:='4011';
 //ShowMessage(Edit2.Text);
+
 tx:=' ';
 tx:=tx+'select tt.dtnnomer podr,tt.zavn zavn,tt.zak zak,tt.tkunomer tkunomer,tt.typnomer typnomer,';
 tx:=tx+' tt.tkname tkname,tt.txnomer txnomer,tt.txname txname,tt.tnnomer tnnomer,';
@@ -157,12 +158,12 @@ tx:=tx+' order by tt.dtnnomer,tt.zavn,tt.typnomer,txnomer,tnnomer';
 end;
 
 
-procedure TForm63.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFNaryd_UKR_Pue.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
      OraQuery1.Close;
 end;
 
-procedure TForm63.Button1Click(Sender: TObject);
+procedure TFNaryd_UKR_Pue.Button1Click(Sender: TObject);
 var
 ExcelApplication:TExcelApplication;
 Range, Sheet: VAriant;
@@ -190,7 +191,7 @@ end;
 end;
 
 
-procedure TForm63.DBGridEh1DrawColumnCell(Sender: TObject;
+procedure TFNaryd_UKR_Pue.DBGridEh1DrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumnEh;
   State: TGridDrawState);
 begin

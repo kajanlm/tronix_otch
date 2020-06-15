@@ -1,4 +1,4 @@
-unit Unit65;
+unit Norm_Trud_Prof_Razr_Setka;
 
 interface
 
@@ -8,20 +8,22 @@ uses
   OleServer, GridsEh, ComCtrls, ExtCtrls;
 
 type
-  TForm65 = class(TForm)
+  TFNorm_Trud_Prof_Razr_Setka = class(TForm)
     DBGridEh1: TDBGridEh;
     OraQuery1: TOraQuery;
     OraDataSource1: TOraDataSource;
     Edit1: TEdit;
     Edit2: TEdit;
     OraQuery1zak: TStringField;
-    OraQuery1cex: TStringField;
-    OraQuery1ukr: TStringField;
+    OraQuery1txnomer: TStringField;
     OraQuery1razrjd: TStringField;
     OraQuery1tars: TStringField;
     OraQuery1trudoem: TFloatField;
     OraQuery1kodprof: TStringField;
     OraQuery1prof: TStringField;
+    OraQuery1denomer: TStringField;
+    OraQuery1tknomer: TStringField;
+    OraQuery1tkname: TStringField;
     Button1: TButton;
     SaveDialog1: TSaveDialog;
     ExcelApplication1: TExcelApplication;
@@ -40,14 +42,14 @@ type
   end;
 
 var
-  Form65: TForm65;
+  FNorm_Trud_Prof_Razr_Setka: TFNorm_Trud_Prof_Razr_Setka;
 implementation
 
 uses Unit9;
 
 {$R *.dfm}
 
-procedure TForm65.FormShow(Sender: TObject);
+procedure TFNorm_Trud_Prof_Razr_Setka.FormShow(Sender: TObject);
 var tx:string;
 begin
 //Edit1.Text:='458';
@@ -56,46 +58,37 @@ begin
 //ShowMessage(Edit2.Text);
 
 tx:=' ';
-tx:='select tt.zak zak,tt.cex cex,tt.ukr ukr, tt.razrjd razrjd,tt.tars tars,tt.trudoem trudoem,tt.kodprof kodprof,tt.prof prof';
-tx:=tx+' from (';
-tx:=tx+' select l.projectid projectid,l.zak zak,decode(substr(l.ukr,1,2),''œ–'',''œ–'',l.ukr) ukr,l.cex cex,';
-tx:=tx+' l.kodprof kodprof,l.razrjd razrjd,l.tars tars,sum(l.kol) kol,sum(l.norm) trudoem,l.nprof prof';
-tx:=tx+' from (';
-tx:=tx+' select tx.project_project_id projectid, z.zak zak, tx.nomer nomer,tv.kol kol, tv.time norm, to_char(tv.razpjd,''9'') razrjd,';
-tx:=tx+' (vr.kod||yr.kod) tars, kv.kod_prof kodprof,kv.name nprof, substr(dd.nomer,1,2) cex,';
-tx:=tx+' (select nomer from nordsy.texkompl';
-tx:=tx+' where type_tex_type_tex_id in (select type_tex_id from nordsy.type_tex where kod = ''” –'')';
-tx:=tx+' and rownum <= 1';
-tx:=tx+' connect by texkompl_id = prior texkompl_texkompl_id';
-tx:=tx+' start with texkompl_id = tx.texkompl_id) ukr';
+tx:='select z.zak zak,tx.nomer txnomer,to_char(tv.razpjd,''9'') razrjd,(vr.kod||yr.kod) tars,tv.time trudoem,';
+tx:=tx+'kv.kod_prof kodprof,kv.name prof,de.nomer denomer,tk.nomer tknomer,tk.name tkname';
 
-tx:=tx+' from nordsy.tex_kvalif tv,nordsy.kvalif kv,nordsy.texkompl tx,nordsy.texkompl tk,feb_zakaz z,tronix_project_list pr,';
-tx:=tx+' nordsy.vid_rabot vr,nordsy.ysl_rabot yr,kadry_dep de,kadry_dep dd';
+tx:=tx+' from nordsy.tex_kvalif tv,nordsy.kvalif kv,nordsy.texkompl tx,nordsy.texkompl tk,';
+tx:=tx+' feb_zakaz z,nordsy.vid_rabot vr,nordsy.ysl_rabot yr,kadry_dep de,kadry_dep dd,tronix_project_list pr';
 
 tx:=tx+' where tx.project_project_id=pr.project_id(+) and tv.texkompl_texkompl_id= tx.texkompl_id(+)';
-tx:=tx+' and tv.kvalif_kvalif_id=kv.kvalif_id and vid_rabot_vid_rabot_id=vr.vid_rabot_id(+)';
-tx:=tx+' and ysl_rabot_ysl_rabot_id=yr.ysl_rabot_id(+) and tv.time is not null';
-tx:=tx+' and tx.dep_dep_id=de.dep_id(+) and dd.dep_id='+edit2.text+' and (de.dep_dep_id=dd.dep_id or de.nomer=dd.nomer)';
+tx:=tx+' and tv.kvalif_kvalif_id=kv.kvalif_id(+) and vid_rabot_vid_rabot_id=vr.vid_rabot_id(+)';
+tx:=tx+' and ysl_rabot_ysl_rabot_id=yr.ysl_rabot_id(+) and tx.dep_dep_id=de.dep_id(+)';
+tx:=tx+' and dd.dep_id='+edit2.text+' and (de.dep_dep_id=dd.dep_id or de.dep_id=dd.dep_id)';
+//tx:=tx+' and dd.dep_id='+edit2.text+' and (de.dep_dep_id=dd.dep_id or de.dep_id=dd.nomer)';
 tx:=tx+' and pr.project_id=z.id_project and z.id_project='+edit1.text;
-tx:=tx+' and nordsy.uzak_tx(tx.texkompl_id)=z.nn';
-tx:=tx+' and nvl(nordsy.go_in_tk(tx.texkompl_texkompl_id,''œ”≈'',''TYPE''),tx.texkompl_texkompl_id)=tk.texkompl_id';
-tx:=tx+' ) l';
-tx:=tx+' group by l.projectid,l.zak,decode(substr(l.ukr,1,2),''œ–'',''œ–'',l.ukr),l.cex,l.kodprof,l.razrjd,l.tars,l.nprof';
-tx:=tx+' ) tt';
-tx:=tx+' order by tt.projectid,tt.zak,tt.cex,tt.ukr,tt.prof,tt.razrjd,tt.tars';
 
+tx:=tx+' and nordsy.uzak_tx(tx.texkompl_id)=z.nn';
+tx:=tx+' and nvl(nordsy.go_in_tk(tx.TEXkompl_TEXKOMPL_ID,''œ”≈'',''TYPE''),tx.TEXkompl_TEXKOMPL_ID)=tk.texkompl_id';
+
+tx:=tx+' order by tk.nomer,tx.nomer,kv.kod_prof,vr.kod,yr.kod';
 
 //ShowMEssage(tx);
   With OraQuery1 Do
      begin
         FieldByName('zak').DisplayLAbel:='«¿¬.π ';
-        FieldByName('cex').DisplayLAbel:='÷≈’ ';
-        FieldByName('ukr').DisplayLAbel:='” – ';
+        FieldByName('txnomer').DisplayLAbel:='œ“ /÷≈’Œ ŒŒœ ';
         FieldByName('razrjd').DisplayLAbel:='–¿«–ﬂƒ ';
         FieldByName('tars').DisplayLAbel:='“¿–.—≈“ ¿ ';
-        FieldByName('trudoem').DisplayLAbel:='“–-“‹ ';
-        FieldByName('kodprof').DisplayLAbel:=' Œƒ œ–Œ‘≈——»» ';
+        FieldByName('trudoem').DisplayLAbel:='“–”ƒŒ®Ã Œ—“‹ ';
+        FieldByName('kodprof').DisplayLAbel:=' Œƒ œ–Œ‘. ';
         FieldByName('prof').DisplayLAbel:='œ–Œ‘≈——»ﬂ ';
+        FieldByName('denomer').DisplayLAbel:='÷≈’ ';
+        FieldByName('tknomer').DisplayLAbel:='“  ';
+        FieldByName('tkname').DisplayLAbel:='Õ¿»Ã≈ÕŒ¬¿Õ»≈ “ ';
      end;
 
    OraQuery1.SQL.Text:=tx;
@@ -104,12 +97,12 @@ tx:=tx+' order by tt.projectid,tt.zak,tt.cex,tt.ukr,tt.prof,tt.razrjd,tt.tars';
 
  end;
 
-procedure TForm65.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFNorm_Trud_Prof_Razr_Setka.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
      OraQuery1.Close;
 end;
 
-procedure TForm65.Button1Click(Sender: TObject);
+procedure TFNorm_Trud_Prof_Razr_Setka.Button1Click(Sender: TObject);
 var
 ExcelApplication:TExcelApplication;
 Range, Sheet: VAriant;
@@ -135,10 +128,9 @@ ExcelWorksheet1.ConnectTo(ExcelApplication.ActiveWorkbook.ActiveSheet as ExcelWo
   SaveDBGridEhToExportFile(TDBGridEhExportAsXLS,DBGridEh1,SaveDialog1.FileName+ '.xls' ,true);
   end;
 end;
-
 end;
 
-procedure TForm65.DBGridEh1DrawColumnCell(Sender: TObject;
+procedure TFNorm_Trud_Prof_Razr_Setka.DBGridEh1DrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumnEh;
   State: TGridDrawState);
 begin
@@ -146,7 +138,6 @@ begin
     TDBGridEh(Sender).Canvas.Font.Style:=[fsbold];
 
  TDBGridEh(Sender).DefaultDrawColumnCell(Rect, DataCol, Column, State);
-
 end;
 
 end.

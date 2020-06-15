@@ -57,12 +57,7 @@ uses
   addzams in 'addzams.pas' {zams},
   Unit99 in 'Unit99.pas' {DIF_OTCH_OLD},
   Unit52 in 'Unit52.pas' {Form52},
-  Unit53 in 'Unit53.pas' {Form53},
-  Unit54 in 'Unit54.pas' {Form54},
-  Unit55 in 'Unit55.pas' {Form55},
   Unit56 in 'Unit56.pas' {Form56},
-  Unit60 in 'Unit60.pas' {Form60},
-  Unit61 in 'Unit61.pas' {Form61},
   cpct in 'cpct.pas' {copycnct},
   cnctbody in 'cnctbody.pas' {s_contract},
   cnctinfo in 'cnctinfo.pas' {cntinfo},
@@ -75,7 +70,10 @@ uses
   r_over_tmc in 'r_over_tmc.pas' {over_tmc},
   r_calendar in 'r_calendar.pas' {f_calendar},
   r_set_mnomen in 'r_set_mnomen.pas' {set_mnomen},
-  r_set_mnomen_details in 'r_set_mnomen_details.pas' {set_mnomen_details};
+  r_set_mnomen_details in 'r_set_mnomen_details.pas' {set_mnomen_details},
+  r_dates_inttns in 'r_dates_inttns.pas' {input_ttns},
+  t_utils in 't_utils.pas',
+  r_dcspcn in 'r_dcspcn.pas' {docSpCnt};
 
 {$R *.res}
 
@@ -129,12 +127,9 @@ begin
   Application.CreateForm(TForm47, Form47);
   Application.CreateForm(TForm48, Form48);
   Application.CreateForm(TForm52, Form52);
-  Application.CreateForm(TForm53, Form53);
-  Application.CreateForm(TForm55, Form55);
-  Application.CreateForm(TForm60, Form60);
-  Application.CreateForm(TForm61, Form61);
-  Application.CreateForm(Tset_mnomen, set_mnomen);
-  Application.CreateForm(Tset_mnomen_details, set_mnomen_details);
-  //Application.CreateForm(Tover_tmc, over_tmc);
+  Application.CreateForm(TdocSpCnt, docSpCnt);
+  //  Application.CreateForm(TForm55, Form55);
+//  Application.CreateForm(TForm60, Form60);
+//  Application.CreateForm(TForm61, Form61);
   Application.Run;
 end.

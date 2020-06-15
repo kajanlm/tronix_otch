@@ -9,7 +9,7 @@ uses
 type
   Tover_tmc = class(TForm)
     cb_cehs: TComboBox;
-    OraQueryS: TOraQuery;
+    OraQueryS: TOraQuery;  
     invi_cb_cehs: TComboBox;
     Button1: TButton;
     procedure FormShow(Sender: TObject);

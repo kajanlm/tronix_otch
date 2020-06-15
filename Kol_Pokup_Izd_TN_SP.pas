@@ -1,4 +1,4 @@
-unit Unit68;
+unit Kol_Pokup_Izd_TN_SP;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   OleServer, GridsEh;
 
 type
-  TForm68 = class(TForm)
+  TFKol_Pokup_Izd_TN_SP = class(TForm)
     OraQuery1: TOraQuery;
     OraDataSource1: TOraDataSource;
     OraQuery1kod: TStringField;
@@ -42,15 +42,15 @@ type
   end;
 
 var
-  Form68: TForm68;
+  FKol_Pokup_Izd_TN_SP: TFKol_Pokup_Izd_TN_SP;
 
 implementation
 
-//uses unit67;
+//uses Kol_All_Pokup_Izd_Proekt;
 
 {$R *.dfm}
 
-procedure TForm68.FormShow(Sender: TObject);
+procedure TFKol_Pokup_Izd_TN_SP.FormShow(Sender: TObject);
 var tx:string;
 begin
 //Edit1.Text:='458';
@@ -127,12 +127,12 @@ tx:=tx+' order by l.kod,l.kodm,l.nomertx';
 end;
 
 
-procedure TForm68.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFKol_Pokup_Izd_TN_SP.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
      OraQuery1.Close;
 end;
 
-procedure TForm68.Button1Click(Sender: TObject);
+procedure TFKol_Pokup_Izd_TN_SP.Button1Click(Sender: TObject);
 var
 ExcelApplication:TExcelApplication;
 Range, Sheet: VAriant;
@@ -160,7 +160,7 @@ end;
 end;
 
 
-procedure TForm68.DBGridEh1DrawColumnCell(Sender: TObject;
+procedure TFKol_Pokup_Izd_TN_SP.DBGridEh1DrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumnEh;
   State: TGridDrawState);
 begin
