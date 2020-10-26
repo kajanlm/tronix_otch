@@ -28,7 +28,7 @@ var
 
 implementation
 
-uses Unit9, Unit38,Unit58,Unit52,Unit62,Unit73;
+uses Unit9, Unit38,Naryd_Close_PDO,Pasport_Plant,Naryd_Delete;
 
 {$R *.dfm}
 
@@ -75,65 +75,85 @@ begin
 
    if form32.Caption='Наряды по цеху,проекту. Выберите цех' then
      begin
+  Application.CreateForm(TForm9, Form9);
   form9.Caption:='Наряды по цеху,проекту';
   form9.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
   form9.ShowModal();
+  Form9.Free;
      end;
 
    if form32.Caption='Удалённые наряды. Выберите цех' then
      begin
-  Application.CreateForm(TForm73, Form73);
-  form73.Caption:='Удалённые наряды';
-  form73.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
-  form73.Caption:='Удалённые наряды:'+'  ЦЕХ='+Form32.oraQuery1.FieldByName('nomer').asString;
-  form73.ShowModal();
-  Form73.Free;
+  Application.CreateForm(TFNaryd_Delete, FNaryd_Delete);
+  fNaryd_Delete.Caption:='Удалённые наряды';
+  fNaryd_Delete.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
+  fNaryd_Delete.Caption:='Удалённые наряды:'+'  ЦЕХ='+Form32.oraQuery1.FieldByName('nomer').asString;
+  fNaryd_Delete.ShowModal();
+  FNaryd_Delete.Free;
      end;
 
   if form32.Caption='Остатки трудоёмкости по МСЧ. Выберите цех' then
      begin
+  Application.CreateForm(TForm9, Form9);
   form9.Caption:='Остатки трудоёмкости по МСЧ';
   form9.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
   form9.ShowModal();
+  form9.Free;
+     end;
+
+   if form32.Caption='Остатки трудоёмкости по ПУЕ(без МСЧ). Выберите цех' then
+     begin
+
+  Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Остатки трудоёмкости по ПУЕ(без МСЧ). Выберите проект';
+  form9.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
+  form9.ShowModal();
+  Form9.free;
      end;
 
    if form32.Caption='Паспорт предприятия - Фактическая тр-ть по цеху в разрезе профессий,рабочих ЯСЗ,подрядчиков за период. Выберите цех' then
      begin
-  Application.CreateForm(TForm62, Form62);
-  form62.Caption:='Паспорт предприятия - Фактическая тр-ть по цеху в разрезе профессий,рабочих ЯСЗ,подрядчиков по цеху '+oraQuery1.FieldByName('nomer').asString;
-  form62.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
-  form62.ShowModal();
-  Form62.Free;
+  Application.CreateForm(TFPasport_Plant, FPasport_Plant);
+  FPasport_Plant.Caption:='Паспорт предприятия - Фактическая тр-ть по цеху в разрезе профессий,рабочих ЯСЗ,подрядчиков по цеху '+oraQuery1.FieldByName('nomer').asString;
+  FPasport_Plant.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
+  FPasport_Plant.ShowModal();
+  FPasport_Plant.Free;
       end;
 
    if form32.Caption='Нормированная тр-ть по цеху в разрезе профессий,разрядов,тарифных сеток по проекту. Выберите цех' then
      begin
+  Application.CreateForm(TForm9, Form9);
   form9.Caption:='Нормированная тр-ть по цеху в разрезе профессий,разрядов,тарифных сеток по проекту. Выберите проект';
   form9.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
   form9.ShowModal();
+  form9.free;
      end;
 
   if form32.Caption='Суммарная нормированная тр-ть по цеху в разрезе разрядов,тарифных сеток,профессий c привязкой к УКР по проекту. Выберите цех' then
      begin
+  Application.CreateForm(TForm9, Form9);
   form9.Caption:='Суммарная нормированная тр-ть по цеху в разрезе разрядов,тарифных сеток,профессий c привязкой к УКР по проекту. Выберите проект';
   form9.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
   form9.ShowModal();
+  form9.free;
      end;
 
   if form32.Caption='Незакрытые ПУЕ(без МСЧ) по цеху по проекту. Выберите цех' then
      begin
+  Application.CreateForm(TForm9, Form9);
   form9.Caption:='Незакрытые ПУЕ(без МСЧ) по цеху по проекту. Выберите проект';
   form9.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
   form9.ShowModal();
+  form9.free;
      end;
 
   if form32.Caption='Наряды,закрытые за период по цеху (ПДО). Выберите цех' then
      begin
-  Application.CreateForm(TForm58, Form58);
-  form58.Caption:='Наряды,закрытые за период по цеху '+oraQuery1.FieldByName('nomer').asString;
- form58.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
-  form58.ShowModal();
-  Form58.Free;
+  Application.CreateForm(TFNaryd_Close_Pdo, FNaryd_Close_Pdo);
+  FNaryd_Close_Pdo.Caption:='Наряды,закрытые за период по цеху '+oraQuery1.FieldByName('nomer').asString;
+  FNaryd_Close_Pdo.Edit1.text:=oraQuery1.FieldByName('dep_id').asString;
+  FNaryd_Close_Pdo.ShowModal();
+  FNaryd_Close_Pdo.Free;
      end;
 
 end;
@@ -147,7 +167,8 @@ or (form32.Caption='Потребность по материалам в разрезе чертежа. Выберите цех')
 or (form32.Caption='Наряды по цеху,проекту. Выберите цех')
 then
 begin
-//howMessage('all');
+//ShowMessage('all');
+  Application.CreateForm(TForm9, Form9);
    if form32.Caption='Наряды по цеху,проекту. Выберите цех' then
     form9.Caption:='Наряды по цеху,проекту';
 
@@ -159,24 +180,25 @@ begin
 
   form9.Edit1.text:='All';
   form9.ShowModal();
+  form9.free;
   end;
 
  if form32.Caption='Наряды,закрытые за период по цеху (ПДО). Выберите цех' then
  begin
-  Application.CreateForm(TForm58, Form58);
-  form58.Caption:='Наряды,закрытые за период по всем цехам';
-  form58.Edit1.text:='All';
-  form58.ShowModal();
-  Form58.Free;
+  Application.CreateForm(TFNaryd_Close_PDO, FNaryd_Close_PDO);
+  fNaryd_Close_PDO.Caption:='Наряды,закрытые за период по всем цехам';
+  fNaryd_Close_PDO.Edit1.text:='All';
+  fNaryd_Close_PDO.ShowModal();
+  FNaryd_Close_PDO.Free;
  end;
 
  if form32.Caption='Удалённые наряды. Выберите цех' then
  begin
-  Application.CreateForm(TForm73, Form73);
-  form73.Caption:='Удалённые наряды по всем цехам';
-  form73.Edit1.text:='All';
-  form73.ShowModal();
-  Form73.Free;
+  Application.CreateForm(TFNaryd_Delete, FNaryd_Delete);
+  fNaryd_Delete.Caption:='Удалённые наряды по всем цехам';
+  fNaryd_Delete.Edit1.text:='All';
+  fNaryd_Delete.ShowModal();
+  FNaryd_Delete.Free;
   end;
 
 end;

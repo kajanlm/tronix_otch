@@ -20,6 +20,7 @@ type
     ceh: TComboBox;
     invi_ceh: TComboBox;
     Label4: TLabel;
+    nomen_list: TButton;
     procedure FormShow(Sender: TObject);
     procedure Image2Click(Sender: TObject);
     procedure skodKeyPress(Sender: TObject; var Key: Char);
@@ -28,6 +29,7 @@ type
     procedure gridDblClick(Sender: TObject);
     procedure cehChange(Sender: TObject);
     procedure blockClick(Sender: TObject);
+    procedure nomen_listClick(Sender: TObject);
   private
     { Private declarations }
     procedure Select;
@@ -42,7 +44,7 @@ var
 
 implementation
 
-uses Unit1, Unit9, r_set_mnomen_details;
+uses Unit1, Unit9, t_utils, r_set_mnomen_details;
 
 {$R *.dfm}
 
@@ -266,6 +268,21 @@ end;
 procedure Tset_mnomen.blockClick(Sender: TObject);
 begin
   Select;
+end;
+
+procedure Tset_mnomen.nomen_listClick(Sender: TObject);
+var ch : string;
+begin
+  if MessageDlg('Создать EXCEL-отчет: Перечень основной номенклатуры за период: ' +date_f + '.' + date_s + '?',
+  mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+    exit;
+
+  if ceh.itemIndex <> -1 then
+    ch := ceh.Items[ceh.itemIndex]
+  else
+    ch := '';//unassigned;
+
+  main_nomenclature_list(date_f, date_s, ch);
 end;
 
 end.

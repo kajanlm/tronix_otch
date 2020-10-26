@@ -4,25 +4,38 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, DB, MemDS, DBAccess, Ora;
+  Dialogs, StdCtrls, DB, MemDS, DBAccess, Ora, GridsEh, DBGridEh, ExtCtrls;
 
 type
   TdocSpCnt = class(TForm)
     Query: TOraQuery;
-    projects: TComboBox;
-    invi_projects: TComboBox;
-    documents: TComboBox;
-    invi_documents: TComboBox;
-    search: TEdit;
-    find: TButton;
+    grid: TDBGridEh;
+    dataSource: TOraDataSource;
+    projectSearch: TEdit;
+    projectFind: TButton;
+    treeSearch: TEdit;
+    treeFind: TButton;
+    treeType: TComboBox;
+    Label1: TLabel;
+    Label2: TLabel;
+    project: TLabel;
+    gridTree: TDBGridEh;
+    dataSourceTree: TOraDataSource;
+    QueryTree: TOraQuery;
     create: TButton;
+    blockMask: TPanel;
     procedure FormShow(Sender: TObject);
-    procedure projectsChange(Sender: TObject);
-    procedure findClick(Sender: TObject);
+    procedure treeTypeChange(Sender: TObject);
+    procedure projectFindClick(Sender: TObject);
+    procedure gridDblClick(Sender: TObject);
+    procedure treeFindClick(Sender: TObject);
     procedure createClick(Sender: TObject);
+    procedure treeSearchChange(Sender: TObject);
   private
     { Private declarations }
-    procedure documentsList;
+    PROJECT_ID : string;
+    procedure selectProjects;
+    procedure ChangeTypeALock;
   public
     { Public declarations }
   end;
@@ -36,76 +49,106 @@ implementation
 
 uses Unit1, t_utils;
 
+procedure TdocSpCnt.ChangeTypeALock;
+begin
+  if treeType.ItemIndex = 0 then
+    treeFind.Caption := 'Показать спецификации'
+  else
+    treeFind.Caption := 'Показать ПУЕ';
+
+  QueryTree.Close;
+  gridTree.Enabled := false;
+  Create.Enabled := false;
+
+  blockMask.Visible := true;
+end;
+
+procedure TdocSpCnt.selectProjects;
+var SQL : string;
+begin
+  ChangeTypeALock;
+  
+  SQL := 'SELECT PROJECT_ID as ID, ZAVN as PROJECT, NAME FROM TRONIX.PROJECT_LIST WHERE DATE_END is null and ZAVN is not null ';
+
+  if length(projectSearch.Text) > 0 then
+  begin
+    SQL := SQL + 'and ZAVN like ' + char(39) + '%' + AnsiUpperCase(projectSearch.Text) + '%' + char(39) + ' ';
+  end;
+
+  SQL := SQL + 'ORDER BY PROJECT ASC';
+  form1.execQuery(Query, SQL, false);
+
+end;
+
 procedure TdocSpCnt.FormShow(Sender: TObject);
-var
-SQL : string;
 begin
-  SQL := 'SELECT * FROM TRONIX.PROJECT_LIST ORDER BY PROJECT';
-  form1.execQuery(Query, SQL, false);
+  PROJECT_ID := '-1';
+  PROJECT.Caption := 'ПРОЕКТ: не выбран';
+  selectProjects;
+end;
 
-  projects.Clear;
-  invi_projects.Clear;
+procedure TdocSpCnt.treeTypeChange(Sender: TObject);
+begin
+  ChangeTypeALock;
+end;
 
-  documents.Clear;
-  invi_documents.Clear;
+procedure TdocSpCnt.projectFindClick(Sender: TObject);
+begin
+  selectProjects;
+end;
 
-  while not Query.Eof do
+procedure TdocSpCnt.gridDblClick(Sender: TObject);
+begin
+  PROJECT_ID := Query.FieldByName('ID').asString;
+  PROJECT.Caption := 'ПРОЕКТ: ' + Query.FieldByName('PROJECT').AsString;
+
+  ChangeTypeALock;
+end;
+
+procedure TdocSpCnt.treeFindClick(Sender: TObject);
+var SQL : string;
+begin
+  if PROJECT_ID = '-1' then
   begin
-    projects.Items.Add(Query.FieldByName('name').asString);
-    invi_projects.Items.Add(Query.FieldByName('PROJECT_ID').asString);
-
-    Query.Next;
-  end;
-
-  projects.ItemIndex := -1;
-end;
-
-procedure TdocSpCnt.projectsChange(Sender: TObject);
-begin
-  documentsList;
-end;
-
-procedure TdocSpCnt.findClick(Sender: TObject);
-begin
-  documentsList;
-end;
-
-procedure TdocSpCnt.documentsList;
-var
-SQL : string;
-begin
-  if (projects.ItemIndex = -1) then
+    showMessage('Выберите проект!');
     exit;
-
-  documents.Clear;
-  invi_documents.Clear;
-
-  SQL := 'select * from tronix.document where id_project = ' + invi_projects.Items[projects.ItemIndex];
-  if (search.Text <> '') and (length(search.text) > 2) then
-    SQL := SQL + ' and ident like ' + char(39) + '%' + search.text + '%' + char(39);
-
-  form1.execQuery(Query, SQL, false);
-
-  while not Query.Eof do
-  begin
-    documents.Items.Add(Query.FieldByName('IDENT').asString);
-    invi_documents.Items.Add(Query.FieldByName('DOCUMENT_ID').asString);
-
-    Query.Next;
   end;
 
-  documents.ItemIndex := -1;
-  documents.Enabled := true;
+  SQL := '';
+  if treeType.ItemIndex = 0 then
+    SQL := 'select * from (select DOCUMENT_ID as ID, IDENT as NAME, NAME as SRC from tronix.document WHERE ID_PROJECT = ' + PROJECT_ID + ') '
+  else
+    SQL := 'select * from (select TEXKOMPL_ID as ID, NOMER as NAME, NAME as SRC from tx_texkompl where PROJECT_PROJECT_ID = ' + PROJECT_ID + ') ';
+
+  if length(treeSearch.Text) > 0 then
+    SQL := SQL + 'WHERE name like ' + char(39) + '%' + AnsiUpperCase(treeSearch.Text) + '%' + char(39);
+
+  SQL := SQL + ' ORDER BY NAME ASC';
+
+  form1.execQuery(QueryTree, SQL, false);
+
+  gridTree.Enabled := true;
+  Create.Enabled := true;
+  blockMask.Visible := false;
 end;
 
 procedure TdocSpCnt.createClick(Sender: TObject);
+var ID : string;
 begin
-  if documents.ItemIndex = -1 then
-    exit;
-  
-  test(invi_documents.Items[documents.ItemIndex]);
-  
-  self.close;
+  ID := QueryTree.FieldByName('ID').asString;
+  if ID <> '' then
+  begin
+    SP_DetailsTree(ID, (treeType.ItemIndex = 1));
+    //self.Close;
+  end
+  else
+    showMessage('Ошибка!');
+
+end;
+
+procedure TdocSpCnt.treeSearchChange(Sender: TObject);
+begin
+  ChangeTypeALock;
 end;
 
 end.

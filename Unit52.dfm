@@ -283,6 +283,44 @@ object Form52: TForm52
         Title.Font.Name = 'MS Sans Serif'
         Title.Font.Style = [fsBold]
         Width = 250
+      end
+      item
+        Alignment = taCenter
+        EditButtons = <>
+        FieldName = 'god_dok'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        Footers = <>
+        Layout = tlCenter
+        Title.Caption = #1044#1040#1058#1040' '#1057#1054#1047#1044'.'
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 90
+      end
+      item
+        Alignment = taCenter
+        EditButtons = <>
+        FieldName = 'god_ins'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        Footers = <>
+        Title.Alignment = taCenter
+        Title.Caption = #1044#1040#1058#1040' '#1047#1040#1050#1056'.'
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -13
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Width = 90
       end>
   end
   object Edit1: TEdit
@@ -451,6 +489,12 @@ object Form52: TForm52
     end
     object OraQuery1pname: TStringField
       FieldName = 'pname'
+    end
+    object OraQuery1god_dok: TStringField
+      FieldName = 'god_dok'
+    end
+    object OraQuery1god_ins: TStringField
+      FieldName = 'god_ins'
     end
   end
   object OraDataSource1: TOraDataSource

@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, StdCtrls;
 
-type
+type    
   Tdefttns_fltrs = class(TForm)
     zaprosheno: TEdit;
     Label1: TLabel;

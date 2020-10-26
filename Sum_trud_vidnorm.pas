@@ -58,7 +58,8 @@ begin
 
 tx:=' ';
 tx:=tx+'select ''0'' as CHK_FLD, pr.zavn as zavn,pr.name as proekt,pr.project_id as idpr';
-tx:=tx+' from tronix.project_list pr where pr.date_end is null';
+tx:=tx+' from tronix.project_list pr';
+// where pr.date_end is null';
 tx:=tx+' order by pr.zavn';
 //ShowMEssage(tx);
    OraQuery2.Close;
@@ -113,10 +114,11 @@ txx:=txx+' where tv.texkompl_texkompl_id=tx.texkompl_id(+)';
 txx:=txx+' and tx.project_project_id=pr.project_id(+)';
 txx:=txx+' and pr.project_id in ('+idpro;
 txx:=txx+' ) and zk.id_project=tx.project_project_id';
-txx:=txx+' and nordsy.uzak_tx(tx.texkompl_id)=zk.nn and upper(zk.zak) not like (''%%(ляв)'')';
+txx:=txx+' and nordsy.uzak_tx(tx.texkompl_id)=zk.nn';
+// and upper(zk.zak) not like (''%%(ляв)'')';
 txx:=txx+' and tx.TYPE_TEX_TYPE_TEX_ID in (7,8,12,14)';
 txx:=txx+' and vid_norm_vid_norm_id is not null';
-txx:=txx+' and pr.date_end is null';
+//txx:=txx+' and pr.date_end is null';
 txx:=txx+') t';
 txx:=txx+' group by t.zavn,t.zak,t.proekt,t.vdd';
 //ShowMEssage(txx);

@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, DBAccess, OdacVcl, DB, Ora, Menus, IdBaseComponent, IdComponent,
-  IdTCPConnection, IdTCPClient, IdHTTP, clipbrd;
+  IdTCPConnection, IdTCPClient, IdHTTP, clipbrd, StdCtrls;
 
 type
   TForm1 = class(TForm)
@@ -87,6 +87,19 @@ type
     N68: TMenuItem;
     N71: TMenuItem;
     N52: TMenuItem;
+    N72: TMenuItem;
+    N74: TMenuItem;
+    N75: TMenuItem;
+    N76: TMenuItem;
+    N77: TMenuItem;
+    N78: TMenuItem;
+    N79: TMenuItem;
+    N80: TMenuItem;
+    N81: TMenuItem;
+    N82: TMenuItem;
+    N83: TMenuItem;
+    N84: TMenuItem;
+    N85: TMenuItem;
     procedure N3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure tn1Click(Sender: TObject);
@@ -152,9 +165,22 @@ type
     procedure N55Click(Sender: TObject);
     procedure N56Click(Sender: TObject);
     procedure N57Click(Sender: TObject);
-    procedure N58Click(Sender: TObject);
     procedure N68Click(Sender: TObject);
     procedure N71Click(Sender: TObject);
+    procedure N72Click(Sender: TObject);
+    procedure N74Click(Sender: TObject);
+    procedure N75Click(Sender: TObject);
+    procedure N58Click(Sender: TObject);
+    procedure N76Click(Sender: TObject);
+    procedure N78Click(Sender: TObject);
+    procedure N79Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure N80Click(Sender: TObject);
+    procedure N81Click(Sender: TObject);
+    procedure N82Click(Sender: TObject);
+    procedure N83Click(Sender: TObject);
+    procedure N84Click(Sender: TObject);
+    procedure N85Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -165,6 +191,7 @@ type
     function execQuery(Q : TOraQuery; S : string; T : boolean) : boolean;
     function showError(H : string; B : string) : boolean;
 
+    function strtok(Str: WideString; Delimiter: string): TStringList;
     function inUserList(s, d, e : string) : boolean;
   end;
 
@@ -174,7 +201,7 @@ var
 
 const
 
-VERSION = '2.1.0';
+VERSION = '2.2.0';
 
 SERVER_ADDR = 'http://192.168.10.15:7777/server/tronix_otch/';
 SERVER_FILE_PART = '.sql';
@@ -182,11 +209,12 @@ SERVER_FILE_PART = '.sql';
 implementation
 
 uses Unit2, Unit7, Unit8, Unit9, Unit12, Unit17, Unit23, Unit32, Unit34, cpct, r_dates, r_ttns, t_error,
-  r_leftovers_nomen,Reestr_doc_sklad, r_calendar,Nomenklator;
+  r_leftovers_nomen,Reestr_doc_sklad, r_calendar,Nomenklator,Sum_trud_vidnorm,
+  r_dates_inttns, t_utils, r_dcspcn, t_equipment_dtls;
 
 {$R *.dfm}
 
-function strtok(Str: WideString; Delimiter: string): TStringList;
+function TForm1.strtok(Str: WideString; Delimiter: string): TStringList;
 var
   tmpStrList: TStringList;
   tmpString, tmpVal: WideString;
@@ -252,7 +280,7 @@ procedure TForm1.N4Click(Sender: TObject);
 begin
 //   form12.Caption:='Отчет по проектам';
  //  form12.ShowModal();
-end;
+end;       
 
 procedure TForm1.N8Click(Sender: TObject);
 begin
@@ -318,8 +346,10 @@ end;
 procedure TForm1.N16Click(Sender: TObject);
 begin
   Application.CreateForm(TForm9, Form9);
+  Application.CreateForm(TForm32, Form32);
   form32.Caption:='Потребность по материалам в разрезе чертежа. Выберите цех';
-  form32.ShowModal(); 
+  form32.ShowModal();
+  Form32.Free;
   Form9.Free;
 end;
 
@@ -389,15 +419,17 @@ end;
 procedure TForm1.N23Click(Sender: TObject);
 begin
   Application.CreateForm(TForm9, Form9);
+  Application.CreateForm(TForm32, Form32);
   form32.Caption:='Потребность по материалам и оборудованию общая по проекту';
-  form32.ShowModal(); 
+  form32.ShowModal();
+  Form32.Free;
   Form9.Free;
 end;
 
 procedure TForm1.N24Click(Sender: TObject);
 begin
   Application.CreateForm(TForm9, Form9);
-  form9.Caption:='Формрование ведомости комплектации запуска.';
+  form9.Caption:='Формирование ведомости комплектации запуска.';
   form9.ShowModal(); 
   Form9.Free;
 end;
@@ -447,7 +479,7 @@ begin
   Application.CreateForm(TForm9, Form9);
   Form2.Caption:='Отчёт по изделиям МСЧ';
   Form2.ShowModal();    
-  Form9.Free;
+  Form2.Free;
 end;
 
 procedure TForm1.N31Click(Sender: TObject);
@@ -455,7 +487,7 @@ begin
   Application.CreateForm(TForm9, Form9);
   Form2.Caption:='МСЧ (Россыпь) с составом по проекту';
   Form2.ShowModal();
-  Form9.Free;
+  Form2.Free;
 end;
 
 procedure TForm1.N32Click(Sender: TObject);
@@ -491,26 +523,26 @@ end;
 
 procedure TForm1.N35Click(Sender: TObject);
 begin
-  Application.CreateForm(TForm9, Form9);
+  Application.CreateForm(TForm32, Form32);
   form32.Caption:='Наряды по цеху,проекту. Выберите цех';
   form32.ShowModal();  
-  Form9.Free;
+  Form32.Free;               
 end;
 
 procedure TForm1.N36Click(Sender: TObject);
 begin
   Application.CreateForm(TForm9, Form9);
   form9.Caption:='Остатки трудоёмкости по МСЧ. Выберите проект';
-  form9.ShowModal();   
+  form9.ShowModal();
   Form9.Free;
 end;
 
  procedure TForm1.N73Click(Sender: TObject);
 begin
-  Application.CreateForm(TForm9, Form9);
+  Application.CreateForm(TForm32, Form32);
   form32.Caption:='Удалённые наряды. Выберите цех';
   form32.ShowModal(); 
-  Form9.Free;
+  Form32.Free;
 end;
 
 procedure TForm1.N37Click(Sender: TObject);
@@ -531,10 +563,10 @@ end;
 
  procedure TForm1.N39Click(Sender: TObject);
 begin
-  Application.CreateForm(TForm9, Form9);
+  Application.CreateForm(TForm32, Form32);
   form32.Caption:='Наряды,закрытые за период по цеху (ПДО). Выберите цех';
   form32.ShowModal();  
-  Form9.Free;
+  Form32.Free;
 end;
 
  procedure TForm1.N60Click(Sender: TObject);
@@ -555,10 +587,10 @@ end;
 
  procedure TForm1.N62Click(Sender: TObject);
 begin
-  Application.CreateForm(TForm9, Form9);
+  Application.CreateForm(TForm32, Form32);
   form32.Caption:='Паспорт предприятия - Фактическая тр-ть по цеху в разрезе профессий,рабочих ЯСЗ,подрядчиков за период. Выберите цех';
-  form32.ShowModal(); 
-  Form9.Free;
+  form32.ShowModal();
+  Form32.Free;
 end;
 
  procedure TForm1.N63Click(Sender: TObject);
@@ -571,26 +603,26 @@ end;
 
  procedure TForm1.N64Click(Sender: TObject);
 begin
-  Application.CreateForm(TForm9, Form9);
+  Application.CreateForm(TForm32, Form32);
   form32.Caption:='Нормированная тр-ть по цеху в разрезе профессий,разрядов,тарифных сеток по проекту. Выберите цех';
   form32.ShowModal();
-  Form9.Free;
+  Form32.Free;
 end;
 
  procedure TForm1.N65Click(Sender: TObject);
 begin
-  Application.CreateForm(TForm9, Form9);
+  Application.CreateForm(TForm32, Form32);
   form32.Caption:='Суммарная нормированная тр-ть по цеху в разрезе разрядов,тарифных сеток,профессий c привязкой к УКР по проекту. Выберите цех';
   form32.ShowModal();
-  Form9.Free;
+  Form32.Free;
 end;
 
  procedure TForm1.N66Click(Sender: TObject);
 begin
-  Application.CreateForm(TForm9, Form9);
+  Application.CreateForm(TForm32, Form32);
   form32.Caption:='Незакрытые ПУЕ(без МСЧ) по цеху по проекту. Выберите цех';
   form32.ShowModal();
-  Form9.Free;
+  Form32.Free;
 end;
 
 function TForm1.inUserList(s, d, e : string) : boolean;
@@ -644,7 +676,7 @@ begin
   except
     showError('Ошибка сети', 'Не удалось подключиться к серверу!');
     SCAlive := false;
-    exit;
+    exit;               
   end;
 
   SCAlive := true;
@@ -663,7 +695,7 @@ end;
 end;
 
 function TForm1.execQuery(Q : TOraQuery; S : string; T : boolean) : boolean;
-begin   //remake to custom form with backup input data and SQL print.
+begin 
 
   execQuery := true;
   Q.Close;
@@ -765,7 +797,7 @@ end;
 procedure TForm1.N50Click(Sender: TObject);
 begin
   Application.CreateForm(TFReestr_doc_sklad, FReestr_doc_sklad);
-  FReestr_doc_sklad.Caption:='Реестр документов движения по складу за прериод';
+  FReestr_doc_sklad.Caption:='Реестр документов движения по складу за период';
   FReestr_doc_sklad.ShowModal();
   FReestr_doc_sklad.Free;
 end;
@@ -790,12 +822,8 @@ end;
 procedure TForm1.N52Click(Sender: TObject);
 begin
   Application.CreateForm(Tf_calendar, f_calendar);
-  Application.CreateForm(TForm9, Form9);
-
   f_calendar.Showmodal();
-  form9.Show_TTRTN_Details(f_calendar.result_month, f_calendar.result_year, true);
-
-  Form9.Free;
+  Show_TTRTN_Details(f_calendar.result_month, f_calendar.result_year, true);
   f_calendar.Free;
 end;
 
@@ -813,18 +841,13 @@ begin
   form9.Caption:='Оборудование по проекту. Выберите проект';
   form9.ShowModal();
   form9.Free;
-
 end;
 
 procedure TForm1.N55Click(Sender: TObject);
 begin
   Application.CreateForm(Tf_calendar, f_calendar);
-  Application.CreateForm(TForm9, Form9);
-
   f_calendar.Showmodal();
-  form9.Show_TTRTN_Details(f_calendar.result_month, f_calendar.result_year, false);
-
-  Form9.Free;
+  Show_TTRTN_Details(f_calendar.result_month, f_calendar.result_year, false);
   f_calendar.Free;
 end;
 
@@ -845,38 +868,145 @@ begin
   FNomenklator.Free;
  end;
 
-procedure TForm1.N58Click(Sender: TObject);
-begin
-  //otchet po deficity osnovnoy nomenclature
-  exit;
-  
-  Application.CreateForm(TForm9, Form9);
-  Form9.Show_Deficit_MainNomen;
-  Form9.Free;
-end;
-
 procedure TForm1.N68Click(Sender: TObject);
 begin
-  //exit;
-
   Application.CreateForm(TForm9, Form9);
-  Form9.Caption:='Установка основной номенклатуры';
+  Form9.Caption:='Формирование основной номенклатуры';
   Form9.showmodal();
   Form9.Free;
 end;
 
 procedure TForm1.N71Click(Sender: TObject);
 begin
-  //exit;
-
   Application.CreateForm(Tf_calendar, f_calendar);
-  Application.CreateForm(TForm9, Form9);
-
   f_calendar.Showmodal();
-  Form9.main_nomenclature_list(f_calendar.result_month, f_calendar.result_year);
+  main_nomenclature_list(f_calendar.result_month, f_calendar.result_year, ''(*unassigned*));
+  f_calendar.Free;                                
+end;
 
+procedure TForm1.N72Click(Sender: TObject);
+begin
+  //Укрупнённые помещения по проекту: СП,ПУЕ,УДП
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='Укрупнённые помещения по проекту: СП,ПУЕ,УДП';
+  Form9.showmodal();
   Form9.Free;
-  f_calendar.Free;
+end;
+
+procedure TForm1.N74Click(Sender: TObject);
+begin
+  //Укрупнённые помещения  по ТНВ по извещениям по проекту
+   Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='Укрупнённые помещения по ТНВ по извещениям по проекту';
+  Form9.showmodal();
+  Form9.Free;
+end;
+
+procedure TForm1.N75Click(Sender: TObject);
+begin
+//Остатки трудоёмкости по ПУЕ(без МСЧ)
+ Application.CreateForm(TForm9, Form9);
+  form9.Caption:='Остатки трудоёмкости по ПУЕ(без МСЧ). Выберите проект';
+  form9.ShowModal();
+  Form9.Free;
+end;
+
+procedure TForm1.N58Click(Sender: TObject);
+begin
+  Application.CreateForm(TFSum_trud_vidnorm, FSum_trud_vidnorm);
+  FSum_trud_vidnorm.Caption:='Суммарная тр-ть по видам норм по проектам';
+  FSum_trud_vidnorm.ShowModal();
+  FSum_trud_vidnorm.Free;
+end;
+
+procedure TForm1.N76Click(Sender: TObject);
+begin
+ //Запас МСЧ на ЦКС по ячейкам
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='Запас МСЧ на ЦКС по ячейкам. Выберите проект';
+  Form9.showmodal();
+  Form9.Free;
+ end;
+
+procedure TForm1.N78Click(Sender: TObject);
+begin
+ //Расход по годам в разрезе затребованных и отгруженных материалов по проекту
+
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='Расход по годам в разрезе затребованных и отгруженных материалов по проекту. Выберите проект';
+  Form9.showmodal();
+  Form9.Free;
+end;
+
+procedure TForm1.N79Click(Sender: TObject);
+begin
+ //Расход по годам  затребованной  номенклатуры по проекту
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='Расход по годам в разрезе затребованной номенклатуры по проекту. Выберите проект';
+  Form9.showmodal();
+  Form9.Free;
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  //test;
+end;
+
+procedure TForm1.N80Click(Sender: TObject);
+begin
+  Application.CreateForm(TDocSpCnt, DocSpCnt);
+  DocSpCnt.ShowModal();
+  DocSpCnt.Free();
+end;
+
+procedure TForm1.N81Click(Sender: TObject);
+begin
+ //Приходные ордера по отгруженному оборудованию по проекту
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='Приходные ордера по отгруженному оборудованию по проекту. Выберите проект';
+  Form9.showmodal();
+  Form9.Free;
+
+end;
+
+procedure TForm1.N82Click(Sender: TObject);
+begin
+ //Ведомости снабжения с привязкой к веткам по проекту
+
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='Ведомости снабжения(237) с привязкой к веткам по проекту. Выберите проект';
+  Form9.showmodal();
+  Form9.Free;
+
+end;
+
+procedure TForm1.N83Click(Sender: TObject);
+begin
+//Расход по годам в разрезе затребованного и отгруженного оборудования по проекту
+{*
+ Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='Расход по годам в разрезе затребованного и отгруженного оборудования по проекту. Выберите проект';
+  Form9.showmodal();
+  Form9.Free;
+*}                       
+end;
+
+procedure TForm1.N84Click(Sender: TObject);
+begin
+//Применяемость ПУЕ: Документы движения,Наряды по проекту
+
+ Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='Применяемость ПУЕ: Документы движения,Наряды по проекту. Выберите проект';
+  Form9.showmodal();
+  Form9.Free;
+
+end;        
+
+procedure TForm1.N85Click(Sender: TObject);
+begin
+  Application.CreateForm(Tequipment_details, equipment_details);
+  equipment_details.ShowModal();
+  equipment_details.Free;
 end;
 
 end.

@@ -73,7 +73,8 @@ uses
   r_set_mnomen_details in 'r_set_mnomen_details.pas' {set_mnomen_details},
   r_dates_inttns in 'r_dates_inttns.pas' {input_ttns},
   t_utils in 't_utils.pas',
-  r_dcspcn in 'r_dcspcn.pas' {docSpCnt};
+  r_dcspcn in 'r_dcspcn.pas' {docSpCnt},
+  t_equipment_dtls in 't_equipment_dtls.pas' {equipment_details};
 
 {$R *.res}
 
@@ -109,7 +110,7 @@ begin
   Application.CreateForm(TForm29, Form29);
   Application.CreateForm(TForm30, Form30);
   Application.CreateForm(TForm31, Form31);
-  Application.CreateForm(TForm32, Form32);
+  //Application.CreateForm(TForm32, Form32);
   Application.CreateForm(TForm33, Form33);
   Application.CreateForm(TForm34, Form34);
   Application.CreateForm(TForm35, Form35);
@@ -128,6 +129,7 @@ begin
   Application.CreateForm(TForm48, Form48);
   Application.CreateForm(TForm52, Form52);
   Application.CreateForm(TdocSpCnt, docSpCnt);
+  Application.CreateForm(Tequipment_details, equipment_details);
   //  Application.CreateForm(TForm55, Form55);
 //  Application.CreateForm(TForm60, Form60);
 //  Application.CreateForm(TForm61, Form61);

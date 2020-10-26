@@ -7,7 +7,7 @@ uses
   Dialogs, GridsEh, DBGridEh, DB, MemDS, DBAccess, Ora, StdCtrls, DBClient, midaslib,
   Buttons;
 
-type
+type           
   Tdefttns = class(TForm)
 
   OraDataSource1: TOraDataSource;

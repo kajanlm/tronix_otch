@@ -130,6 +130,22 @@ tx:=tx+' where tm.tex_texkompl_id=tx.texkompl_id and tx.TYPE_TEX_TYPE_TEX_ID in 
 tx:=tx+' and tx.project_project_id='+edit1.text;
 tx:=tx+' and tm.document_document_id=do.document_id';
 tx:=tx+' and tx.texkompl_texkompl_id=tu.texkompl_id(+) and substr(tu.nomer,1,2)=''ÈÇ'' and tx.dep_dep_id=de.dep_id(+)';
+
+tx:=tx+' union all';
+ 
+tx:=tx+' select substr(tx.nomer,10,3) tkup,'' '' ident, '' '' namesp,';
+tx:=tx+' tx.nomer txnomer, decode(tx.otk_end,null,'' '',to_char(tx.otk_end,''DD.MM.YYYY'')) txdate,de.nomer dxnomer,';
+tx:=tx+' tx.nomer tknomer, decode(tx.otk_end,null,'' '',to_char(tx.otk_end,''DD.MM.YYYY'')) tkdate,de.nomer denomer,';
+tx:=tx+' replace(replace(tx.name,CHR(13)||CHR(10),'' ''),chr(39), '' '') tkname,tronix.up_tk_dic_short(tx.texkompl_id) udp,';
+tx:=tx+' tu.nomer tunomer,replace(replace(tu.name,CHR(13)||CHR(10),'' ''),chr(39), '' '') tuname';
+
+tx:=tx+' from nordsy.texkompl tx,nordsy.texkompl tu,kadry_dep de';
+
+tx:=tx+' where tx.TYPE_TEX_TYPE_TEX_ID in (14) and substr(tx.nomer,1,3)=''ÈÇÂ''';
+tx:=tx+' and tx.project_project_id='+edit1.text;
+tx:=tx+' and not exists (select * from nordsy.tx_mat tl where tl.tex_texkompl_id=tx.texkompl_id)';
+tx:=tx+' and tx.texkompl_texkompl_id=tu.texkompl_id(+) and substr(tu.nomer,1,2)=''ÈÇ'' and tx.dep_dep_id=de.dep_id(+)';
+
 tx:=tx+' )t';
 tx:=tx+' group by t.tkup,t.tknomer,t.txnomer,t.ident'; 
 //ShowMEssage(tx);

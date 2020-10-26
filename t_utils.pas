@@ -11,9 +11,9 @@ var
   OracleQuery_4 : TOraQuery;
 
 procedure Show_TTRTN_Details(date_filter_month : string; date_filter_year : string; main_nomen : boolean);
-procedure main_nomenclature_list(t : string; s : string);
+procedure main_nomenclature_list(t : string; s : string; c : string);
 procedure Show_Deficit_MainNomen;
-procedure test(id : string);
+procedure SP_DetailsTree(id : string; isTexkompl : boolean);
 function parseResult(FExcel : OleVariant; Query : TOraQuery; (*QueryIndex : integer;*) index : integer) : integer;
 
 var
@@ -22,7 +22,7 @@ var
 
 implementation
 
-uses Unit1, Unit9;
+uses Unit1, Unit9;              
 
 procedure DBSession_construct();
 begin
@@ -63,7 +63,7 @@ procedure DBSession_destruct();
 begin
   OracleQuery_1.Close;
   OracleQuery_1.Free;
-
+  
   OracleQuery_2.Close;
   OracleQuery_2.Free;
 
@@ -74,19 +74,9 @@ begin
   OracleQuery_4.Free;
 end;
 
-function parseResult(FExcel : OleVariant; Query : TOraQuery; (*1QueryIndex : integer;*) index : integer) : integer;
-var SQL, sType, sname, poz, mass, kol : string;
-//cQuery : TOraQuery;
+function parseResult(FExcel : OleVariant; Query : TOraQuery; index : integer) : integer;
+var SQL, sType, sname, poz, mass, kol : string; treeDown : boolean; treeDownQuery : TOraQuery;
 begin
-(*
-  if QueryIndex = 1 then
-      Query := OracleQuery_1;
-    if QueryIndex = 2 then
-      Query := OracleQuery_2;
-    if QueryIndex = 3 then
-      Query := OracleQuery_3;
-*)
-      
   while not Query.Eof do
   begin
     //showMessage(inttostr(index));
@@ -97,11 +87,12 @@ begin
     poz := Query.FieldByName('poz').asString;
     mass := Query.FieldByName('mass').asString;
     kol := Query.FieldByName('kol').asString;
-
+    
+    treeDown := false;
     if (sType <> '') and (strtoInt(sType) > 0)  then
     begin
-      index := (index + 2);
-
+      index := (index + 2);      
+      
       //showmessage('head');
 
       FExcel.Cells[index, 5].value := sname;
@@ -114,14 +105,11 @@ begin
 
       index := (index + 2);
 
-      SQL := 'Select sp.nn as id, sp.type_str as type, sp.name, sp.poz, sp.mass, sp.kol from kart_sp sp where sp.up_nn = ' + Query.FieldByName('id').asString;
-      form1.execQuery(OracleQuery_2, SQL, true);
-      if OracleQuery_2.RecordCount <> 0 then
-        index := (parseResult(FExcel, OracleQuery_2, index));
-    end
+      treeDown := true;
+    end           
     else
     if  sType = '' then
-    begin
+    begin                   
       inc(index);
 
       //showmessage('title');
@@ -146,16 +134,19 @@ begin
 
       inc(index);
 
-      SQL := 'Select sp.nn as id, sp.type_str as type, sp.name, sp.poz, sp.mass, sp.kol from tronix.sp sp where sp.up_nn = ' + Query.FieldByName('id').asString;
-      form1.execQuery(OracleQuery_3, SQL, true);
-
-      if OracleQuery_3.RecordCount <> 0 then
-        index := (parseResult(FExcel, OracleQuery_3(*cQuery*), index));
+      treeDown := true;
     end
     else
     //if (strtoInt(sType) = -1) then
-    begin
+    begin                
       //showmessage('single');
+
+      if AnsiPos('труба', AnsiLowerCase(sname)) <> 0 then
+      begin
+        sname := sname + ' ' + kol;
+        kol := '1';
+      end;               
+
       FExcel.Cells[index, 4].value := mass;
       FExcel.Cells[index, 5].value := sname;
       FExcel.Cells[index, 5].Font.Bold := false;
@@ -167,6 +158,27 @@ begin
       FExcel.Cells[index, 7].value := kol;
 
       inc(index);
+
+      treeDown := false; //?
+    end;
+
+    if treeDown then
+    begin
+      treeDownQuery := TOraQuery.Create(nil);
+      treeDownQuery.ReadOnly := true;
+      treeDownQuery.FetchAll := true; //TODO
+      treeDownQuery.Session := Form1.OraSession1;
+
+      SQL := 'Select sp.nn as id, sp.type_str as type, sp.name, sp.poz, sp.mass, sp.kol from tronix.sp sp where sp.up_nn = '
+      + Query.FieldByName('id').asString + ' ORDER BY KART_Name_from_PozSP(sp.nn), upper(sp.PODPOZ)';
+      form1.execQuery(treeDownQuery, SQL, true);
+
+      if treeDownQuery.RecordCount <> 0 then
+        index := (parseResult(FExcel, treeDownQuery, index));
+
+      treeDownQuery.Close;
+      treeDownQuery.Free;
+      //FreeAndNil(treeDownQuery);
     end;
 
     Query.next;
@@ -175,14 +187,12 @@ begin
   parseResult := index;
 end;
 
-procedure test(id : string (* : integer *));
+procedure SP_DetailsTree(id : string; isTexkompl : boolean);
 var
 FExcel, Sheet : OleVariant;
 SQL : string;
 startIndex, index : integer;
 begin
-  //showmessage(id);
-  
   FExcel := CreateOleObject('Excel.Application');
   FExcel.EnableEvents := False;
   FExcel.Visible := false;
@@ -190,12 +200,6 @@ begin
   FExcel.Workbooks.Add('\\Ser1\s1sys2\PROG\FOX_WIN\SHABLON_DOC_SP_MAT.xls');
   FExcel.Workbooks[1].WorkSheets[1].Name := 'Раскрытие позиций';
   Sheet := FExcel.Workbooks[1].WorkSheets['Раскрытие позиций'];
-
-  (*
-  SQL := 'select lv.*, sp.name as lname, sp.poz as lpoz, sp.mass as lmass, sp.kol as lkol from (select d.hname, d.hpoz, d.nn, d.name, d.poz, d.mass, '
-  + 'd.kol from (select head.name as hname, head.poz as hpoz, sp.nn, sp.name, sp.poz, sp.mass, sp.kol from (select nn, poz, name from tronix.sp where nnn = ' + id + ' and kod is '
-  + 'null and kode is null) head, tronix.sp sp where head.nn = sp.up_nn(+) and id_sprav is not null) d) lv, tronix.sp sp where lv.nn = sp.up_nn(+)';
-  *)
   
   DBSession_construct();
 
@@ -208,31 +212,64 @@ begin
   startIndex := 10;
   index := startIndex;
 
-  SQL := 'Select sp.nn as id, sp.type_str as type, sp.name, sp.poz, sp.mass, sp.kol from kart_sp sp where sp.nnn = ' + id + ' and sp.type_str is not null and sp.type_str > 0 and UP_NN is not null';
-  //SQL := 'select sp.nn as id, sp.type_str as type, sp.name, sp.poz, sp.mass, sp.kol from tronix.sp where nnn = ' + id + ' and up_nn is null';
-  form1.execQuery(QueryS[QueryIndex], SQL, false);
-
-  index := (index - 2);
-
-  if QueryS[QueryIndex].RecordCount = 0 then
+  if isTexkompl then
   begin
-    SQL := 'Select sp.nn as id, sp.type_str as type, sp.name, sp.poz, sp.mass, sp.kol from kart_sp sp where sp.nnn = ' + id + ' and sp.type_str is null';
+     (*
+     SQL := 'select sp.nn as id, sp.type_str as type, sp.name, sp.poz, sp.mass, sp.kol from kart_sp sp, (select sp_sp_id as sp_id, '
+     + 'tex_texkompl_id as texkompl_id from nordsy.tx_mat where tex_texkompl_id in (select texkompl_id from tx_texkompl '
+     + 'connect by prior texkompl_id = texkompl_texkompl_id start with texkompl_id = ' + ID +') and sp_sp_id is not null) tx where tx.sp_id = sp.nn(+) '
+     + 'ORDER BY tx.texkompl_id, TO_NUMBER(replace(replace(sp.poz, ' + char(39) + '-' + char(39) + '), ' + char(39) + '.' + char(39) + ')) ASC';
+     *)
+     SQL := 'select sp.nn as id, sp.type_str as type, sp.name, sp.poz, sp.mass, sp.kol from kart_sp sp, (select sp_sp_id as sp_id, '
+     + 'tex_texkompl_id as texkompl_id from nordsy.tx_mat where tex_texkompl_id in (select texkompl_id from tx_texkompl '
+     + 'connect by prior texkompl_id = texkompl_texkompl_id start with texkompl_id = ' + ID +') and sp_sp_id is not null) tx where tx.sp_id = sp.nn(+) '
+     + 'ORDER BY tx.texkompl_id, KART_Name_from_PozSP(sp.nn), upper(sp.PODPOZ)';
+     form1.execQuery(QueryS[QueryIndex], SQL, false);
+
+     if QueryS[QueryIndex].RecordCount = 0 then
+     begin
+        DBSession_destruct();
+        showMessage('По выбранной ПУЕ - отсуствуют записи!');
+        exit;
+     end;                        
+  end
+  else
+  begin
+    (*
+    SQL := 'Select sp.nn as id, sp.type_str as type, sp.name, sp.poz, sp.mass, sp.kol from kart_sp sp where sp.nnn = ' + id + ' and sp.type_str is not null '
+    + 'and sp.type_str > 0 and UP_NN is not null  ORDER BY TO_NUMBER(replace(replace(sp.poz, ' + char(39) + '-' + char(39) + '), ' + char(39) + '.' + char(39) + ')) ASC';
+    *)
+    SQL := 'Select sp.nn as id, sp.type_str as type, sp.name, sp.poz, sp.mass, sp.kol from kart_sp sp where sp.nnn = ' + id
+    + ' and UP_NN is null ORDER BY KART_Name_from_PozSP(sp.nn), upper(sp.PODPOZ)';
     form1.execQuery(QueryS[QueryIndex], SQL, false);
 
-    index := (index + 2);
+    index := (index - 2);
 
+    (*
     if QueryS[QueryIndex].RecordCount = 0 then
     begin
-      SQL := 'Select sp.nn as id, sp.type_str as type, sp.name, sp.poz, sp.mass, sp.kol from kart_sp sp where sp.nnn = ' + id + ' and sp.type_str is not null and sp.type_str = -1';
+      SQL := 'Select sp.nn as id, sp.type_str as type, sp.name, sp.poz, sp.mass, sp.kol from kart_sp sp where sp.nnn = ' + id + ' and sp.type_str is null '
+      + 'ORDER BY TO_NUMBER(replace(replace(sp.poz, ' + char(39) + '-' + char(39) + '), ' + char(39) + '.' + char(39) + ')) ASC';
       form1.execQuery(QueryS[QueryIndex], SQL, false);
+
+      index := (index + 2);
 
       if QueryS[QueryIndex].RecordCount = 0 then
       begin
-        DBSession_destruct();
-        showmessage('По данному запросу - отсутствуют записи!');
-        exit;
+        SQL := 'Select sp.nn as id, sp.type_str as type, sp.name, sp.poz, sp.mass, sp.kol from kart_sp sp where sp.nnn = ' + id + ' and sp.type_str is not '
+        + 'null and sp.type_str = -1 ORDER BY TO_NUMBER(replace(replace(sp.poz, ' + char(39) + '-' + char(39) + '), ' + char(39) + '.' + char(39) + ')) ASC';
+        form1.execQuery(QueryS[QueryIndex], SQL, false);
+
+        if QueryS[QueryIndex].RecordCount = 0 then
+        begin
+          DBSession_destruct();
+          showmessage('По выбранной спецификации - отсутствуют записи!');
+          exit;
+        end;
       end;
     end;
+    *)
+
   end;
   
   index := parseResult(FExcel, QueryS[QueryIndex], index);
@@ -298,7 +335,7 @@ begin
   + '(ttn.user_date4 > (last_day(to_date(<MONTH_YEAR>, ' + DM_MASK + ') - interval ' + char(39) + '1' + char(39) + ' month) - interval ' + char(39) + '3' + char(39) + ' day) ) AND '
   + '(ttn.date_ins is null or TO_CHAR(ttn.date_ins, ' + MM_MASK + ') = <MONTH_NUM>))) group by ttn.DEP_DEP_ID_TO, ttn.UZAK_UZAK_ID) afull, kadry_dep c, kadry_dep ct, '
   + 'tronix.zakaz z where afull.ceh = c.dep_id(+) and c.dep_dep_id = ct.dep_id(+) and afull.uzak_id = z.nn(+)) a order by A.nomer, A.zak, A.full';
-
+  
   // 'SELECT DECODE(a.COMPLETE, 0, 100,
   if main_nomen then
   SQL := 'SELECT DECODE(a.COMPLETE, 0, 0, (CASE WHEN a.USH_PERCENT > 100 THEN 100 ELSE a.USH_PERCENT END)) as USH_PERCENT, a.* FROM (SELECT z.zak, '
@@ -424,7 +461,7 @@ begin
   end;
 
   inc(strNum);
-
+  
   Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum, 13]].Font.Size := 16;
   Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 13]].borders.linestyle := xlContinuous;
   Sheet.range[Sheet.cells[strNum, 1], Sheet.cells[strNum, 13]].HorizontalAlignment := xlCenter;
@@ -476,16 +513,16 @@ begin
   DBSession_destruct();
 end;
 
-procedure main_nomenclature_list(t : string; s : string);
+procedure main_nomenclature_list(t : string; s : string; c : string);
 var
   SQL : string;
   FExcel, Sheet : OleVariant;
-  startNum, strNum : integer;
+  startNum, strNum : integer;  
 const
   MMYYYY_MASK = 'mm.YYYY';
-begin
+begin                    
 
-  SQL :=
+  SQL :=                 
   'select zk.zak, dp.nomer, B.* from (select round((a.main_kol - (a.zapas - a.main_zapas)), 5) as left, round((a.main_kol_uchet - (a.zapas_uchet - a.main_zapas_uchet)), 5) '
   + 'as left_uchet, A.* from (select decode(main.need_kol, null, 0, 1) as flag, round(decode(main.need_kol, null, 0, (main.need_kol * '
   + 'tronix_kof_koded(sp.sprav_id, main.koded_id, defa.koded_potr))), 5) as main_kol, round(decode(main.need_kol, null, 0, (main.need_kol * tronix_kof_koded(sp.sprav_id, main.koded_id, defa.koded_uchet))), 5) as '
@@ -509,12 +546,17 @@ begin
   + '(defa.d > 0 or defa.d_u > 0) and defa.koded_potr = fkd.koded_id(+) and defa.koded_uchet = skd.koded_id(+) and defa.s_i = sp.sprav_id(+) and '
   + 'defa.s_i = main.sprav_id(+) and defa.dep_id = main.dep_id(+) and defa.uzak_id = main.uzak_id(+) and ' + char(39) + t + '.' + s + char(39) + ' '
   + '= main.date_i(+) order by TO_NUMBER(sp.kod) desc) A where A.flag = 1) B, tronix.zakaz zk, kadry_dep dp '
-  + 'where (B.left > 0 or B.left_uchet > 0) and B.uzak_id = zk.nn(+) and B.dep_id = dp.dep_id(+)';
+  + 'where (B.left > 0 or B.left_uchet > 0) and B.uzak_id = zk.nn(+) and B.dep_id = dp.dep_id(+) <CEH_FILTER> order by dp.nomer, zk.zak, b.kod';
+  
+  if (*Assigned(c)*) C <> '' then
+    SQL := StringReplace(SQL, '<CEH_FILTER>', 'and dp.nomer = ' + char(39) + c + char(39), [rfReplaceAll, rfIgnoreCase])
+  else
+    SQL := StringReplace(SQL, '<CEH_FILTER>', 'and (1 = 1)', [rfReplaceAll, rfIgnoreCase]);
 
   //Clipboard.asText := SQL;
   //exit;
   //showmessage(SQL);
-  
+
   DBSession_construct();
   
   form1.execQuery(OracleQuery_1, SQL, false);

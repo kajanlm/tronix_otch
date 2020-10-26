@@ -109,7 +109,9 @@ var tx:string;
 begin
 tx:=' ';
 tx:='select tt.dtnnomer dtnnomer,tt.zak zak,tt.typnomer typnomer,tt.txnomer txnomer,decode(tt.ducnomer,'''',tt.dtxnomer,tt.ducnomer) ducnomer,';
-tx:=tx+'tt.tnnomer tnnomer,tt.date_dok date_dok,tt.date_ins date_ins,tt.trudoem trudoem,tt.ts_number ts_number,tt.naname naname,tt.pname pname from (';
+tx:=tx+'tt.tnnomer tnnomer,tt.date_dok date_dok,tt.date_ins date_ins,tt.trudoem trudoem,tt.ts_number ts_number,tt.naname naname,tt.pname pname,';
+tx:=tx+'substr(tt.date_dok,7,4) god_dok,substr(tt.date_ins,7,4) god_ins';
+tx:=tx+' from (';
 
 if RadioGroup1.ItemIndex<2 then
 begin
@@ -208,7 +210,9 @@ tx:=tx+' order by tt.zak,tt.dtnnomer,tt.typnomer,tt.txnomer,tt.tnnomer';
         FieldByName('ts_number').DisplayLAbel:='ÒÀÁ.ÍÎÌÅÐ ';
         FieldByName('naname').DisplayLAbel:='ÔÈÎ/ÏÎÄÐßÄ×ÈÊ ';
         FieldByName('pname').DisplayLAbel:='ÏÎÄÐßÄ×ÈÊ ';
-     end;
+        FieldByName('god_dok').DisplayLAbel:='ÃÎÄ ÑÎÇÄ. ';
+        FieldByName('god_ins').DisplayLAbel:='ÃÎÄ ÇÀÊÐ. ';
+    end;
 
    OraQuery1.SQL.Text:=tx;
 

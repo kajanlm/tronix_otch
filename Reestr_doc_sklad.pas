@@ -149,7 +149,7 @@ stipt:='ïðèõîäó';
 
 tx:=tx+'select l.oper as oper,l.nomer as nomer,l.depfrom as depfrom,l.depto as depto';
 tx:=tx+' from(';
-tx:=tx+' select ''75'' oper,tn.nomer nomer,df.nomer depto,dt.nomer depfrom from tronix.ttn tn,kadry_dep df,kadry_dep dt';
+tx:=tx+' select ''61'' oper,tn.nomer nomer,df.nomer depto,dt.nomer depfrom from tronix.ttn tn,kadry_dep df,kadry_dep dt';
 tx:=tx+' where tn.dep_dep_id_from=df.dep_id(+) and tn.dep_dep_id_to=dt.dep_id(+)';
 tx:=tx+' and dt.nomer in ('+skl;
 tx:=tx+') and tn.date_ins is not null and TO_CHAR(tn.date_ins,''YYYYMMDD'') >='+DN+' and TO_CHAR(tn.date_ins,''YYYYMMDD'') <='+DK;
@@ -178,7 +178,22 @@ tx:=tx+' select ''75'' oper,tn.nomer nomer,dt.nomer depfrom,substr(df.nomer,1,2)
 tx:=tx+' where tn.dep_dep_id_from=df.dep_id(+) and tn.dep_dep_id_to=dt.dep_id(+)';
 tx:=tx+' and dt.nomer in ('+skl;
 tx:=tx+') and tn.date_ins is not null and TO_CHAR(tn.date_ins,''YYYYMMDD'') >='+DN+' and TO_CHAR(tn.date_ins,''YYYYMMDD'') <='+DK;
-tx:=tx+' and tn.type_ttn_type_ttn_id in (10,45,56)';
+tx:=tx+' and tn.type_ttn_type_ttn_id in (10,45)';
+
+tx:=tx+' union all';
+
+tx:=tx+' select ''75'' oper,tn.nomer nomer,dt.nomer depfrom,substr(df.nomer,1,2) depto from tronix.ttn tn,kadry_dep df,kadry_dep dt';
+tx:=tx+' where tn.dep_dep_id_from=df.dep_id(+) and tn.dep_dep_id_to=dt.dep_id(+)';
+tx:=tx+' and dt.nomer in ('+skl;
+tx:=tx+') and tn.date_ins is not null and TO_CHAR(tn.date_ins,''YYYYMMDD'') >='+DN+' and TO_CHAR(tn.date_ins,''YYYYMMDD'') <='+DK;
+tx:=tx+' and tn.type_ttn_type_ttn_id=56';
+
+if skl='''ÖÊÑ-25''' then
+begin
+//ShowMessage('skl1= '+skl);
+tx:=tx+' and (select nvl(s.can_do_self,0) s from tronix.sprav s,tronix.ttn_mat tm where tm.ttn_ttn_id=tn.ttn_id and tm.sprav_sprav_id=s.sprav_id and rownum=1)=0';
+end;
+
 tx:=tx+' )l';
 if CheckBox1.Checked=true then
 begin
@@ -189,6 +204,23 @@ stk:='J';
 tx:=tx+' order by l.depfrom,l.oper,nordsy.sort_char_number(l.depto),nordsy.sort_char_number(l.nomer)'
 end
 else
+tx:=tx+' order by l.depfrom,l.oper,nordsy.sort_char_number(l.nomer)';
+end;
+
+if RadioGroup1.ItemIndex=2 then
+begin
+tipt:='6';
+stipt:='Çàïðàâêå áàëëîíîâ';
+
+tx:=tx+'select l.oper as oper,l.nomer as nomer,l.depfrom as depfrom,l.depto as depto';
+tx:=tx+' from(';
+tx:=tx+' select ''Èíâåíò.'' oper,tn.nomer nomer,df.nomer depto,dt.nomer depfrom from tronix.ttn tn,kadry_dep df,kadry_dep dt';
+tx:=tx+' where tn.dep_dep_id_from=df.dep_id(+) and tn.dep_dep_id_to=dt.dep_id(+)';
+tx:=tx+' and dt.nomer in ('+skl;
+tx:=tx+') and tn.date_ins is not null and TO_CHAR(tn.date_ins,''YYYYMMDD'') >='+DN+' and TO_CHAR(tn.date_ins,''YYYYMMDD'') <='+DK;
+tx:=tx+' and tn.type_ttn_type_ttn_id=6';
+tx:=tx+' and upper(trim(tn.txt)) like  ''%%ÇÀÏÐÀÂÊÀ%%ÁÀËËÎÍÎÂ%%''';
+tx:=tx+' )l';
 tx:=tx+' order by l.depfrom,l.oper,nordsy.sort_char_number(l.nomer)';
 end;
 

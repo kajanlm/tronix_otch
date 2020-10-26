@@ -88,7 +88,7 @@ begin
   end;
 
   DEP_ID := strtoint(Query.FieldByName('DEP_ID').asString);
-
+  
   (*
   if DEP_ID = 4041 then //sklad
   begin
