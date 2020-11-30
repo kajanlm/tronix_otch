@@ -139,7 +139,7 @@ begin
  death:=0;
  tx1:='';
  CheckBox1.Checked:=false;
-if  (Form1.OraSession1.Username='36048') or (Form1.OraSession1.Username='36086') or (Form1.OraSession1.Username='36039')
+if  (Form1.OraSession1.Username='36091') or (Form1.OraSession1.Username='36086') or (Form1.OraSession1.Username='36039')
 or (Form1.OraSession1.Username='36052') or (Form1.OraSession1.Username='36100') then
  begin
   showMessage('Добро пожаловать!');

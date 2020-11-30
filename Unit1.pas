@@ -961,9 +961,9 @@ end;
 
 procedure TForm1.N81Click(Sender: TObject);
 begin
- //Приходные ордера по отгруженному оборудованию по проекту
+ //Приходные ордера по отгруженному оборудованию\материалам по проекту
   Application.CreateForm(TForm9, Form9);
-  Form9.Caption:='Приходные ордера по отгруженному оборудованию по проекту. Выберите проект';
+  Form9.Caption:='Приходные ордера по отгруженному оборудованию\материалам по проекту. Выберите проект';
   Form9.showmodal();
   Form9.Free;
 
@@ -999,7 +999,7 @@ begin
   Form9.Caption:='Применяемость ПУЕ: Документы движения,Наряды по проекту. Выберите проект';
   Form9.showmodal();
   Form9.Free;
-
+  
 end;        
 
 procedure TForm1.N85Click(Sender: TObject);

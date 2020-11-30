@@ -24,6 +24,7 @@ type
     QueryTree: TOraQuery;
     create: TButton;
     blockMask: TPanel;
+    test: TCheckBox;
     procedure FormShow(Sender: TObject);
     procedure treeTypeChange(Sender: TObject);
     procedure projectFindClick(Sender: TObject);
@@ -133,7 +134,7 @@ begin
 end;
 
 procedure TdocSpCnt.createClick(Sender: TObject);
-var ID : string;
+var ID: string;
 begin
   ID := QueryTree.FieldByName('ID').asString;
   if ID <> '' then

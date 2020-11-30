@@ -2,13 +2,15 @@ unit t_utils;
 
 interface
 
-uses dialogs, sysutils, ExcelXP, OleServer, ComObj, Variants, Ora;
+uses dialogs, sysutils, ExcelXP, OleServer, ComObj, Variants, Ora, clipbrd;
 
 var
   OracleQuery_1 : TOraQuery;
   OracleQuery_2 : TOraQuery;
   OracleQuery_3 : TOraQuery;
   OracleQuery_4 : TOraQuery;
+
+function custom_ReplaceStr(source, p, r : string) : string;
 
 procedure Show_TTRTN_Details(date_filter_month : string; date_filter_year : string; main_nomen : boolean);
 procedure main_nomenclature_list(t : string; s : string; c : string);
@@ -133,7 +135,7 @@ begin
       FExcel.Cells[index, 7].value := kol;
 
       inc(index);
-
+      
       treeDown := true;
     end
     else
@@ -146,7 +148,7 @@ begin
         sname := sname + ' ' + kol;
         kol := '1';
       end;               
-
+      
       FExcel.Cells[index, 4].value := mass;
       FExcel.Cells[index, 5].value := sname;
       FExcel.Cells[index, 5].Font.Bold := false;
@@ -229,6 +231,7 @@ begin
      if QueryS[QueryIndex].RecordCount = 0 then
      begin
         DBSession_destruct();
+        FExcel := Unassigned;
         showMessage('По выбранной ПУЕ - отсуствуют записи!');
         exit;
      end;                        
@@ -714,6 +717,25 @@ begin
   FExcel := Unassigned;
 end;
 
+function custom_ReplaceStr(source, p, r : string) : string;
+var
+i : integer;
+begin
+  i := 1;
+  while (i <= length(source)) do
+  begin
+    if (copy(source, i, length(p)) = p) then
+    begin
+      delete(source, i, length(p));
+      insert(r, source, i);
+    end;
+
+    inc(i);
+  end;
+
+  custom_ReplaceStr := source;
+end;
+
 (*
 procedure TForm9.Show_MainNomenDetails;
 var
@@ -799,7 +821,7 @@ begin
   Sheet.Cells[strNum, 1].Value := 'ИТОГО: ';
   Sheet.Cells[strNum, 1].HorizontalAlignment := xlRight;
   Sheet.Cells[strNum, 1].VerticalAlignment := xlCenter;
-
+  
   Sheet.Cells[strNum, 3].NumberFormat := '';
   Sheet.Cells[strNum, 3].Formula := '=SUM(C' + inttostr(startNum) + ':C' + inttostr((strNum - 2)) + ')';
 
@@ -815,7 +837,7 @@ begin
   Sheet.Cells[strNum, 7].NumberFormat := '';
   Sheet.Cells[strNum, 7].Formula := '=SUM(G' + inttostr(startNum) + ':G' + inttostr((strNum - 2)) + ')';
 
-  Sheet.Cells[strNum, 8].NumberFormat := '';
+  Sheet.Cells[strNum, 8].NumberFormat := '';         
   Sheet.Cells[strNum, 8].Formula := '=SUM(H' + inttostr(startNum) + ':H' + inttostr((strNum - 2)) + ')';
 
   Sheet.Cells[strNum, 9].NumberFormat := '';

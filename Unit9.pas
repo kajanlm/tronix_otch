@@ -346,7 +346,7 @@ or  (form9.Caption='Применяемость ПУЕ: Документы движения,Наряды по проекту. Выб
 or  (form9.caption='Расход по годам в разрезе затребованных и отгруженных материалов по проекту. Выберите проект')
 or  (form9.caption='Расход по годам в разрезе затребованного и отгруженного оборудования по проекту. Выберите проект')
 or  (form9.caption='Расход по годам в разрезе затребованной номенклатуры по проекту. Выберите проект')
-or  (form9.caption='Приходные ордера по отгруженному оборудованию по проекту. Выберите проект')
+or  (form9.caption='Приходные ордера по отгруженному оборудованию\материалам по проекту. Выберите проект')
 or  (form9.caption='Ведомости снабжения(237) с привязкой к веткам по проекту. Выберите проект')
 or  (form9.caption='Формирование ведомости комплектации запуска.')
 or  (form9.Caption='Изделия с незаполненой трудоемкостью ТНа')
@@ -1343,11 +1343,11 @@ begin
   FRasxod_proekt_years_zatr.Free;
 end;
  
-     if form9.caption='Приходные ордера по отгруженному оборудованию по проекту. Выберите проект' then
+     if form9.caption='Приходные ордера по отгруженному оборудованию\материалам по проекту. Выберите проект' then
 begin
   Application.CreateForm(TFRasxod_obor_otgr_prixod_order, FRasxod_obor_otgr_prixod_order);
   FRasxod_obor_otgr_prixod_order.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
-  FRasxod_obor_otgr_prixod_order.Caption:='Приходные ордера по отгруженному оборудованию по проекту: '+oraQuery1.FieldByName('name').asString;
+  FRasxod_obor_otgr_prixod_order.Caption:='Приходные ордера по отгруженному оборудованию\материалам по проекту: '+oraQuery1.FieldByName('name').asString;
   FRasxod_obor_otgr_prixod_order.ShowModal();
   FRasxod_obor_otgr_prixod_order.Free;
 end;

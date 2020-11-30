@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, DB, ADODB, Grids, DBGrids, GridsEh, DBGridEh, DBGridEhImpExp, ComObj, ExcelXP,
-  MemDS, DBAccess, Ora, StdCtrls;
+  MemDS, DBAccess, Ora, StdCtrls, clipbrd, strUtils;
 
 type
   Tequipment_details = class(TForm)
@@ -35,7 +35,7 @@ var
 
 implementation
 
-uses Unit1;
+uses Unit1, t_utils;
 
 {$R *.dfm}
 
@@ -62,7 +62,7 @@ begin
   OraQuery.SQL.Text := 'select name, project_id from tronix.project_list order by name';
   OraQuery.Open;
 
-  prs.Clear;
+  prs.Clear;     
   invi_prs.Clear;
 
   while not OraQuery.Eof do
@@ -75,19 +75,26 @@ begin
   
   prs.ItemIndex := -1;
   invi_prs.ItemIndex := -1;
-end;                   
+end;
 
 procedure Tequipment_details.equipmentToExcel(Sender: TObject);
 var
 FExcel, Sheet, Excel, SExcel, Output, Money : OleVariant;
-startIndex, insIndex, i, mI, index, mPosSize : integer;
-tempStr : string;
+startIndex, insIndex, i, mI, index, mPosSize, COUNT_ACT, COUNT_MONEY : integer;
+tempStr, SQL : string;
 tempDate : TDateTime;
 parseStr : TStringList;
 ZAKAZ : string;
 saveDialog : TSaveDialog;
 needMoney : boolean;
+const
+colSize = 15;
 begin
+
+if form1.SCAlive then
+  SQL := form1.ServerRequest('EQUIP_DETAILS')
+else
+  exit;
 
 if zakArgument = '' then
 begin
@@ -99,8 +106,6 @@ if Pos('/', zakArgument) <> 0 then
   ZAKAZ := copy(zakArgument, 1, 5)
 else
   ZAKAZ := zakArgument;
-
-//showmessage(zakaz);
 
 FExcel := CreateOleObject('Excel.Application');
 FExcel.EnableEvents := False;
@@ -116,13 +121,18 @@ Sheet.UsedRange.Sort (Sheet.Range['K2'], xlAscending,
                       EmptyParam, EmptyParam,
                       xlAscending, xlNo, EmptyParam, True, xlTopToBottom, xlSyllabary);
 
+(* money *)
+SExcel := CreateOleObject('Excel.Application');
+SExcel.EnableEvents := False;
+SExcel.Visible := false;
+(* money *)
+
 Excel := CreateOleObject('Excel.Application');
 Excel.EnableEvents := False;
 Excel.Visible := false;
 
 Excel.Workbooks.Add('\\Ser1\s1sys2\PROG\FOX_WIN\SHABLON_EQUIPMENT_D.xlsx');
 Output := Excel.Workbooks[1].WorkSheets[1];
-
 Output.Cells[1, 4].Value := zak.Caption;
 
 saveDialog := TSaveDialog.Create(self);
@@ -138,13 +148,9 @@ if saveDialog.Execute then
 else
   showMessage('ŒÚ˜ÂÚ ·Û‰ÂÚ ÒÙÓÏËÓ‚‡Ì ·ÂÁ Á‡Ú‡Ú!');
 
-(* money *)
-SExcel := CreateOleObject('Excel.Application');
-SExcel.EnableEvents := False;
-SExcel.Visible := false;
-(* money *)
+startIndex := 4;
+insIndex := startIndex;
 
-//showmessage(saveDialog.FileName);
 if needMoney then
 begin
   //SExcel.Workbooks.Add('C:\money.xls');
@@ -153,78 +159,143 @@ begin
   Money := SExcel.Workbooks[1].WorkSheets[1];
 
   (* cfg *)
-  mPosSize := 16;
-  mI := 7; //start
+  mPosSize := 0;
+  mI := 1; //start
+  
+  index := 1;
+  while true do
+  begin
+    if Money.Cells[(mI + index), 3].Text <> '' then
+      break;
+      
+    Output.Cells[(startIndex - 1), (index + colSize)] := Money.Cells[(mI + index), 1].Text;
 
-  for index := 1 to mPosSize do
-    Output.Cells[3, (index + mPosSize - 1)] := Money.Cells[(mI + index), 1].Text;
+    inc(index);
+    inc(mPosSize);
+  end;
 
-  Output.Cells[3, (index + mPosSize - 1)] := '¬ÒÂ„Ó'; //Money.Cells[mI, 1].Text;
+  Output.Cells[(startIndex - 1), (index + colSize)] := '¬ÒÂ„Ó'; //Money.Cells[mI, 1].Text;
 end;
+//showmessage(inttostr(mPosSize));
 saveDialog.Free;
 
-startIndex := 4;
-insIndex := startIndex;
-for i := 1 to (Sheet.Cells.SpecialCells(xlCellTypeLastCell).Row - 1) do
+SQL := StringReplace(SQL, '<PROJECT_MASK>', ZAKAZ, [rfReplaceAll, rfIgnoreCase]);
+
+SQL := StringReplace(SQL, '<DECODE_MASK>', 'decode(ll.zavn, ' + char(39) + '167' + char(39) + ', ' + char(39)
++ '¿40-2¡-ﬂ–-2' + char(39) + ', ' + char(39) + '168' + char (39) + ', ' + char(39) + '¿40-2¡-ﬂ–-2' + char(39) + ', ll.proekt)', [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<T_MASK>', ansitoutf8('T'), [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<SSHORT_MASK>', 'ŒƒÕŒ–¿«', [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<MULTI_LOW_MASK>', 'ÏÌÓ„Ó‡ÁÓ‚‡ˇ', [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<SINGLE_LOW_MASK>', 'Ó‰ÌÓ‡ÁÓ‚‡ˇ', [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<STORE_MASK>', '’–¿Õ≈Õ»≈', [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<FIX_LOW_MASK>', 'ÂÏÓÌÚ', [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<FIX_UPPER_MASK>', '–≈ÃŒÕ“', [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<TNO_MASK>', '“ÕŒ', [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<STORE_EQUIP_MULTI_MASK>', '%%’–¿Õ≈Õ»≈%Œ—Õ¿—“ »%%ÃÕŒ√Œ–¿«Œ¬¿ﬂ%%', [rfReplaceAll, rfIgnoreCase]);
+SQL := StringReplace(SQL, '<STORE_EQUIP_SINGLE_MASK>', '%%’–¿Õ≈Õ»≈%Œ—Õ¿—“ »%%ŒƒÕŒ–¿«Œ¬¿ﬂ%%', [rfReplaceAll, rfIgnoreCase]);
+
+(*
+SQL := custom_ReplaceStr(SQL, '<DECODE_MASK>', 'decode(ll.zavn, ' + char(39) + '167' + char(39) + ', ' + char(39)
++ '¿40-2¡-ﬂ–-2' + char(39) + ', ' + char(39) + '168' + char (39) + ', ' + char(39) + '¿40-2¡-ﬂ–-2' + char(39) + ', ll.proekt)');
+SQL := custom_ReplaceStr(SQL, '<T_MASK>', 'T');
+SQL := custom_ReplaceStr(SQL, '<SSHORT_MASK>', 'ŒƒÕŒ–¿«');
+SQL := custom_ReplaceStr(SQL, '<MULTI_LOW_MASK>', 'ÏÌÓ„Ó‡ÁÓ‚‡ˇ');
+SQL := custom_ReplaceStr(SQL, '<SINGLE_LOW_MASK>', 'Ó‰ÌÓ‡ÁÓ‚‡ˇ');
+SQL := custom_ReplaceStr(SQL, '<STORE_MASK>', '’–¿Õ≈Õ»≈');
+SQL := custom_ReplaceStr(SQL, '<FIX_LOW_MASK>', 'ÂÏÓÌÚ');
+SQL := custom_ReplaceStr(SQL, '<FIX_UPPER_MASK>', '–≈ÃŒÕ“');
+SQL := custom_ReplaceStr(SQL, '<TNO_MASK>', '“ÕŒ');
+SQL := custom_ReplaceStr(SQL, '<STORE_EQUIP_MULTI_MASK>', '%%’–¿Õ≈Õ»≈%Œ—Õ¿—“ »%%ÃÕŒ√Œ–¿«Œ¬¿ﬂ%%');
+SQL := custom_ReplaceStr(SQL, '<STORE_EQUIP_SINGLE_MASK>', '%%’–¿Õ≈Õ»≈%Œ—Õ¿—“ »%%ŒƒÕŒ–¿«Œ¬¿ﬂ%%');
+*)
+//Clipboard.asText := SQL;
+//showmessage(SQL);
+
+form1.execQuery(OraQuery, SQL, false);
+
+//exit;
+
+//showmessage(zakaz);
+
+COUNT_ACT := 0;
+COUNT_MONEY := 0;
+
+while not OraQuery.Eof do
 begin
-  if (Sheet.Cells[i, 3].text = ZAKAZ) then
+  Output.Cells[insIndex, 1].value := OraQuery.FieldByName('n').asString;//(InsIndex - startIndex  + 1);  //'n'
+
+  Output.Cells[insIndex, 2].value := ZAKAZ + '/' + inttostr(InsIndex - startIndex + 1);
+
+  (*
+  OraQuery.Close;
+  OraQuery.SQL.Text := 'select texkompl_comment from tx_texkompl where project_project_id = ' + invi_prs.Items[prs.ItemIndex] + ' '
+  + 'and nomer = ' + char(39) + OraQuery.FieldByName('CH').asString + '_1' + char(39) + ' and rownum = 1';
+  OraQuery.Open;
+  Output.Cells[insIndex, 3].value := OraQuery.FieldByName('texkompl_comment').asString;
+  *)
+
+  Output.Cells[insIndex, 3].value := OraQuery.FieldByName('TX_COMM').asString;
+
+  Output.Cells[insIndex, 4].value := OraQuery.FieldByName('CH').asString;
+
+  Output.Cells[insIndex, 5].value := OraQuery.FieldByName('NAME').asString;
+
+  Output.Cells[insIndex, 6].value := OraQuery.FieldByName('KOL').asString;
+
+  Output.Cells[insIndex, 7].NumberFormat := '@';
+  Output.Cells[insIndex, 7].value := OraQuery.FieldByName('MASSA').asString;
+
+  Output.Cells[insIndex, 8].value := OraQuery.FieldByName('DOCU').asString;
+
+  Output.Cells[insIndex, 9].value := OraQuery.FieldByName('PRIZNAK').asString;
+
+  Output.Cells[insIndex, 10].NumberFormat := '@';
+  Output.Cells[insIndex, 10].value := OraQuery.FieldByName('TRUD').asString;
+
+  //showmessage('¿ÍÚ π' + Sheet.Cells[i, 20].Text + ' ÓÚ ' + Sheet.Cells[i, 21].Text);
+
+  //add check for date_otk is null (if null - no check)!!!
+  if OraQuery.FieldByName('DATEINS').asString <> '' then
   begin
-    Output.Cells[insIndex, 1].value := (InsIndex - startIndex  + 1);
 
-    Output.Cells[insIndex, 2].value := Sheet.Cells[i, 3].text + '/' + inttostr(InsIndex - startIndex + 1);
-    
-    OraQuery.Close;
-    OraQuery.SQL.Text := 'select texkompl_comment from tx_texkompl where project_project_id = ' + invi_prs.Items[prs.ItemIndex] + ' '
-    + 'and nomer = ' + char(39) + Sheet.Cells[i, 11].text + '_1' + char(39) + ' and rownum = 1';
-    OraQuery.Open;
-    Output.Cells[insIndex, 3].value := OraQuery.FieldByName('texkompl_comment').asString;
+    for i := 1 to (Sheet.Cells.SpecialCells(xlCellTypeLastCell).Row - 1) do
+    begin
 
-    Output.Cells[insIndex, 4].value := Sheet.Cells[i, 11].text;
+      if ((Sheet.Cells[i, 3].text <> ZAKAZ) or (Sheet.Cells[i, 5].text <> OraQuery.FieldByName('CH').asString)) then
+        continue;
 
-    Output.Cells[insIndex, 5].value := Sheet.Cells[i, 18].text;
-
-    Output.Cells[insIndex, 6].value := Sheet.Cells[i, 14].text;
-    
-    Output.Cells[insIndex, 7].NumberFormat := '@';
-    Output.Cells[insIndex, 7].value := Sheet.Cells[i, 12].text;
-    
-    Output.Cells[insIndex, 8].value := Sheet.Cells[i, 17].text;
-
-    Output.Cells[insIndex, 9].value := Sheet.Cells[i, 16].text;
-
-    Output.Cells[insIndex, 10].NumberFormat := '@';
-    Output.Cells[insIndex, 10].value := Sheet.Cells[i, 13].text;
-
-    //showmessage('¿ÍÚ π' + Sheet.Cells[i, 20].Text + ' ÓÚ ' + Sheet.Cells[i, 21].Text);
-    if Sheet.Cells[i, 30].Text <> '' then
-    begin               
-      Output.Cells[insIndex, 11].value := '¿ÍÚ π' + Sheet.Cells[i, 30].Text + ' ÓÚ ';
-      
-      //showmessage('== ' + Sheet.Cells[i, 21].Text);
-      if Sheet.Cells[i, 31].NumberFormat <> 'ƒƒ.ÃÃ.√√√√' then
+      if Sheet.Cells[i, 30].Text <> '' then
       begin
-        tempStr := Sheet.Cells[i, 31].Text;
-        Insert('.', tempStr, 5); //2020.1010
-        Insert('.', tempStr, 8); //2020.10.10
-
-        parseStr := form1.strtok(tempStr, '.');
-        tempStr := parseStr[0] + '.' + parseStr[1] + '.' + parseStr[2];
+        Output.Cells[insIndex, 11].value := '¿ÍÚ π' + Sheet.Cells[i, 30].Text + ' ÓÚ ';
         
-        tempDate := StrToDate(tempStr);
-      end
-      else       
-        tempDate := Sheet.Cells[i, 31].Value;
+        //showmessage('== ' + Sheet.Cells[i, 21].Text);
+        if Sheet.Cells[i, 31].NumberFormat <> 'ƒƒ.ÃÃ.√√√√' then
+        begin
+          tempStr := Sheet.Cells[i, 31].Text;
+          Insert('.', tempStr, 5); //2020.1010
+          Insert('.', tempStr, 8); //2020.10.10
 
-      Output.Cells[insIndex, 11].value := Output.Cells[insIndex, 11].value + DateToStr(tempDate);
-      //break;       
+          parseStr := form1.strtok(tempStr, '.');
+          tempStr := parseStr[0] + '.' + parseStr[1] + '.' + parseStr[2];
+          
+          tempDate := StrToDate(tempStr);
+        end
+        else
+          tempDate := Sheet.Cells[i, 31].Value;
+        
+        Output.Cells[insIndex, 11].value := Output.Cells[insIndex, 11].value + DateToStr(tempDate);
+        inc(COUNT_ACT);
+        break;
 
-      //showmessage(Sheet.Cells[i, 21].Value + #10#13 + Sheet.Cells[i, 21].Text);
-      //showmessage(DateToStr(Sheet.Cells[i, 21].Value) + #10#13 + Sheet.Cells[i, 21].NumberFormat + #10#13 + varType(Sheet.Cells[i, 21].Value));
+        //showmessage(Sheet.Cells[i, 21].Value + #10#13 + Sheet.Cells[i, 21].Text);
+        //showmessage(DateToStr(Sheet.Cells[i, 21].Value) + #10#13 + Sheet.Cells[i, 21].NumberFormat + #10#13 + varType(Sheet.Cells[i, 21].Value));
+      end;
+
     end;
 
-    if needMoney then
+    if needMoney then                                          
     begin
-      mI := 7; //start
+      mI := 1; //start
       while mI < (Money.Cells.SpecialCells(xlCellTypeLastCell).Row - 1) do
       begin
 
@@ -232,32 +303,36 @@ begin
         begin
           index := 1;
           for index := 1 to mPosSize do
-            Output.Cells[insIndex, ((mPosSize - 1) + index)] := Money.Cells[(mI + index), 2].Text;
+            Output.Cells[insIndex, (colSize + index)] := Money.Cells[(mI + index), 2].Text;
 
-          Output.Cells[insIndex, ((mPosSize - 1) + index)] := Money.Cells[mI, 2].Text;
+          Output.Cells[insIndex, (colSize + index)] := Money.Cells[mI, 2].Text;
+          inc(COUNT_MONEY);
           break;
         end;
-
-        mI := mI + (mPosSize + 1); //17
+        
+        mI := mI + (mPosSize + 1);
       end;
     end;
-
-    //if Sheet.Cells[i, 21].Text <> '' then
-    //  showMessage(Pchar(varType(Sheet.Cells[i, 21].Value)));
-    (*
-    if Sheet.Cells[i, 21].Text <> '' then
-      showmessage(DateToStr(Sheet.Cells[i, 21].Value) + #10#13 + Sheet.Cells[i, 21].NumberFormat + #10#13 + varType(Sheet.Cells[i, 21].Value));
-    *)
-    Output.Cells[insIndex, 12].value := '';
-    Output.Cells[insIndex, 13].value := Sheet.Cells[i, 4].text;
-    //Output.Cells[insIndex, 14].value := Sheet.Cells[i, 16].text;
-    Output.Cells[insIndex, 14].value := '';
-    Output.Cells[insIndex, 15].value := '';
     
-    inc(insIndex);
   end;
 
-  Output.range[Output.cells[startIndex, 1], Output.cells[(insIndex - 1), 32]].borders.linestyle := xlContinuous;
+  //if Sheet.Cells[i, 21].Text <> '' then
+  //  showMessage(Pchar(varType(Sheet.Cells[i, 21].Value)));
+  (*
+  if Sheet.Cells[i, 21].Text <> '' then
+    showmessage(DateToStr(Sheet.Cells[i, 21].Value) + #10#13 + Sheet.Cells[i, 21].NumberFormat + #10#13 + varType(Sheet.Cells[i, 21].Value));
+  *)
+  Output.Cells[insIndex, 12].value := '';
+  Output.Cells[insIndex, 13].value := OraQuery.FieldByName('PODR').asString;
+  //Output.Cells[insIndex, 14].value := Sheet.Cells[i, 16].text;
+  Output.Cells[insIndex, 14].value := '';
+  Output.Cells[insIndex, 15].value := '';
+
+  inc(insIndex);
+  //end;
+  OraQuery.Next;
+
+  Output.range[Output.cells[startIndex, 1], Output.cells[(insIndex - 1), (colSize + mPosSize + 1)]].borders.linestyle := xlContinuous;
 end;
 
 //FExcel.Visible := true;
@@ -268,6 +343,11 @@ FExcel := Unassigned;
 SExcel.Quit;
 SExcel := Unassigned;
 Excel := Unassigned;
+
+showmessage('Œ·‡·ÓÚ‡ÌÓ ÒÚÓÍ = ' + inttostr(OraQuery.RecordCount)
++ #10#13 + '»Á ÌËı:' + #10#13
++ '    ‡ÍÚÓ‚ = ' + inttostr(COUNT_ACT) + ';' + #10#13
++ '    Á‡Ú‡Ú = ' + inttostr(COUNT_MONEY) + '.');
 
 end;
 
