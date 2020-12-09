@@ -310,7 +310,14 @@ begin
 
    ProjectList;
 
-   if (form9.caption='Отчет по материальной ведомости') then  Form9.Button1.Visible:=false;
+   if ((form9.caption='Отчет по материальной ведомости') or (self.caption = 'Норма расхода материала для расчета цены по проекту (ЦФЭК)')) then
+    Form9.Button1.Visible:=false;
+
+   if self.caption = 'Норма расхода материала для расчета цены по проекту (ЦФЭК)' then
+   begin
+    dbgrideh2.Visible := false;
+    button2.Visible := true;
+   end;
 
 if (form9.caption='Отчет по заявкам') or (form9.caption='Отчет планируемой трудоемкости') or
 (form9.caption='Отчет по выполнению ведомостей (Для склада ЗИП)') or (form9.caption='Отчет по Отчет по ТН (материал изделие)')
@@ -435,7 +442,7 @@ end;
 procedure TForm9.DBGridEh1DblClick(Sender: TObject);
 var
 tx,zak, uzak,part1,part2, SQL: string;
-e, INC_POS: integer;
+e, INC_POS, nField: integer;
 FExcel, Sheet, Colum : OleVariant;
 begin
 
@@ -517,21 +524,26 @@ end;
 if (form9.caption = 'Отчет по материальной ведомости') and (Sender <> nil) then
 	exit;
 
-if form9.caption='Отчет по материальной ведомости' then
+if ((form9.caption='Отчет по материальной ведомости') or (self.caption = 'NORMSPENTMAT_FOR_COST_BYPROJECT')) then
 begin
 
-	uzak := '-1';
-	for e := 0 to uzaks.Items.Count - 1 do
-		if uzaks.Checked[e] then
-			uzak := uzak + ', ' + uzaks_memory.Items[e];
+  if (self.caption <> 'NORMSPENTMAT_FOR_COST_BYPROJECT') then
+  begin
+	  uzak := '-1';
+	  for e := 0 to uzaks.Items.Count - 1 do
+		  if uzaks.Checked[e] then
+			  uzak := uzak + ', ' + uzaks_memory.Items[e];
 
-	if uzak = '-1' then
-	begin
-		showmessage('Выберите минимум 1 заказ!');
-		exit;
-	end;
+	  if uzak = '-1' then
+	  begin
+		  showmessage('Выберите минимум 1 заказ!');
+		  exit;
+	  end;
+  end
+  else
+    uzak := 'select NN from tronix.zakaz where id_project = ' + OraQuery1.FieldByName('project_id').asString;
 
-	tx:=' SELECT I.CED, I.CED_UCHET, I.PART,I.PART2,SUBSTR(I.KOD,1,4) GRP_KOD,I.SUBGRP,I.GOST_CHART_POST GOST,I.KOD,I.MARKA,I.TYPE_RAZM,I.DOP_NAME,I.GOST_TY,I.GOST_MAT, ';
+	tx:=' SELECT <MTR_MASK> I.CED, I.CED_UCHET, I.PART,I.PART2,SUBSTR(I.KOD,1,4) GRP_KOD,I.SUBGRP,I.GOST_CHART_POST GOST,I.KOD,I.MARKA,I.TYPE_RAZM,I.DOP_NAME,I.GOST_TY,I.GOST_MAT, ';
 	tx:=tx+' RTRIM(I.MARKA || DECODE(I.TYPE_RAZM, NULL ,'''','' '')  || I.TYPE_RAZM  || DECODE(I.GOST_TY, NULL ,'''','' '')  || I.GOST_TY  || DECODE(I.GOST_MAT, NULL ,'''','' '')  || I.GOST_MAT ) MAT, ';
 	tx:=tx+' UPPER(I.ED) ED,REPLACE(TO_CHAR(I.POTR),''.'','','') POTR,UPPER(I.ED_UCHET) ED_UCHET,REPLACE(TO_CHAR(I.POTR_UCHET),''.'','','') POTR_UCHET,';
 	//tx:=tx+' REPLACE(TO_CHAR(I.MASS),''.'','','') MASS ';
@@ -775,13 +787,72 @@ begin
 	tx:=tx+' AND SPR.TIP_LOV_TIP_LOV_ID = TTI.TIP_LOV_ID (+) ';
 	tx:=tx+'  AND SPR.RAZ_LOV_RAZ_LOV_ID = TTR.RAZ_LOV_ID (+) ';
 	tx:=tx+' AND SPR.TY_LOV_TY_LOV_ID = TTY.TY_LOV_ID (+)) I  ';
-	tx:=tx+' ORDER BY I.PART,I.part2, GRP_KOD, TO_NUMBER(I.KOD) ASC ';
+	tx:=tx+' ORDER BY <ORDER_MASK>';
 	//tx:=tx+' ORDER BY I.KOD, I.SPRAV_ID';
 	//       ShowMEssage(tx);
 
+  if (self.caption = 'NORMSPENTMAT_FOR_COST_BYPROJECT') then
+  begin
+    tx := StringReplace(tx, '<MTR_MASK>', 'substr(upper(ltrim(tronix_sp_sp_name(I.SPRAV_ID, null, 3))), 1, 200) as MTR_NAME,', [rfReplaceAll, rfIgnoreCase]);
+    tx := StringReplace(tx, '<ORDER_MASK>', 'I.KOD ASC', [rfReplaceAll, rfIgnoreCase]);
+    form1.execQuery(OraQuery3, tx, false);
+
+    FExcel := CreateOleObject('Excel.Application');
+    FExcel.Workbooks.Add;
+    FExcel.EnableEvents := False;
+    FExcel.Visible := false;
+    FExcel.WorkSheets[1].Select;
+    FExcel.Workbooks[1].WorkSheets[1].Name := 'Лист1';
+    INC_POS := 1;
+
+    //for e := 0 to (OraQuery3.Fields.Count - 1) do
+    //  FExcel.Cells[INC_POS, (e + 1)].Value := OraQuery3.Fields[e].FieldName;
+    FExcel.Cells[INC_POS, 1].Value := 'NAME';
+    FExcel.Cells[INC_POS, 2].Value := 'KOD';
+    FExcel.Cells[INC_POS, 3].Value := 'ED';
+    FExcel.Cells[INC_POS, 4].Value := 'NORM';
+    inc(INC_POS);
+
+    OraQuery3.First;
+    while not OraQuery3.Eof do
+    begin
+      nField := 1;
+      for e := 1 to OraQuery3.Fields.Count do
+      begin
+
+        tx := OraQuery3.Fields[(e - 1)].FieldName;
+        if ((tx = 'MTR_NAME') or (tx = 'KOD') or (tx = 'ED')) then
+        begin
+          FExcel.Cells[INC_POS, nField].NumberFormat := '@';
+          FExcel.Cells[INC_POS, nField].Value := OraQuery3.FieldByName(TX).asString;
+          inc(nField);
+        end
+        else if (tx = 'POTR') then
+        begin
+          FExcel.Cells[INC_POS, nField].Value := excelFloat(OraQuery3.FieldByName(TX).asString);
+          inc(nField);
+        end
+        else
+          continue;
+
+      end;
+
+      OraQuery3.Next;
+      inc(INC_POS);
+    end;
+
+    FExcel.Visible := true;
+    FExcel := Unassigned;
+
+    showmessage('Выгружено ' + inttostr(OraQuery3.RecordCount) + ' строк(и).');
+    exit;
+  end;
+
+  tx := StringReplace(tx, '<MTR_MASK>', '', [rfReplaceAll, rfIgnoreCase]);
+  tx := StringReplace(tx, '<ORDER_MASK>', 'I.PART,I.part2, GRP_KOD, TO_NUMBER(I.KOD) ASC', [rfReplaceAll, rfIgnoreCase]);
+
 	if MessageDlg('Создать отчет в новом варианте? Да - новый вариант. Нет - старый вариант.', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
 	begin
-
 		SQL := tx;
 
 		FExcel := CreateOleObject('Excel.Application');
@@ -1862,6 +1933,14 @@ begin
 
   trnomen.ShowModal();
   trnomen.Free;
+
+  exit;
+end;
+
+if (self.caption = 'Норма расхода материала для расчета цены по проекту (ЦФЭК)') then
+begin
+  self.caption := 'NORMSPENTMAT_FOR_COST_BYPROJECT';
+  DBGridEh1DblClick(nil);
 
   exit;
 end;

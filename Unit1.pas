@@ -100,6 +100,7 @@ type
     N83: TMenuItem;
     N84: TMenuItem;
     N85: TMenuItem;
+    N86: TMenuItem;
     procedure N3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure tn1Click(Sender: TObject);
@@ -181,6 +182,7 @@ type
     procedure N83Click(Sender: TObject);
     procedure N84Click(Sender: TObject);
     procedure N85Click(Sender: TObject);
+    procedure N86Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -1007,6 +1009,14 @@ begin
   Application.CreateForm(Tequipment_details, equipment_details);
   equipment_details.ShowModal();
   equipment_details.Free;
+end;
+
+procedure TForm1.N86Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='Норма расхода материала для расчета цены по проекту (ЦФЭК)';
+  Form9.showmodal();
+  Form9.Free;
 end;
 
 end.

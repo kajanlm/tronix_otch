@@ -172,6 +172,8 @@ SQL := StringReplace(SQL, '<EVAL_TYPE_DEP>', EVAL_DEP, [rfReplaceAll, rfIgnoreCa
 SQL := StringReplace(SQL, '<FILTER_MASK>', FILTER_MASK, [rfReplaceAll, rfIgnoreCase]);
 SQL := StringReplace(SQL, '<SFILTER_MASK>', SFILTER_MASK, [rfReplaceAll, rfIgnoreCase]);
 
+SQL := StringReplace(SQL, '<DEFICIT_MASK>', 'b.deficit > 0 or b.deficit_uchet > 0', [rfReplaceAll, rfIgnoreCase]);
+
 OraQuery.Close;
 OraQuery.SQL.Text := SQL;
 OraQuery.ExecSQL;
