@@ -124,7 +124,7 @@ begin
         kol := '1';
       end;
 
-      FExcel.Cells[index, 4].value := mass;
+      FExcel.Cells[index, 4].value := form9.excelFloat(mass);
       FExcel.Cells[index, 5].value := sname;
       FExcel.Cells[index, 5].Font.Bold := true;
       FExcel.Cells[index, 5].Font.Size := 12;
@@ -149,7 +149,7 @@ begin
         kol := '1';
       end;               
       
-      FExcel.Cells[index, 4].value := mass;
+      FExcel.Cells[index, 4].value := form9.excelFloat(mass);
       FExcel.Cells[index, 5].value := sname;
       FExcel.Cells[index, 5].Font.Bold := false;
       FExcel.Cells[index, 5].Font.Size := 12;
@@ -277,6 +277,9 @@ begin
   
   index := parseResult(FExcel, QueryS[QueryIndex], index);
   Sheet.Range[Sheet.Cells[startIndex, 1], Sheet.Cells[index - 1, 17]].borders.linestyle := xlContinuous;
+
+  FExcel.Cells[index, 3].Value := 'Масса: ';
+  FExcel.Cells[index, 4].Formula := '=sum(D1:D' + inttostr((index - 1)) + ')';
 
   DBSession_destruct();
 

@@ -24,7 +24,6 @@ type
     QueryTree: TOraQuery;
     create: TButton;
     blockMask: TPanel;
-    test: TCheckBox;
     procedure FormShow(Sender: TObject);
     procedure treeTypeChange(Sender: TObject);
     procedure projectFindClick(Sender: TObject);

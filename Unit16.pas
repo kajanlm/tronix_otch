@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Grids, DBGridEh, DB, DBAccess, Ora, MemDS, ExcelXP, OleServer,
   StdCtrls,DBGridEhImpExp, GridsEh, DBGrids, DBClient, ExtCtrls, CheckLst,
-  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, jpeg;
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, jpeg, clipbrd;
 
 type
   TDIF_OTCH_FORM = class(TForm)

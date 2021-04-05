@@ -1,6 +1,6 @@
 object DIF_OTCH_FORM: TDIF_OTCH_FORM
-  Left = 234
-  Top = 69
+  Left = 245
+  Top = 249
   Width = 1350
   Height = 878
   BorderIcons = [biSystemMenu, biMaximize]
