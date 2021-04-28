@@ -77,7 +77,7 @@ txx:=txx+' group by pr.zavn,substr(de.nomer,1,2)';
 
 txx:=txx+' union all';
 
-txx:=txx+' select t.zavn zavn,t.denomer denomer,sum(t.tktrud) tktrud,sum(t.trudz) trudz,sum(t.trudnz) trudnz';
+txx:=txx+' select t.zavn zavn,t.denomer denomer,sum(t.tktrud) tktrud,sum(t.trudz) trudnarz,sum(t.trudnz) trudnarnz';
 //,t.iddenomer iddenomer';
 txx:=txx+' from( ';
 
@@ -107,7 +107,7 @@ txx:=txx+' )l'
         FieldByName('tktrud').DisplayLAbel:='ÒĞ-ÒÜ ÍÎĞÌ. ';
         FieldByName('trudz').DisplayLAbel:='ÒĞ-ÒÜ ÇÀÊĞÛÒÛÕ ÍÀĞßÄÎÂ ';
         FieldByName('osttrud').DisplayLAbel:='ÎÑÒÀÒÊÈ ÒĞ-ÒÈ';
-        FieldByName('trudnz').DisplayLAbel:='ÒĞ-ÒÜ ÍÅÇÀÊĞÛÒÛÕ ÍÀĞßÄÎÂ';
+        FieldByName('trudnz').DisplayLAbel:='Â ÒÎÌ ×ÑËÅ ÒĞ-ÒÜ ÍÅÇÀÊĞÛÒÛÕ ÍÀĞßÄÎÂ';
         FieldByName('iddenomer').DisplayLAbel:='iddenomer';
      end;
 

@@ -34,6 +34,7 @@ type
     OraQuery1pname: TStringField;
     OraQuery1god_dok: TStringField;
     OraQuery1god_ins: TStringField;
+    OraQuery1tunomer: TStringField;
     DateTimePicker1: TDateTimePicker;
     Label1: TLabel;
     Button2: TButton;
@@ -111,7 +112,7 @@ begin
 tx:=' ';
 tx:='select tt.dtnnomer dtnnomer,tt.zak zak,tt.typnomer typnomer,tt.txnomer txnomer,decode(tt.ducnomer,'''',tt.dtxnomer,tt.ducnomer) ducnomer,';
 tx:=tx+'tt.tnnomer tnnomer,tt.date_dok date_dok,tt.date_ins date_ins,tt.trudoem trudoem,tt.ts_number ts_number,tt.naname naname,tt.pname pname,';
-tx:=tx+'substr(tt.date_dok,7,4) god_dok,substr(tt.date_ins,7,4) god_ins from (';
+tx:=tx+'substr(tt.date_dok,7,4) god_dok,substr(tt.date_ins,7,4) god_ins,tt.tunomer tunomer from (';
 
 if RadioGroup1.ItemIndex<2 then
 begin
@@ -121,10 +122,11 @@ tx:=tx+' decode(substr(dtx.nomer,3,1),''-'',dtx.nomer,'''') dtxnomer,';
 tx:=tx+' TO_CHAR(tn.date_dok,''DD.MM.YYYY'') date_dok,TO_CHAR(tn.user_date1,''DD.MM.YYYY'') user_date1,TO_CHAR(tn.date_ins,''DD.MM.YYYY'') date_ins,';
 
 tx:=tx+' tn.nomer tnnomer,tm.trudoem trudoem,substr(kv.kod_prof,1,5) kod_prof,duc.nomer ducnomer,kv.name kvname,';
-tx:=tx+' pi.ts_number ts_number,na.fullname naname,'''' pname,tn.user_name1 avtor';
+tx:=tx+' pi.ts_number ts_number,na.fullname naname,'''' pname,tn.user_name1 avtor,';
+tx:=tx+' decode(instr(nordsy.tx_name_all(tk.texkompl_id),''(прн)'',1),0,nordsy.tx_nomer(tk.texkompl_texkompl_id),''прн'') tunomer';
 
 tx:=tx+' from tronix.ttn tn,tronix.ttn_mat tm,tronix.zakaz zk,kadry_dep dtx,kadry_dep dtn,kadry_dep duc,kadry_prikaz pi,kadry_type_prikaz tp,';
-tx:=tx+'nordsy.texkompl tx,nordsy.texkompl tk,feb_zakaz z,nordsy.kvalif kv,kadry_name na';
+tx:=tx+'nordsy.texkompl tx,nordsy.texkompl tk ,feb_zakaz z,nordsy.kvalif kv,kadry_name na';
 
 tx:=tx+' where tn.type_ttn_type_ttn_id=60 and tm.ttn_ttn_id=tn.ttn_id and tn.texkompl_texkompl_id_nar=tx.texkompl_id';
 tx:=tx+' and tx.dep_dep_id=dtx.dep_id(+) and tn.dep_dep_id_to=dtn.dep_id(+)';
@@ -135,7 +137,8 @@ tx:=tx+' and tx.uch_uch_id=duc.dep_id(+) and tm.KVALIF_KVALIF_ID=kv.kvalif_id(+)
 tx:=tx+' and tn.uzak_uzak_id=zk.nn(+) and tn.CADRY_CADRY_ID_NAR=pi.CADRY_CADRY_ID(+) and pi.type_prikaz_type_prikaz_id=tp.type_prikaz_id and tp.kod=1';
 tx:=tx+' and pi.CADRY_CADRY_ID=na.CADRY_CADRY_ID(+) and tm.trudoem is not null and tn.date_anul_nar is null';
 
-tx:=tx+' and nvl(nordsy.go_in_tk(tx.TEXkompl_TEXKOMPL_ID,''осе'',''TYPE''),tx.TEXkompl_TEXKOMPL_ID)=tk.texkompl_id and nordsy.uzak_tx(tx.TEXkompl_TEXKOMPL_ID)=z.nn(+)';
+tx:=tx+' and nvl(nordsy.go_in_tk(tx.TEXkompl_TEXKOMPL_ID,''осе'',''TYPE''),tx.TEXkompl_TEXKOMPL_ID)=tk.texkompl_id';
+tx:=tx+' and nordsy.uzak_tx(tx.TEXkompl_TEXKOMPL_ID)=z.nn(+)';
 tx:=tx+' and not exists ( select * from tronix.ttn tz where tz.zamen_nar = tn.ttn_id)';
 
 if Edit1.Text<>'All' then
@@ -162,7 +165,9 @@ tx:=tx+'decode(substr(dtx.nomer,3,1),''-'',dtx.nomer,'''') dtxnomer,';
 tx:=tx+' TO_CHAR(tn.date_dok,''DD.MM.YYYY'') date_dok,TO_CHAR(tn.user_date1,''DD.MM.YYYY'') user_date1,TO_CHAR(tn.date_ins,''DD.MM.YYYY'') date_ins,';
 
 tx:=tx+' tn.nomer tnnomer,tm.trudoem trudoem,substr(kv.kod_prof,1,5) kod_prof,duc.nomer ducnomer,kv.name kvname,'''' ts_number,';
-tx:=tx+'fi.ident naname,fi.name pname,tn.user_name1 avtor';
+tx:=tx+'fi.ident naname,fi.name pname,tn.user_name1 avtor,';
+tx:=tx+' decode(instr(nordsy.tx_name_all(tk.texkompl_id),''(прн)'',1),0,nordsy.tx_nomer(tk.texkompl_texkompl_id),''прн'') tunomer';
+
 tx:=tx+' from tronix.ttn tn,tronix.ttn_mat tm,tronix.zakaz zk,kadry_dep dtx,kadry_dep dtn,kadry_dep duc,nordsy.texkompl tx,nordsy.texkompl tk,';
 tx:=tx+'feb_zakaz z,nordsy.kvalif kv,tronix.firm fi';
 
@@ -174,9 +179,9 @@ tx:=tx+' and dtn.dep_id='+Edit2.Text;
 
 tx:=tx+' and tx.uch_uch_id=duc.dep_id(+) and tm.KVALIF_KVALIF_ID=kv.kvalif_id(+) and tn.post_post_id_nar=fi.firm_id(+) and tn.post_post_id_nar is not null';
 tx:=tx+' and tn.uzak_uzak_id=zk.nn(+)';
-tx:=tx+' and tm.trudoem is not null and tn.date_anul_nar is null and nvl(nordsy.go_in_tk(tx.TEXkompl_TEXKOMPL_ID,''осе'',''TYPE''),tx.TEXkompl_TEXKOMPL_ID)=tk.texkompl_id';
-
-tx:=tx+' and nordsy.uzak_tx(tx.TEXkompl_TEXKOMPL_ID)=z.nn(+)';
+tx:=tx+' and tm.trudoem is not null and tn.date_anul_nar is null';
+tx:=tx+' and nvl(nordsy.go_in_tk(tx.TEXkompl_TEXKOMPL_ID,''осе'',''TYPE''),tx.TEXkompl_TEXKOMPL_ID)=tk.texkompl_id';
+ tx:=tx+'  and nordsy.uzak_tx(tx.TEXkompl_TEXKOMPL_ID)=z.nn(+)';
 
 if Edit1.Text<>'All' then
 tx:=tx+' and zk.id_project='+Edit1.Text;
@@ -212,6 +217,7 @@ tx:=tx+' order by tt.zak,tt.dtnnomer,tt.typnomer,tt.txnomer,tt.tnnomer';
         FieldByName('pname').DisplayLAbel:='ондпъдвхй ';
         FieldByName('god_dok').DisplayLAbel:='цнд янгд. ';
         FieldByName('god_ins').DisplayLAbel:='цнд гюйп. ';
+        FieldByName('tunomer').DisplayLAbel:='сйп.осе ';
      end;
 
    OraQuery1.SQL.Text:=tx;

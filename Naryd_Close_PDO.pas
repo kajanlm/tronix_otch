@@ -32,6 +32,7 @@ type
     OraQuery1ts_number: TStringField;
     OraQuery1naname: TStringField;
     OraQuery1pname: TStringField;
+    OraQuery1tunomer: TStringField;
     DateTimePicker1: TDateTimePicker;
     Label1: TLabel;
     Button2: TButton;
@@ -112,7 +113,8 @@ begin
 //ShowMessage(Edit2.Text);
 tx:=' ';
 tx:='select tt.dtnnomer dtnnomer,tt.zak zak,tt.typnomer typnomer,tt.txnomer txnomer,decode(tt.ducnomer,'''',tt.dtxnomer,tt.ducnomer) ducnomer,';
-tx:=tx+'tt.tnnomer tnnomer,tt.date_dok date_dok,tt.date_ins date_ins,tt.trudoem trudoem,tt.ts_number ts_number,tt.naname naname,tt.pname pname from (';
+tx:=tx+'tt.tnnomer tnnomer,tt.date_dok date_dok,tt.date_ins date_ins,tt.trudoem trudoem,tt.ts_number ts_number,tt.naname naname,tt.pname pname,tt.tunomer tunomer';
+tx:=tx+' from (';
 
 if RadioGroup1.ItemIndex<2 then
 begin
@@ -122,7 +124,8 @@ tx:=tx+' decode(substr(dtx.nomer,3,1),''-'',dtx.nomer,'''') dtxnomer,';
 tx:=tx+' TO_CHAR(tn.date_dok,''DD.MM.YYYY'') date_dok,TO_CHAR(tn.user_date1,''DD.MM.YYYY'') user_date1,TO_CHAR(tn.date_ins,''DD.MM.YYYY'') date_ins,tn.user_name1 user_name1,';
 
 tx:=tx+' tn.nomer tnnomer,tm.trudoem trudoem,substr(kv.kod_prof,1,5) kod_prof,duc.nomer ducnomer,kv.name kvname,';
-tx:=tx+' pi.ts_number ts_number,na.fullname naname,'''' pname,tn.user_name1 avtor';
+tx:=tx+' pi.ts_number ts_number,na.fullname naname,'''' pname,tn.user_name1 avtor,';
+tx:=tx+' decode(instr(nordsy.tx_name_all(tk.texkompl_id),''(ÐÒÎ)'',1),0,nordsy.tx_nomer(tk.texkompl_texkompl_id),''ÐÒÎ'') tunomer';
 
 tx:=tx+' from tronix.ttn tn,tronix.ttn_mat tm,tronix.zakaz zk,kadry_dep dtx,kadry_dep dtn,kadry_dep duc,kadry_prikaz pi,kadry_type_prikaz tp,';
 tx:=tx+'nordsy.texkompl tx,nordsy.texkompl tk,feb_zakaz z,nordsy.kvalif kv,kadry_name na';
@@ -157,7 +160,9 @@ tx:=tx+'decode(substr(dtx.nomer,3,1),''-'',dtx.nomer,'''') dtxnomer,';
 tx:=tx+' TO_CHAR(tn.date_dok,''DD.MM.YYYY'') date_dok,TO_CHAR(tn.user_date1,''DD.MM.YYYY'') user_date1,TO_CHAR(tn.date_ins,''DD.MM.YYYY'') date_ins,tn.user_name1 user_name1,';
 
 tx:=tx+' tn.nomer tnnomer,tm.trudoem trudoem,substr(kv.kod_prof,1,5) kod_prof,duc.nomer ducnomer,kv.name kvname,'''' ts_number,';
-tx:=tx+'fi.ident naname,fi.name pname,tn.user_name1 avtor';
+tx:=tx+'fi.ident naname,fi.name pname,tn.user_name1 avtor,';
+tx:=tx+' decode(instr(nordsy.tx_name_all(tk.texkompl_id),''(ÐÒÎ)'',1),0,nordsy.tx_nomer(tk.texkompl_texkompl_id),''ÐÒÎ'') tunomer';
+
 tx:=tx+' from tronix.ttn tn,tronix.ttn_mat tm,tronix.zakaz zk,kadry_dep dtx,kadry_dep dtn,kadry_dep duc,nordsy.texkompl tx,nordsy.texkompl tk,';
 tx:=tx+'feb_zakaz z,nordsy.kvalif kv,tronix.firm fi';
 
@@ -198,6 +203,7 @@ tx:=tx+' order by tt.zak,tt.dtnnomer,tt.typnomer,tt.txnomer,tt.tnnomer';
         FieldByName('ts_number').DisplayLAbel:='ÒÀÁ.ÍÎÌÅÐ ';
         FieldByName('naname').DisplayLAbel:='ÔÈÎ/ÏÎÄÐßÄ×ÈÊ ';
         FieldByName('pname').DisplayLAbel:='ÏÎÄÐßÄ×ÈÊ ';
+        FieldByName('tunomer').DisplayLAbel:='ÓÊÐ.ÏÓÅ ';
      end;
 
    OraQuery1.SQL.Text:=tx;

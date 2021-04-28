@@ -137,7 +137,7 @@ tx:=tx+'        replace(tronix_sp_name(sp.sprav_id), chr(10), '' ''),           
 tx:=tx+'        replace(tx_get_ttn( sp.sprav_id,tn.project_project_id,''ALL''), chr(10), '' '')               ';
 tx:=tx+') ll   ';
 tx:=tx+') l ';
-tx:=tx+'order by l.zavn,l.ident, l.poz, l.podpoz,l.rp,l.kod, l.namek, l.kol,l.tndateins,l.tnnomer,l.ednamek,l.ednamek1 ';
+tx:=tx+'order by l.zavn,l.ident, nordsy.sort_char_number(l.poz), l.podpoz,l.rp,l.kod, l.namek, l.kol,l.tndateins,l.tnnomer,l.ednamek,l.ednamek1 ';
 ORAQuery1.SQL.Text:=tx;
 //ShowMessage(ORAQuery1.SQL.Text);
 

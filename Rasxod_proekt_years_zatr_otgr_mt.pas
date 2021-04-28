@@ -5,11 +5,10 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, DB, DBAccess, Ora, MemDS, Grids, DBGridEh, StdCtrls, ExcelXP,DBGridEhImpExp,
-  OleServer, GridsEh, ComCtrls, ExtCtrls;
+  OleServer, GridsEh, ComCtrls, ExtCtrls, ComObj;
 
 type
   TFRasxod_proekt_years_zatr_otgr_mt = class(TForm)
-    DBGridEh1: TDBGridEh;
     OraQuery1: TOraQuery;
     OraDataSource1: TOraDataSource;
     Edit1: TEdit;
@@ -24,9 +23,7 @@ type
     OraQuery1edzatrosn: TStringField;
     OraQuery1nameotgr: TStringField;
     OraQuery1namezatr: TStringField;
-    OraQuery1zavn: TStringField;
     OraQuery1proe: TStringField;
-    Button1: TButton;
     SaveDialog1: TSaveDialog;
     ExcelApplication1: TExcelApplication;
     ExcelWorkbook1: TExcelWorkbook;
@@ -34,7 +31,6 @@ type
     Edit3: TEdit;
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -50,15 +46,28 @@ uses Unit9;
 {$R *.dfm}
 
 procedure TFRasxod_proekt_years_zatr_otgr_mt.FormShow(Sender: TObject);
-var tx:string;
+var FExcel,Sheet: OleVariant;
+tx:string;
+nk: integer;
 begin
+
 //ShowMessage(Edit1.Text);
 //Edit1.Text:='4011';
 //ShowMessage(Form58.Caption);
+//ShowMessage(Edit2.Text);
 
-tx:=' ';
-tx:='select t.prizn as prizn, t.godins as godins,t.kodotgr as kodotgr, sum(t.kolotgr) as kolotgr, t.edotgrosn as edotgrosn,';
-tx:=tx+' t.kodzatr as kodzatr,sum(t.kolzatr) as kolzatr,t.edzatrosn as edzatrosn,max(t.nameotgr) as nameotgr,max(t.namezatr) as namezatr,t.zavn as zavn,t.proe as proe';
+tx:=tx+' select tl.prizn  as prizn, tl.godins  as godins,tl.kodotgr as kodotgr,';
+tx:=tx+' decode(tl.edotgrosn,''ÿ“'',to_number(round(tl.kolotgr,0),''9999999''),decode(tl.edotgrosn,'' -“'',to_number(round(tl.kolotgr,0),''9999999''),to_number(round(tl.kolotgr,4),''9999999.9999''))) as kolotgr,';
+tx:=tx+' tl.edotgrosn as edotgrosn,tl.kodzatr as kodzatr,';
+tx:=tx+' decode(tl.edzatrosn,''ÿ“'',to_number(round(tl.kolzatr,0),''9999999''),decode(tl.edzatrosn,'' -“'',to_number(round(tl.kolzatr,0),''9999999''),to_number(round(tl.kolzatr,4),''9999999.9999''))) as kolzatr,';
+tx:=tx+' tl.edzatrosn as edzatrosn,tl.nameotgr as nameotgr,tl.namezatr as namezatr,'''+edit2.text+''' as proe';
+
+tx:=tx+' from(';
+
+tx:=tx+' select tt.prizn prizn,tt.godins godins,tt.kodotgr kodotgr,';
+tx:=tx+' sum(tt.kolotgr) kolotgr,tt.edotgrosn edotgrosn,tt.kodzatr kodzatr,sum(tt.kolzatr) kolzatr,tt.edzatrosn as edzatrosn,';
+tx:=tx+' max(tt.nameotgr) nameotgr,max(tt.namezatr) namezatr';
+
 tx:=tx+' from(';
 
 tx:=tx+' select pr.zavn zavn, pr.project proe,''0'' prizn, tn.nomer tnnomer,tn.type_ttn_type_ttn_id tntyp,to_char( tn.date_dok, ''DD.MM.YYYY'' ) datdok,';
@@ -102,11 +111,17 @@ tx:=tx+' and pr.project_id=zk.id_project';
 tx:=tx+' and tn.user_date1 is not null and tn.date_ins is not null';
 tx:=tx+' and tm.koded_koded_id_uchet=ed.koded_id(+) and tm.koded_koded_id_zam_snab=ed1.koded_id(+)';
 tx:=tx+' and s1.koded_koded_id=edo.koded_id(+) and edo1.koded_id(+)=s.koded_koded_id';
-tx:=tx+' ) t';
-tx:=tx+' group by t.zavn,t.proe,t.godins,t.kodzatr,t.edzatrosn,t.prizn,t.kodotgr,t.edotgrosn';
+
+tx:=tx+' ) tt';
+
+tx:=tx+' group by tt.godins,tt.kodzatr,tt.edzatrosn,tt.prizn,tt.kodotgr,tt.edotgrosn';
+
+tx:=tx+' ) tl';
 
 //ShowMEssage(tx);
-  With OraQuery1 Do
+ 
+{*
+ With OraQuery1 Do
      begin
         FieldByName('prizn').DisplayLAbel:='œ–»«Õ¿  ';
         FieldByName('godins').DisplayLAbel:='√Œƒ ';
@@ -118,48 +133,64 @@ tx:=tx+' group by t.zavn,t.proe,t.godins,t.kodzatr,t.edzatrosn,t.prizn,t.kodotgr
         FieldByName('edzatrosn').DisplayLAbel:='≈ƒ.»«Ã.«¿“–.Œ—Õ. ';
         FieldByName('nameotgr').DisplayLAbel:='Õ¿»Ã≈ÕŒ¬¿Õ»≈ Œ“√–. ';
         FieldByName('namezatr').DisplayLAbel:='Õ¿»Ã≈ÕŒ¬¿Õ»≈ «¿“–. ';
-        FieldByName('zavn').DisplayLAbel:='«¿¬.π ';
         FieldByName('PROE').DisplayLAbel:='œ–Œ≈ “ ';
      end;
+*}
 
    OraQuery1.SQL.Text:=tx;
 
   OraQuery1.ExecSQL;
 
- end;
+ nk:=1;
+
+FExcel:=CreateOleObject('Excel.Application');
+FExcel.EnableEvents:=False;
+FExcel.Visible:=False;
+
+//FExcel.Workbooks.Add('c:\SHABLON_RASXOD_MATER_CFEK.xls');
+FExcel.Workbooks.Add('\\Ser1\s1sys2\PROG\FOX_WIN\SHABLON_RASXOD_MATER_CFEK.xls');
+
+FExcel.Workbooks[1].WorkSheets[1].Name := 'ÀËÒÚ1';
+sheet:=FExcel.Workbooks[1].WorkSheets[1];
+
+OraQuery1.First;
+
+While not OraQuery1.eof do
+Begin
+
+Inc(nk);
+
+Sheet.Cells[nk,1].Value:=OraQuery1.FieldByName('prizn').asString;
+Sheet.Cells[nk,2].Value:=OraQuery1.FieldByName('godins').asString;
+Sheet.Cells[nk,3].Value:=OraQuery1.FieldByName('kodotgr').asString;
+Sheet.Cells[nk,4].Value:=OraQuery1.FieldByName('kolotgr').asFloat;
+Sheet.Cells[nk,5].Value:=OraQuery1.FieldByName('edotgrosn').asString;
+Sheet.Cells[nk,6].Value:=OraQuery1.FieldByName('kodzatr').asString;
+Sheet.Cells[nk,7].Value:=OraQuery1.FieldByName('kolzatr').asFloat;
+Sheet.Cells[nk,8].Value:=OraQuery1.FieldByName('edzatrosn').asString;
+Sheet.Cells[nk,9].Value:=OraQuery1.FieldByName('nameotgr').asString;
+Sheet.Cells[nk,10].Value:=OraQuery1.FieldByName('namezatr').asString;
+Sheet.Cells[nk,11].Value:=OraQuery1.FieldByName('proe').asString;
+
+
+OraQuery1.Next;
+end;    //While not OraQuery1.eof do
+
+Sheet.Range[Sheet.Cells[1,1],Sheet.Cells[nk+1,14]].RowHeight:=16;
+Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,14]].HorizontalAlignment:=xlGeneral;
+Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,14]].VerticalAlignment:=xlTop;
+//Sheet.Range[Sheet.Cells[4,1], Sheet.Cells[nk,7]].WrapText:=True;
+Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,14]].Rows.AutoFit;
+Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,14]].borders.linestyle:=xlContinuous;
+FExcel.Visible:=True;
+FRasxod_proekt_years_zatr_otgr_mt.Close;
+
+end;    // procedure TFRasxod_proekt_years_zatr_otgr_mt.FormShow(Sender: TObject);
+
 
 procedure TFRasxod_proekt_years_zatr_otgr_mt.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
      OraQuery1.Close;
-end;
-
-procedure TFRasxod_proekt_years_zatr_otgr_mt.Button1Click(Sender: TObject);
-var
-ExcelApplication:TExcelApplication;
-Range, Sheet: VAriant;
-begin
-ExcelApplication := TExcelApplication.Create(Self);
-ExcelApplication.ConnectKind := ckNewInstance;
-ExcelApplication.Connect;
-ExcelApplication.AutoQuit := true;
-ExcelWorkbook1.ConnectTo(ExcelApplication.Workbooks.Add(EmptyParam,LOCALE_USER_DEFAULT));
-ExcelWorkBook1.Activate(LOCALE_USER_DEFAULT);
-ExcelWorksheet1.ConnectTo(ExcelApplication.ActiveWorkbook.ActiveSheet as ExcelWorkSheet);
-
-
-  Sheet := ExcelWorkbook1.Sheets[1];
-  Range := Sheet.Columns;
-
-
- with SaveDialog1 do
-  begin
-  InitialDir :=ExtractFilePath(Application.ExeName);
-  Filter :='Exell files (*.xls)|*.xls|All files (*.*)|*.*';
-   if SaveDialog1.Execute then begin
-  SaveDBGridEhToExportFile(TDBGridEhExportAsXLS,DBGridEh1,SaveDialog1.FileName+ '.xls' ,true);
-  end;
-end;
-
 end;
 
 end.
