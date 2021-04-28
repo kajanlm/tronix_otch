@@ -67,6 +67,7 @@ object Form9: TForm9
     FooterFont.Height = -11
     FooterFont.Name = 'MS Sans Serif'
     FooterFont.Style = []
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit]
     ReadOnly = True
     TabOrder = 0
     TitleFont.Charset = DEFAULT_CHARSET
@@ -103,6 +104,7 @@ object Form9: TForm9
     FooterFont.Height = -11
     FooterFont.Name = 'MS Sans Serif'
     FooterFont.Style = []
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit]
     ReadOnly = True
     TabOrder = 1
     TitleFont.Charset = DEFAULT_CHARSET

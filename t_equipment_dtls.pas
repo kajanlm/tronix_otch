@@ -102,10 +102,13 @@ begin
   exit;
 end;
 
+(*
 if Pos('/', zakArgument) <> 0 then
   ZAKAZ := copy(zakArgument, 1, 5)
 else
   ZAKAZ := zakArgument;
+*)
+ZAKAZ := zakArgument;
 
 FExcel := CreateOleObject('Excel.Application');
 FExcel.EnableEvents := False;

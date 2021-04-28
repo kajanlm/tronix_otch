@@ -2,7 +2,7 @@ unit t_utils;
 
 interface
 
-uses dialogs, sysutils, ExcelXP, OleServer, ComObj, Variants, Ora, clipbrd;
+uses dialogs, sysutils, ExcelXP, OleServer, ComObj, Variants, Ora, clipbrd, Graphics;
 
 var
   OracleQuery_1 : TOraQuery;
@@ -12,6 +12,7 @@ var
 
 function custom_ReplaceStr(source, p, r : string) : string;
 
+procedure TXList_from_DOCument(DOCUMENT_ID : string);
 procedure Show_TTRTN_Details(date_filter_month : string; date_filter_year : string; main_nomen : boolean);
 procedure main_nomenclature_list(t : string; s : string; c : string);
 procedure Show_Deficit_MainNomen;
@@ -74,6 +75,144 @@ begin
 
   OracleQuery_4.Close;
   OracleQuery_4.Free;
+end;
+
+procedure TXList_from_DOCument(DOCUMENT_ID : string);
+var
+  SQL, PUE, head : string;
+  FExcel : OleVariant;
+  insertIndex, x, lastStartGrouping : integer;
+const
+  noVisibleFields = 3;
+begin
+  DBSession_construct();
+  
+  SQL := 'select t.NOMER as "Номер ПУЕ", s.POZ as "Позиция", t.NAME as "Наименование", d.NOMER as "Исполнитель", tp.NAME as "Тип работы", '
+  + 't.TRUDOEM as "Трудоемкость", s.KOD, s.NAME, tr.NAME as TYPE from tx_texkompl t, tx_tx_mat m, kart_sp s, kadry_dep d, tx_type_relation_poz tr, '
+  + 'tronix_document doc, tx_type_tex tp where m.type_relation_type_relation_id = tr.type_relation_poz_id(+) and '
+  + 't.type_tex_type_tex_id = tp.TYPE_TEX_ID(+) and m.tex_texkompl_id = t.texkompl_id and t.dep_dep_id = d.dep_id and m.sp_sp_id = s.nn '
+  + 'and s.nnn = doc.document_id and doc.document_id = ' + DOCUMENT_ID +' order by t.nsort, t.nomer';
+
+  form1.execQuery(OracleQuery_1, SQL, false);
+  if (OracleQuery_1.RecordCount = 0) then
+  begin
+    showMessage('Работ по данному чертежу не найдено!');
+    exit;
+  end;
+
+  FExcel := CreateOleObject('Excel.Application');
+  FExcel.Workbooks.Add;
+  FExcel.EnableEvents := False;
+  FExcel.Visible := false;
+
+  FExcel.WorkSheets[1].Select;
+  FExcel.WorkSheets[2].Delete;
+  FExcel.WorkSheets[2].Delete;
+
+  insertIndex := 1;
+  for x := 0 to (OracleQuery_1.Fields.Count - (1 + noVisibleFields)) do
+    FExcel.Cells[insertIndex, (x + 1)].Value := OracleQuery_1.Fields[x].FieldName;
+  inc(insertIndex);
+
+  head := '';
+  lastStartGrouping := -1;
+  
+  OracleQuery_1.First;
+  while not OracleQuery_1.Eof do
+  begin
+    PUE := OracleQuery_1.FieldByName('Номер ПУЕ').asString;
+
+    if ((head <> PUE) and (head <> '')) then
+    begin
+      FExcel.Range['A' + inttostr(lastStartGrouping) + ':A' + inttostr(insertIndex - 1)].Rows.Group;
+
+      FExcel.Range
+      [
+        FExcel.Cells[lastStartGrouping, (OracleQuery_1.Fields.Count - noVisibleFields)],
+        FExcel.Cells[(insertIndex - 1), (OracleQuery_1.Fields.Count - noVisibleFields)]
+      ].MergeCells := true;
+
+      FExcel.Range[FExcel.Cells[insertIndex, 1], FExcel.Cells[insertIndex, (OracleQuery_1.Fields.Count - noVisibleFields)]].MergeCells := true;
+      
+      inc(insertIndex);
+    end;
+
+    FExcel.Cells[insertIndex, 1].NumberFormat := '@';
+    FExcel.Cells[insertIndex, 1].Value := PUE;
+
+    if ((head <> PUE) or (head = '')) then
+    begin
+      head := PUE;
+
+      for x := 3 to (OracleQuery_1.Fields.Count - noVisibleFields) do
+      begin
+
+        if (OracleQuery_1.Fields[(x - 1)].FieldName = 'Трудоемкость') then
+        begin
+          FExcel.Cells[insertIndex, x].Value := form9.excelFloat(OracleQuery_1.FieldByName(OracleQuery_1.Fields[(x - 1)].FieldName).asString);
+          continue;
+        end;
+
+        if (OracleQuery_1.Fields[(x - 1)].FieldName = 'Исполнитель') then
+          FExcel.Cells[insertIndex, x].Font.Bold := true;
+        
+        FExcel.Cells[insertIndex, x].NumberFormat := '@';
+        FExcel.Cells[insertIndex, x].Value := OracleQuery_1.FieldByName(OracleQuery_1.Fields[(x - 1)].FieldName).asString;
+
+      end;
+
+      FExcel.Range[FExcel.Cells[insertIndex, 1], FExcel.Cells[insertIndex, 2]].MergeCells := True;
+      FExcel.Cells[insertIndex, 1].HorizontalAlignment := xlCenter;
+      FExcel.Cells[insertIndex, 1].Font.Bold := true;
+
+      inc(insertIndex);
+      lastStartGrouping := insertIndex;
+    end;
+
+    FExcel.Cells[insertIndex, 1].NumberFormat := '@';
+    FExcel.Cells[insertIndex, 1].Value := PUE;
+    FExcel.Cells[insertIndex, 1].Font.Color :=clWhite;
+
+    FExcel.Cells[insertIndex, 2].NumberFormat := '@';
+    FExcel.Cells[insertIndex, 2].Value := OracleQuery_1.FieldByName('Позиция').asString;
+
+    FExcel.Cells[insertIndex, 3].NumberFormat := '@';
+    FExcel.Cells[insertIndex, 3].Value := OracleQuery_1.FieldByName('NAME').asString;
+
+    FExcel.Cells[insertIndex, 4].NumberFormat := '@';
+    FExcel.Cells[insertIndex, 4].Value := OracleQuery_1.FieldByName('KOD').asString;
+
+    FExcel.Cells[insertIndex, 5].NumberFormat := '@';
+    FExcel.Cells[insertIndex, 5].Value := OracleQuery_1.FieldByName('TYPE').asString;
+
+    OracleQuery_1.Next;
+    inc(insertIndex);
+  end;
+
+  FExcel.Range['A' + inttostr(lastStartGrouping) + ':A' + inttostr(insertIndex - 1)].Rows.Group;
+  FExcel.Range
+  [
+    FExcel.Cells[lastStartGrouping, (OracleQuery_1.Fields.Count - noVisibleFields)],
+    FExcel.Cells[(insertIndex - 1), (OracleQuery_1.Fields.Count - noVisibleFields)]
+  ].MergeCells := true;
+
+  FExcel.Range[FExcel.Cells[1, 1], FExcel.Cells[1, (OracleQuery_1.Fields.Count - noVisibleFields)]].Font.Size := 15;
+  FExcel.Range[FExcel.Cells[1, 1], FExcel.Cells[1, (OracleQuery_1.Fields.Count - noVisibleFields)]].Font.Bold := true;
+  FExcel.Range[FExcel.Cells[1, 1], FExcel.Cells[(insertIndex - 1), (OracleQuery_1.Fields.Count - noVisibleFields)]].borders.linestyle := xlContinuous;
+  FExcel.Range[FExcel.Cells[1, 1], FExcel.Cells[(insertIndex - 1), (OracleQuery_1.Fields.Count - noVisibleFields)]].Columns.AutoFit;
+
+  FExcel.Columns['C:C'].ColumnWidth := 70;
+  FExcel.Columns['C:C'].WrapText := true;
+
+  FExcel.ActiveWindow.SplitColumn := (OracleQuery_1.Fields.Count - noVisibleFields);
+  FExcel.ActiveWindow.SplitRow := 1;
+  FExcel.ActiveWindow.FreezePanes := true;
+  FExcel.ActiveWorkbook.ActiveSheet.Outline.ShowLevels(1, EmptyParam);
+
+  DBSession_destruct();
+
+  FExcel.Visible := true;
+  FExcel := Unassigned;
 end;
 
 function parseResult(FExcel : OleVariant; Query : TOraQuery; index : integer) : integer;

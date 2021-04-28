@@ -101,6 +101,10 @@ type
     N84: TMenuItem;
     N85: TMenuItem;
     N86: TMenuItem;
+    N87: TMenuItem;
+    N88: TMenuItem;
+    N89: TMenuItem;
+    N90: TMenuItem;
     procedure N3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure tn1Click(Sender: TObject);
@@ -183,6 +187,10 @@ type
     procedure N84Click(Sender: TObject);
     procedure N85Click(Sender: TObject);
     procedure N86Click(Sender: TObject);
+    procedure N87Click(Sender: TObject);
+    procedure N88Click(Sender: TObject);
+    procedure N89Click(Sender: TObject);
+    procedure N90Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -203,8 +211,6 @@ var
 
 const
 
-VERSION = '2.2.0';
-
 SERVER_ADDR = 'http://192.168.10.15:7777/server/tronix_otch/';
 SERVER_FILE_PART = '.sql';
 
@@ -212,7 +218,7 @@ implementation
 
 uses Unit2, Unit7, Unit8, Unit9, Unit12, Unit17, Unit23, Unit32, Unit34, cpct, r_dates, r_ttns, t_error,
   r_leftovers_nomen,Reestr_doc_sklad, r_calendar,Nomenklator,Sum_trud_vidnorm,
-  r_dates_inttns, t_utils, r_dcspcn, t_equipment_dtls;
+  r_dates_inttns, t_utils, r_dcspcn, t_equipment_dtls, r_potreb, r_createdTxList;
 
 {$R *.dfm}
 
@@ -246,7 +252,7 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   OraSession1.Connect;
-  self.Caption := 'Отчеты к Tronix v' + VERSION;
+  self.Caption := 'TRONIX Отчеты';
 end;
 
 function TForm1.showError(H : string; B : string): boolean;
@@ -574,7 +580,7 @@ end;
  procedure TForm1.N60Click(Sender: TObject);
 begin
   Application.CreateForm(TForm9, Form9);
-  form9.Caption:='СП Ведомости снабжения группы 237 по проекту. Выберите проект';
+  form9.Caption:='Ведомости снабжения,заказные по проекту. Выберите проект';
   form9.ShowModal();   
   Form9.Free;
 end;
@@ -963,9 +969,9 @@ end;
 
 procedure TForm1.N81Click(Sender: TObject);
 begin
- //Приходные ордера по отгруженному оборудованию\материалам по проекту
+ //Приходные ордера по отгруженному оборудованию по проекту
   Application.CreateForm(TForm9, Form9);
-  Form9.Caption:='Приходные ордера по отгруженному оборудованию\материалам по проекту. Выберите проект';
+  Form9.Caption:='Приходные ордера по отгруженному оборудованию по проекту. Выберите проект';
   Form9.showmodal();
   Form9.Free;
 
@@ -973,10 +979,10 @@ end;
 
 procedure TForm1.N82Click(Sender: TObject);
 begin
- //Ведомости снабжения с привязкой к веткам по проекту
+ //Ведомости снабжения,заказные с привязкой к веткам по проекту
 
   Application.CreateForm(TForm9, Form9);
-  Form9.Caption:='Ведомости снабжения(237) с привязкой к веткам по проекту. Выберите проект';
+  Form9.Caption:='Ведомости снабжения,заказные с привязкой к веткам по проекту. Выберите проект';
   Form9.showmodal();
   Form9.Free;
 
@@ -985,12 +991,12 @@ end;
 procedure TForm1.N83Click(Sender: TObject);
 begin
 //Расход по годам в разрезе затребованного и отгруженного оборудования по проекту
-{*
+
  Application.CreateForm(TForm9, Form9);
   Form9.Caption:='Расход по годам в разрезе затребованного и отгруженного оборудования по проекту. Выберите проект';
   Form9.showmodal();
   Form9.Free;
-*}                       
+                      
 end;
 
 procedure TForm1.N84Click(Sender: TObject);
@@ -1015,6 +1021,39 @@ procedure TForm1.N86Click(Sender: TObject);
 begin
   Application.CreateForm(TForm9, Form9);
   Form9.Caption:='Норма расхода материала для расчета цены по проекту (ЦФЭК)';
+  Form9.showmodal();
+  Form9.Free;
+end;
+
+procedure TForm1.N87Click(Sender: TObject);
+begin
+  Application.CreateForm(Tpotreb, potreb);
+  potreb.showmodal();
+  potreb.Free;
+end;
+
+procedure TForm1.N88Click(Sender: TObject);
+begin
+  //Приходные ордера по отгруженным материалам по проекту
+
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='Приходные ордера по отгруженным материалам по проекту. Выберите проект';
+  Form9.showmodal();
+  Form9.Free;
+ 
+end;
+
+procedure TForm1.N89Click(Sender: TObject);
+begin
+  Application.CreateForm(Ttx_createdList, tx_createdList);
+  tx_createdList.ShowModal();
+  tx_createdList.Free;
+end;
+
+procedure TForm1.N90Click(Sender: TObject);
+begin
+  Application.CreateForm(TForm9, Form9);
+  Form9.Caption:='Применяемость позиций по чертежу-документу';
   Form9.showmodal();
   Form9.Free;
 end;

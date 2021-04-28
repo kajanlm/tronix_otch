@@ -56,12 +56,11 @@ implementation
 
 uses t_utils, Unit10, Unit15, Unit16, Unit20, Unit21, Unit22, Unit23, Unit25, Unit26, clipbrd,
   Unit27, Unit35, Unit36, Unit37, Unit38, Unit43, Unit45, Unit46, Unit34, ftrnomen, r_ttns,
-  Unit47, Unit49, Unit50, Kol_Izd_Msch_Proekt, Equipment_For_Sklad_ZIP, SP_Snab_Group_237, No_Close_Pue_Cex_Proekt, Kol_All_Pokup_Izd_Proekt,
+  Unit47, Unit49, Unit50, Kol_Izd_Msch_Proekt, Equipment_For_Sklad_ZIP, SP_Snab_Zakazn,No_Close_Pue_Cex_Proekt, Kol_All_Pokup_Izd_Proekt,
   PUE_Udp_Report, Udp_Norma_Fakt_Ostatok, UDP_OTK, NEZAKR_TK_PTK_UDP_ZAKR, Udp_PDO_Report, Udp_Pue_Norma_Zero, Udp_Zakazchik,Naryd_Cex_Proekt,
   Ukr_Pom_TNV_IZV,Ukr_Pom_SP_Tk,Ostatok_Trud_PUE_No_MSCH,Sum_Norm_Trud_Razr_Setka_Prof_Ukr,Norm_Trud_Prof_Razr_Setka,Ostatki_Trud_Msch,
   Equipment,Naryd_UKR_Pue,SpisokCloseOsnastki,Reserve_Msch_Cks_Place,Rasxod_proekt_years_zatr_otgr_mt,Primen_PUE_in_dok_dvig_naryd,
-// Rasxod_proekt_years_zatr_otgr_ob,
-  Rasxod_proekt_years_zatr,Rasxod_obor_otgr_prixod_order,Vedom_snab_vetka_cfek,
+  Rasxod_proekt_years_zatr_otgr_ob,Rasxod_proekt_years_zatr,Rasxod_obor_otgr_prixod_order,Vedom_snab_vetka_cfek,Rasxod_mater_otgr_prixod_order,
   Unit32, Unit1, r_over_tmc, r_set_mnomen,r_calendar;
 
 {$R *.dfm}
@@ -346,15 +345,16 @@ or  (form9.Caption='УДП: Заказчик. Выберите проект')
 or  (form9.Caption='ПДО: Отчёт по УДП по проекту. Выберите проект')
 or  (form9.Caption='ПУЕ с трудоёмкостью 0 с привязкой к УДП по проекту. Выберите проект')
 or  (form9.Caption='Оборудование из комплектной поставки для склада ЗИП по проекту. Выберите проект')
-or  (form9.Caption='СП Ведомости снабжения группы 237 по проекту. Выберите проект')
+or  (form9.Caption='Ведомости снабжения,заказные по проекту. Выберите проект')
 or  (form9.Caption='Оборудование по проекту. Выберите проект')
 or  (form9.Caption='Перечень закрытой оснастки по проекту. Выберите проект')
 or  (form9.Caption='Применяемость ПУЕ: Документы движения,Наряды по проекту. Выберите проект')
 or  (form9.caption='Расход по годам в разрезе затребованных и отгруженных материалов по проекту. Выберите проект')
 or  (form9.caption='Расход по годам в разрезе затребованного и отгруженного оборудования по проекту. Выберите проект')
 or  (form9.caption='Расход по годам в разрезе затребованной номенклатуры по проекту. Выберите проект')
-or  (form9.caption='Приходные ордера по отгруженному оборудованию\материалам по проекту. Выберите проект')
-or  (form9.caption='Ведомости снабжения(237) с привязкой к веткам по проекту. Выберите проект')
+or  (form9.caption='Приходные ордера по отгруженному оборудованию по проекту. Выберите проект')
+or  (form9.caption='Приходные ордера по отгруженным материалам по проекту. Выберите проект')
+or  (form9.caption='Ведомости снабжения,заказные с привязкой к веткам по проекту. Выберите проект')
 or  (form9.caption='Формирование ведомости комплектации запуска.')
 or  (form9.Caption='Изделия с незаполненой трудоемкостью ТНа')
 or  (form9.Caption='Выберите проект для анализа')
@@ -363,6 +363,7 @@ or  (form9.Caption='Проверка масс (спецификация и справочник)')
 or (form9.Caption='Отчёт по сравнению потребности с ведомостями заказа')
 or (form9.Caption='Техкомплекты в обеспечении материалами с признаком поступления')
 or (form9.Caption='Выгружаем транспортный файл.')
+or (self.caption = 'Применяемость позиций по чертежу-документу')
 then
 begin
   Form9.DBgridEH2.Visible:=false;
@@ -441,10 +442,46 @@ end;
 
 procedure TForm9.DBGridEh1DblClick(Sender: TObject);
 var
-tx,zak, uzak,part1,part2, SQL: string;
+tx,zak, uzak,part1,part2, SQL, DOCUMENT_ID: string;
 e, INC_POS, nField: integer;
 FExcel, Sheet, Colum : OleVariant;
 begin
+
+if (self.caption = 'Применяемость позиций по чертежу-документу') then
+begin
+  while DOCUMENT_ID = '' do
+  begin
+    DOCUMENT_ID := InputBox(self.caption, 'Введите обозначение документа: ', '');
+    if (length(DOCUMENT_ID) > 2) then
+    begin
+      SQL := 'SELECT DOCUMENT_ID, IDENT FROM TRONIX.DOCUMENT WHERE ID_PROJECT = ''' + OraQuery1.FieldByName('project_id').asString
+      + ''' AND IDENT like ''%' + DOCUMENT_ID + ''' AND ROWNUM = 1';
+      //showmessage(SQL);
+      form1.execQuery(OraQuery3, SQL, false);
+
+      DOCUMENT_ID := '';
+      if (OraQuery3.RecordCount = 0) then
+      begin
+        showMessage('Документ не найден! Попробуйте еще раз.');
+        continue;
+      end;
+
+      if MessageDlg('Построить список ПУЕ по документу: ' + OraQuery3.FieldByName('IDENT').asString + '? (Да - построить; Нет - ввести еще раз)', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+      begin
+        DOCUMENT_ID := OraQuery3.FieldByName('DOCUMENT_ID').asString;
+        TXList_from_DOCument(DOCUMENT_ID);
+      end
+      else
+        continue;
+
+    end
+    else
+      break;
+
+  end;
+
+  exit;
+end;
 
 if form9.caption='Выгружаем транспортный файл.' then
 begin
@@ -1390,21 +1427,23 @@ end;
 begin
   Application.CreateForm(TFRasxod_proekt_years_zatr_otgr_mt, FRasxod_proekt_years_zatr_otgr_mt);
   FRasxod_proekt_years_zatr_otgr_mt.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
+  FRasxod_proekt_years_zatr_otgr_mt.Edit2.Text:=oraQuery1.FieldByName('name').asString;
   FRasxod_proekt_years_zatr_otgr_mt.Caption:='Расход по годам в разрезе затребованных и отгруженных материалов по проекту: '+oraQuery1.FieldByName('name').asString;
   FRasxod_proekt_years_zatr_otgr_mt.ShowModal();
   FRasxod_proekt_years_zatr_otgr_mt.Free;
 end;
 
-{*
+
      if form9.caption='Расход по годам в разрезе затребованного и отгруженного оборудования по проекту. Выберите проект' then
 begin
   Application.CreateForm(TFRasxod_proekt_years_zatr_otgr_ob, FRasxod_proekt_years_zatr_otgr_ob);
   FRasxod_proekt_years_zatr_otgr_ob.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
+  FRasxod_proekt_years_zatr_otgr_ob.Edit2.Text:=oraQuery1.FieldByName('name').asString;
   FRasxod_proekt_years_zatr_otgr_ob.Caption:='Расход по годам в разрезе затребованного и отгруженного оборудования  по проекту: '+oraQuery1.FieldByName('name').asString;
   FRasxod_proekt_years_zatr_otgr_ob.ShowModal();
   FRasxod_proekt_years_zatr_otgr_ob.Free;
 end;
-*}
+
      if form9.caption='Расход по годам в разрезе затребованной номенклатуры по проекту. Выберите проект' then
 begin
   Application.CreateForm(TFRasxod_proekt_years_zatr, FRasxod_proekt_years_zatr);
@@ -1413,21 +1452,31 @@ begin
   FRasxod_proekt_years_zatr.ShowModal();
   FRasxod_proekt_years_zatr.Free;
 end;
- 
-     if form9.caption='Приходные ордера по отгруженному оборудованию\материалам по проекту. Выберите проект' then
+
+   if form9.caption='Приходные ордера по отгруженному оборудованию по проекту. Выберите проект' then
 begin
   Application.CreateForm(TFRasxod_obor_otgr_prixod_order, FRasxod_obor_otgr_prixod_order);
   FRasxod_obor_otgr_prixod_order.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
-  FRasxod_obor_otgr_prixod_order.Caption:='Приходные ордера по отгруженному оборудованию\материалам по проекту: '+oraQuery1.FieldByName('name').asString;
+  FRasxod_obor_otgr_prixod_order.Caption:='Приходные ордера по отгруженному оборудованию по проекту: '+oraQuery1.FieldByName('name').asString;
   FRasxod_obor_otgr_prixod_order.ShowModal();
   FRasxod_obor_otgr_prixod_order.Free;
 end;
-     if form9.caption='Ведомости снабжения(237) с привязкой к веткам по проекту. Выберите проект' then
+
+   if form9.caption='Приходные ордера по отгруженным материалам по проекту. Выберите проект' then
+begin
+  Application.CreateForm(TFRasxod_mater_otgr_prixod_order, FRasxod_mater_otgr_prixod_order);
+  FRasxod_mater_otgr_prixod_order.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
+  FRasxod_mater_otgr_prixod_order.Caption:='Приходные ордера по отгруженным материалам по проекту: '+oraQuery1.FieldByName('name').asString;
+  FRasxod_mater_otgr_prixod_order.ShowModal();
+  FRasxod_mater_otgr_prixod_order.Free;
+end;
+
+     if form9.caption='Ведомости снабжения,заказные с привязкой к веткам по проекту. Выберите проект' then
 begin
 
   Application.CreateForm(TFVedom_snab_vetka_cfek, FVedom_snab_vetka_cfek);
   FVedom_snab_vetka_cfek.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
-  FVedom_snab_vetka_cfek.Caption:='Ведомости снабжения(237) с привязкой к веткам  по проекту: '+oraQuery1.FieldByName('name').asString;
+  FVedom_snab_vetka_cfek.Caption:='Ведомости снабжения,заказные с привязкой к веткам по проекту: '+oraQuery1.FieldByName('name').asString;
   FVedom_snab_vetka_cfek.ShowModal();
   FVedom_snab_vetka_cfek.Free;
 
@@ -1522,13 +1571,13 @@ begin
   FEquipment_For_Sklad_ZIP.Free;
 end;
 
-    if form9.caption='СП Ведомости снабжения группы 237 по проекту. Выберите проект' then
+    if form9.caption='Ведомости снабжения,заказные по проекту. Выберите проект' then
 begin
-  Application.CreateForm(TFSP_Snab_Group_237, FSP_Snab_Group_237);
-  FSP_Snab_Group_237.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
-  FSP_Snab_Group_237.Caption:='СП Ведомости снабжения группы 237 по проекту: '+oraQuery1.FieldByName('name').asString;
-  FSP_Snab_Group_237.ShowModal();
-  FSP_Snab_Group_237.Free;
+  Application.CreateForm(TFSP_Snab_Zakazn, FSP_Snab_Zakazn);
+  FSP_Snab_Zakazn.Edit1.Text:=oraQuery1.FieldByName('project_id').asString;
+  FSP_Snab_Zakazn.Caption:='Ведомости снабжения,заказные по проекту: '+oraQuery1.FieldByName('name').asString;
+  FSP_Snab_Zakazn.ShowModal();
+  FSP_Snab_Zakazn.Free;
 end;
 
     if form9.caption='Оборудование по проекту. Выберите проект' then
