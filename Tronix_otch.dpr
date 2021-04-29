@@ -74,7 +74,9 @@ uses
   r_dates_inttns in 'r_dates_inttns.pas' {input_ttns},
   t_utils in 't_utils.pas',
   r_dcspcn in 'r_dcspcn.pas' {docSpCnt},
-  t_equipment_dtls in 't_equipment_dtls.pas' {equipment_details};
+  t_equipment_dtls in 't_equipment_dtls.pas' {equipment_details},
+  r_potreb in 'r_potreb.pas' {potreb},
+  r_createdTxList in 'r_createdTxList.pas' {tx_createdList};
 
 {$R *.res}
 
@@ -110,6 +112,7 @@ begin
   Application.CreateForm(TForm29, Form29);
   Application.CreateForm(TForm30, Form30);
   Application.CreateForm(TForm31, Form31);
+  Application.CreateForm(Tpotreb, potreb);
   //Application.CreateForm(TForm32, Form32);
   Application.CreateForm(TForm33, Form33);
   Application.CreateForm(TForm34, Form34);

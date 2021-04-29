@@ -22,12 +22,13 @@ object Form1: TForm1
     Left = 720
   end
   object ConnectDialog1: TConnectDialog
-    Caption = 'Connect'
-    UsernameLabel = 'User Name'
-    PasswordLabel = 'Password'
-    ServerLabel = 'Server'
-    ConnectButton = 'Connect'
-    CancelButton = 'Cancel'
+    Caption = 'TRONIX '#1054#1090#1095#1077#1090#1099
+    UsernameLabel = #1058#1040#1041#1045#1051#1068#1053#1067#1049' '#8470
+    PasswordLabel = #1055#1040#1056#1054#1051#1068
+    ServerLabel = #1057#1077#1088#1074#1077#1088
+    ConnectButton = #1042#1086#1081#1090#1080
+    CancelButton = #1054#1090#1084#1077#1085#1072
+    LabelSet = lsCustom
     Left = 680
   end
   object MainMenu1: TMainMenu
