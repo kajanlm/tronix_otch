@@ -105,6 +105,9 @@ type
     N88: TMenuItem;
     N89: TMenuItem;
     N90: TMenuItem;
+    N91: TMenuItem;
+    N92: TMenuItem;
+    N93: TMenuItem;
     procedure N3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure tn1Click(Sender: TObject);
@@ -191,6 +194,9 @@ type
     procedure N88Click(Sender: TObject);
     procedure N89Click(Sender: TObject);
     procedure N90Click(Sender: TObject);
+    procedure N92Click(Sender: TObject);
+    procedure N91Click(Sender: TObject);
+    procedure N93Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -217,7 +223,7 @@ SERVER_FILE_PART = '.sql';
 implementation
 
 uses Unit2, Unit7, Unit8, Unit9, Unit12, Unit17, Unit23, Unit32, Unit34, cpct, r_dates, r_ttns, t_error,
-  r_leftovers_nomen,Reestr_doc_sklad, r_calendar,Nomenklator,Sum_trud_vidnorm,
+  r_leftovers_nomen,Reestr_doc_sklad,Prihod_Order_Cfek, r_calendar,Nomenklator,Sum_trud_vidnorm,
   r_dates_inttns, t_utils, r_dcspcn, t_equipment_dtls, r_potreb, r_createdTxList;
 
 {$R *.dfm}
@@ -1056,6 +1062,25 @@ begin
   Form9.Caption:='ѕримен€емость позиций по чертежу-документу';
   Form9.showmodal();
   Form9.Free;
+end;
+
+procedure TForm1.N92Click(Sender: TObject);
+begin
+//* ќбоснование по затребованной в расходе номенклатуре по проекту
+end;
+
+procedure TForm1.N91Click(Sender: TObject);
+begin
+//* ћатериалы: обоснование по последней закупке
+end;
+
+procedure TForm1.N93Click(Sender: TObject);
+begin
+// ѕриходные ордера за период по проекту
+
+  Application.CreateForm(TFPrihod_Order_Cfek, FPrihod_Order_Cfek);
+  FPrihod_Order_Cfek.ShowModal();
+  FPrihod_Order_Cfek.Free;
 end;
 
 end.
