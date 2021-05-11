@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, math;
+  Dialogs, StdCtrls, math, ComCtrls;
 
 type
   Tset_mnomen_details = class(TForm)
@@ -22,13 +22,19 @@ type
     invi_main_zapas: TComboBox;
     left_label: TLabel;
     left: TEdit;
+    Label3: TLabel;
+    texkompls: TComboBox;
+    Label5: TLabel;
+    ttns: TComboBox;
+    invi_ttns: TComboBox;
+    invi_texkompls: TComboBox;
     procedure edizmChange(Sender: TObject);
     procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
-    RETURN_DATA : string;
+    RETURN_DATA, TEXKOMPL_ID, TTN_ID : string;
     procedure Calc;
   end;
 
@@ -92,6 +98,15 @@ begin
     exit;
 
   RETURN_DATA := StringReplace(invi_zapas.Items[edizm.ItemIndex], ',', '.', [rfReplaceAll, rfIgnoreCase]) + ', ' + StringReplace(floattostr(need_value), ',', '.', [rfReplaceAll, rfIgnoreCase]) + ', ' + invi_edizm.Items[edizm.ItemIndex];
+
+  TEXKOMPL_ID := 'NULL';
+  TTN_ID := 'NULL';
+
+  if texkompls.ItemIndex <> -1 then
+    TEXKOMPL_ID := invi_texkompls.Items[texkompls.ItemIndex];
+
+  if ttns.ItemIndex <> -1 then
+    TTN_ID := invi_ttns.Items[ttns.ItemIndex];
 
   ModalResult := mrOK;
   Self.Close;

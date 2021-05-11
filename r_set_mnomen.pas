@@ -53,6 +53,7 @@ var
   SQL : string;
 const
   SQL_FILTER_KOD = 'sp.kod like ';
+  DDMMYYYY_MASK = 'DD.MM.YYYY';
 begin
   if ceh.ItemIndex = -1  then
   begin
@@ -64,6 +65,7 @@ begin
 
   SQL :=
   'select defa.uzak_id, defa.dep_id, 0 as flag_two, decode(main.need_kol, null, 0, 1) as flag, '
+  + 'tn.NOMER || '' '' || TO_CHAR(tn.DATE_DOK, ''' + DDMMYYYY_MASK + ''') as TTN, tx.NOMER as TEXKOMPL, '
   + 'decode(main.need_kol, null, 0, round((main.need_kol * tronix_kof_koded(sp.sprav_id, main.koded_id, defa.koded_potr)), 4)) as main_kol, '
   + 'decode(main.need_kol, null, 0, round((main.need_kol * tronix_kof_koded(sp.sprav_id, main.koded_id, defa.koded_uchet)), 4)) as main_kol_uchet, '
   + 'decode(main.need_kol, null, 0, round((main.zapas_kol * tronix_kof_koded(sp.sprav_id, main.koded_id, defa.koded_potr)), 4)) as main_zapas, '
@@ -80,10 +82,11 @@ begin
   + 'from tx_car_potr tx, tronix_sprav sp where nvl(sp.CAN_DO_SELF, 0) <> 1 and tx.sprav_sprav_id = sp.sprav_id(+) and tx.dep_dep_id = <DEP_ID> and tx.uzak_uzak_id = <UZAK_ID>) tt '
   + 'group by tt.sprav_id, tt.koded_potr, tt.koded_uchet, tt.dep_id, tt.uzak_id) src ) A ) '
   + 'defa, tronix_sprav sp, tronix.koded fkd, tronix.koded skd, (select TO_CHAR(m.date_ins, ' + char(39) + 'mm.YYYY' + char(39) + ') as fdate, m.* from '
-  + 'tronix.main_nomenclature m) main where (defa.d > 0 or defa.d_u > 0) and '
+  + 'tronix.main_nomenclature m) main, tronix.ttn tn, tx_texkompl tx where (defa.d > 0 or defa.d_u > 0) and '
   + 'defa.koded_potr = fkd.koded_id(+) and defa.koded_uchet = skd.koded_id(+) and defa.s_i = sp.sprav_id(+) and '
   + char(39) + date_f + '.' + date_s + char(39) + ' = main.fdate(+) and '
-  + 'defa.s_i = main.sprav_id(+) and defa.dep_id = main.dep_id(+) and defa.uzak_id = main.uzak_id(+) and <KOD_FILTER> order by sp.kod desc';
+  + 'defa.s_i = main.sprav_id(+) and defa.dep_id = main.dep_id(+) and defa.uzak_id = main.uzak_id(+) and main.TTN_ID = tn.TTN_ID(+) and main.TEXKOMPL_ID = tx.TEXKOMPL_ID(+) '
+  + 'and <KOD_FILTER> order by sp.kod desc';
   //13.02.2020 10:20 "remove TO_NUMBER(kod) sorting; error: INVALID NUMBER from KOD with cyrilic symbols"!
 
   //round to 6 (maybe 5) and corret 2E-6 to 0,000002 (to_char) ".", float ","
@@ -96,7 +99,7 @@ begin
   else
     SQL := StringReplace(SQL, '<KOD_FILTER>', '(1 = 1)', [rfReplaceAll, rfIgnoreCase]);
 
-  //Clipboard.asText := SQL;
+  Clipboard.asText := SQL;
   //showmessage(SQL);
   form1.execQuery(Query, SQL, false);
   if Query.RecordCount < 1 then
@@ -186,6 +189,9 @@ procedure Tset_mnomen.gridDblClick(Sender: TObject);
 var
   Pointer : TDataSet;
   SQL : string;
+const
+  DATE_MASK = 'DD.MM.YYYY';
+
 begin
   if Query.RecordCount = 0 then
     exit;
@@ -221,14 +227,68 @@ begin
     set_mnomen_details.need.ReadOnly := true;
     set_mnomen_details.left_label.Visible := true;
     set_mnomen_details.left.Visible := true;
-    
+
     set_mnomen_details.invi_need.Items.Add(Pointer.FieldByName('MAIN_KOL').asString);
     set_mnomen_details.invi_need.Items.Add(Pointer.FieldByName('MAIN_KOL_UCHET').asString);
     set_mnomen_details.invi_main_zapas.Items.Add(Pointer.FieldByName('main_zapas').asString);
     set_mnomen_details.invi_main_zapas.Items.Add(Pointer.FieldByName('main_zapas_uchet').asString);
+
+    if (Pointer.FieldByName('TEXKOMPL').asString <> '') then
+    begin
+      set_mnomen_details.texkompls.Items.Add(Pointer.FieldByName('TEXKOMPL').asString);
+      set_mnomen_details.texkompls.ItemIndex := 0;
+    end;
+
+    if (length(Pointer.FieldByName('TTN').asString) > 2) then
+    begin
+      set_mnomen_details.ttns.Items.Add(Pointer.FieldByName('TTN').asString);
+      set_mnomen_details.ttns.ItemIndex := 0;
+    end;
+    
   end
   else
+  begin
+    SQL := 'select tx.texkompl_id, tx.nomer from (select potr.texkompl_texkompl_id as texkompl_id from tx_car_potr potr where '
+    + 'potr.sprav_sprav_id = ' + Pointer.FieldByName('SPRAV_ID').asString + ' and '
+    + 'potr.project_project_id = ' + form9.OraQuery1.FieldByName('project_id').asString + ' and '
+    + 'potr.dep_dep_id = ' + Pointer.FieldByName('DEP_ID').asString + ' group by potr.texkompl_texkompl_id) t, tx_texkompl tx where tx.texkompl_id = t.texkompl_id ';
+    form1.execQuery(OraInsert, SQL, true);
+
+    set_mnomen_details.texkompls.Enabled := true;
+    while not OraInsert.Eof do
+    begin
+      set_mnomen_details.texkompls.Items.Add(OraInsert.FieldByName('NOMER').asString);
+      set_mnomen_details.invi_texkompls.Items.Add(OraInsert.FieldByName('TEXKOMPL_ID').asString);
+      OraInsert.Next;
+    end;
+
+    SQL := 'SELECT * FROM (SELECT TN.TTN_ID, SPRAVA.KOD as KOD, SPRAVO.KOD as VYD, TN.NOMER as NOMER, TP.NAME as TYPE, '
+    + 'decode(DPO.TYPE_DEP_TYPE_DEP_ID, 2, DPO.NOMER, DPT.NOMER) as CEH, DPP.NOMER as SKLAD, ROUND(TNMAT.KOL_UCHET, 5) as KOL_UCHET, '
+    + 'ROUND(TNMAT.KOL, 5) as KOL, TO_CHAR(TN.DATE_DOK, ' + char(39) + DATE_MASK + char(39) + ') as DATEC, '
+    + 'TO_CHAR(TN.USER_DATE1, ' + char(39) + DATE_MASK + char(39) + ') as DATE1, TO_CHAR(TN.USER_DATE2, ' + char(39) + DATE_MASK + char(39) + ') as DATE2, '
+    + 'TO_CHAR(TN.DATE_INS, ' + char(39) + DATE_MASK + char(39) + ') as DATE3, TO_CHAR(TN.USER_DATE4, ' + char(39) + DATE_MASK + char(39) + ') as DATE4 '
+    + 'FROM TRONIX.TYPE_TTN TP, TRONIX.TTN TN, TRONIX.TTN_MAT TNMAT, TRONIX_SPRAV SPRAVA, TRONIX_SPRAV SPRAVO, KADRY_DEP DPO, KADRY_DEP DPT, KADRY_DEP DPP '
+    + 'WHERE ((TN.PROJECT_PROJECT_ID IS NULL AND TN.UZAK_UZAK_ID is null) or '
+    + 'TN.UZAK_UZAK_ID in ' + Pointer.FieldByName('UZAK_ID').asString + ') AND '
+    + '/*TN.TYPE_TTN_TYPE_TTN_ID in (43, 44, 26, 59, 11) AND */TNMAT.TTN_TTN_ID = TN.TTN_ID AND '
+    + '((TNMAT.SPRAV_SPRAV_ID = ' + Pointer.FieldByName('SPRAV_ID').asString + ' AND TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB is null) OR '
+    + 'TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB = ' + Pointer.FieldByName('SPRAV_ID').asString + ') AND TNMAT.SPRAV_SPRAV_ID = SPRAVO.SPRAV_ID(+) AND '
+    + 'DECODE(TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB, null, TNMAT.SPRAV_SPRAV_ID, TNMAT.SPRAV_SPRAV_ID_ZAM_SNAB) = '
+    + 'SPRAVA.SPRAV_ID(+) AND TN.DEP_DEP_ID_TO = DPO.DEP_ID(+) AND DPO.DEP_DEP_ID = DPT.DEP_ID(+) AND TN.TYPE_TTN_TYPE_TTN_ID = TP.TYPE_TTN_ID(+) AND '
+    + 'TN.DEP_DEP_ID_FROM = DPP.DEP_ID(+)) WHERE DATE3 IS NULL /*AND '
+    + 'CEH = ' + char(39) + ceh.Items[ceh.ItemIndex] + char(39) + '*/';
+    form1.execQuery(OraInsert, SQL, true);
+
+    set_mnomen_details.ttns.Enabled := true;
+    while not OraInsert.Eof do
+    begin
+      set_mnomen_details.ttns.Items.Add(OraInsert.FieldByName('NOMER').asString + ' ' + OraInsert.FieldByName('DATEC').asString);
+      set_mnomen_details.invi_ttns.Items.Add(OraInsert.FieldByName('TTN_ID').asString);
+      OraInsert.Next;
+    end;
+    
     set_mnomen_details.Button1.Enabled := true;
+  end;
 
   set_mnomen_details.Calc;
 
@@ -237,14 +297,14 @@ begin
 
   if set_mnomen_details.RETURN_DATA <> '' then
   begin
-    SQL := 'INSERT INTO tronix.main_nomenclature (SPRAV_ID, ZAPAS_KOL, NEED_KOL, KODED_ID, UZAK_ID, DEP_ID, USER_PRIKAZ_ID, DATE_INS) '
+    SQL := 'INSERT INTO tronix.main_nomenclature (SPRAV_ID, ZAPAS_KOL, NEED_KOL, KODED_ID, UZAK_ID, DEP_ID, USER_PRIKAZ_ID, DATE_INS, TEXKOMPL_ID, TTN_ID) '
     + 'VALUES (' + Pointer.FieldByName('SPRAV_ID').asString + ', ' + set_mnomen_details.RETURN_DATA + ', ' + Pointer.FieldByName('UZAK_ID').asString + ', '
     + Pointer.FieldByName('DEP_ID').asString + ', ' + PRIKAZ_ID + ', TO_DATE(' + char(39) + (FormatDateTime('dd', Now)) + '.' + date_f + '.' + date_s
-    + char(39) + ', ' + char(39) + 'dd.mm.YYYY' + char(39) + '))';
+    + char(39) + ', ' + char(39) + 'dd.mm.YYYY' + char(39) + '), ' + set_mnomen_details.TEXKOMPL_ID + ', ' + set_mnomen_details.TTN_ID + ')';
 
     //showmessage(SQL);
     form1.execQuery(OraInsert, SQL, true);
-    
+
     //Select;
     Pointer.Edit;
     Pointer.FieldByName('FLAG_TWO').Value := '1';

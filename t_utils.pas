@@ -665,11 +665,13 @@ var
   startNum, strNum : integer;  
 const
   MMYYYY_MASK = 'mm.YYYY';
+  DDMMYYYY_MASK = 'dd.mm.YYYY';
 begin                    
 
   SQL :=                 
-  'select zk.zak, dp.nomer, B.* from (select round((a.main_kol - (a.zapas - a.main_zapas)), 5) as left, round((a.main_kol_uchet - (a.zapas_uchet - a.main_zapas_uchet)), 5) '
-  + 'as left_uchet, A.* from (select decode(main.need_kol, null, 0, 1) as flag, round(decode(main.need_kol, null, 0, (main.need_kol * '
+  'select zk.zak, dp.nomer, tn.NOMER || '' '' || TO_CHAR(tn.DATE_DOK, ''' + DDMMYYYY_MASK + ''') as TTN, tx.NOMER as TEXKOMPL, B.* from '
+  + '(select round((a.main_kol - (a.zapas - a.main_zapas)), 5) as left, round((a.main_kol_uchet - (a.zapas_uchet - a.main_zapas_uchet)), 5) '
+  + 'as left_uchet, A.* from (select main.ttn_id, main.texkompl_id, decode(main.need_kol, null, 0, 1) as flag, round(decode(main.need_kol, null, 0, (main.need_kol * '
   + 'tronix_kof_koded(sp.sprav_id, main.koded_id, defa.koded_potr))), 5) as main_kol, round(decode(main.need_kol, null, 0, (main.need_kol * tronix_kof_koded(sp.sprav_id, main.koded_id, defa.koded_uchet))), 5) as '
   + 'main_kol_uchet, round(decode(main.need_kol, null, 0, (main.zapas_kol * tronix_kof_koded(sp.sprav_id, main.koded_id, defa.koded_potr))), 5) as main_zapas, '
   + 'round(decode(main.need_kol, null, 0, (main.zapas_kol * tronix_kof_koded(sp.sprav_id, main.koded_id, defa.koded_uchet))), 5) as main_zapas_uchet, '
@@ -682,7 +684,7 @@ begin
   + 'tt.sprav_id as sprav_id, sum(tt.POTR) as potr, sum(tt.ZAPAS_TR) as zapas, tt.koded_potr as koded_potr, tt.koded_uchet as koded_uchet from '
   + '(select tx.sprav_sprav_id as sprav_id, nvl(tx.KOL, 0) as POTR, nvl(tx.ZAPAS_POST_TR, 0) as ZAPAS_TR, tx.KODED_KODED_ID as koded_potr, '
   + 'nvl(sp.koded_koded_id2, sp.koded_koded_id) as koded_uchet, tx.dep_dep_id as dep_id, tx.uzak_uzak_id as uzak_id from tx_car_potr tx, tronix_sprav sp, '
-  + '(select m.sprav_id, m.uzak_id, m.dep_id from tronix.main_nomenclature m where TO_CHAR(m.date_ins, ' + char(39) + MMYYYY_MASK + char(39) + ') = '
+  + '(select m.sprav_id, m.uzak_id, m.dep_id, m.ttn_id, m.texkompl_id from tronix.main_nomenclature m where TO_CHAR(m.date_ins, ' + char(39) + MMYYYY_MASK + char(39) + ') = '
   + char(39) + t + '.' + s + char(39) + ') main where '
   + 'tx.sprav_sprav_id = sp.sprav_id(+) and main.sprav_id = tx.sprav_sprav_id(+) and main.uzak_id = tx.uzak_uzak_id(+) and main.dep_id = tx.dep_dep_id(+)) '
   + 'tt group by tt.sprav_id, tt.koded_potr, tt.koded_uchet, tt.dep_id, '
@@ -690,8 +692,9 @@ begin
   + char(39) + ') as date_i, m.* from tronix.main_nomenclature m) main where '
   + '(defa.d > 0 or defa.d_u > 0) and defa.koded_potr = fkd.koded_id(+) and defa.koded_uchet = skd.koded_id(+) and defa.s_i = sp.sprav_id(+) and '
   + 'defa.s_i = main.sprav_id(+) and defa.dep_id = main.dep_id(+) and defa.uzak_id = main.uzak_id(+) and ' + char(39) + t + '.' + s + char(39) + ' '
-  + '= main.date_i(+) order by TO_NUMBER(sp.kod) desc) A where A.flag = 1) B, tronix.zakaz zk, kadry_dep dp '
-  + 'where (B.left > 0 or B.left_uchet > 0) and B.uzak_id = zk.nn(+) and B.dep_id = dp.dep_id(+) <CEH_FILTER> order by dp.nomer, zk.zak, b.kod';
+  + '= main.date_i(+) order by TO_NUMBER(sp.kod) desc) A where A.flag = 1) B, tronix.zakaz zk, kadry_dep dp, tronix.ttn tn, tx_texkompl tx '
+  + 'where (B.left > 0 or B.left_uchet > 0) and B.uzak_id = zk.nn(+) and B.dep_id = dp.dep_id(+) and B.ttn_id = TN.ttn_id(+) and B.texkompl_id = tx.TEXKOMPL_ID(+) '
+  + '<CEH_FILTER> order by dp.nomer, zk.zak, b.kod';
   
   if (*Assigned(c)*) C <> '' then
     SQL := StringReplace(SQL, '<CEH_FILTER>', 'and dp.nomer = ' + char(39) + c + char(39), [rfReplaceAll, rfIgnoreCase])
@@ -726,11 +729,11 @@ begin
   startNum := 4;
   strNum := startNum;
 
-  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OracleQuery_1.RecordCount - 1), 16]].Font.Size := 14;
-  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OracleQuery_1.RecordCount - 1), 16]].borders.linestyle := xlContinuous;
-  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OracleQuery_1.RecordCount - 1), 16]].HorizontalAlignment := xlCenter;
-  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OracleQuery_1.RecordCount - 1), 16]].VerticalAlignment := xlCenter;
-  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OracleQuery_1.RecordCount - 1), 16]].WrapText := true;
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OracleQuery_1.RecordCount - 1), 18]].Font.Size := 14;
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OracleQuery_1.RecordCount - 1), 18]].borders.linestyle := xlContinuous;
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OracleQuery_1.RecordCount - 1), 18]].HorizontalAlignment := xlCenter;
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OracleQuery_1.RecordCount - 1), 18]].VerticalAlignment := xlCenter;
+  Sheet.Range[Sheet.Cells[strNum, 1], Sheet.Cells[strNum + (OracleQuery_1.RecordCount - 1), 18]].WrapText := true;
 
   while not OracleQuery_1.Eof do
   begin
@@ -762,7 +765,13 @@ begin
 
     Sheet.Cells[strNum, 15].Value := Form9.excelFloat(OracleQuery_1.FieldByName('LEFT').asString);
     Sheet.Cells[strNum, 16].Value := Form9.excelFloat(OracleQuery_1.FieldByName('LEFT_UCHET').asString);
-    
+
+    Sheet.Cells[strNum, 17].NumberFormat := '@';
+    Sheet.Cells[strNum, 17].Value := OracleQuery_1.FieldByName('TEXKOMPL').asString;
+
+    Sheet.Cells[strNum, 18].NumberFormat := '@';
+    Sheet.Cells[strNum, 18].Value := OracleQuery_1.FieldByName('TTN').asString;
+
     inc(strNum);
     OracleQuery_1.Next;
   end;
