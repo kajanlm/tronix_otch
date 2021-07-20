@@ -32,7 +32,13 @@ uses
     ExcelWorkbook1: TExcelWorkbook;
     ExcelWorksheet1: TExcelWorksheet;
     Edit3: TEdit;
+    Button2: TButton;
+    DateTimePicker1: TDateTimePicker;
+    DateTimePicker2: TDateTimePicker;
     procedure FormShow(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure DateTimePicker1Change(Sender: TObject);
+    procedure DateTimePicker2Change(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
@@ -42,6 +48,8 @@ uses
 
 var
   FRasxod_proekt_years_zatr_otgr_ob: TFRasxod_proekt_years_zatr_otgr_ob;
+  dn,dk: string;
+
 implementation
 
 uses Unit9;
@@ -49,6 +57,19 @@ uses Unit9;
 {$R *.dfm}
 
 procedure TFRasxod_proekt_years_zatr_otgr_ob.FormShow(Sender: TObject);
+begin
+//ShowMessage(Edit1.Text);
+//Edit1.Text:='4011';
+//ShowMessage(Form58.Caption);
+//ShowMessage(Edit3.Text);
+
+DateTimePicker1.DateTime:=StrToDate(Edit3.Text);
+DateTimePicker2.DateTime:=date();
+dn:=FormatDateTime('yyyymmdd',DateTimePicker1.DateTime);
+dk:=FormatDateTime('yyyymmdd',DateTimePicker2.DateTime);
+end;
+
+procedure TFRasxod_proekt_years_zatr_otgr_ob.Button2Click(Sender: TObject);
 var FExcel,Sheet: OleVariant;
 tx:string;
 nk: integer;
@@ -58,10 +79,6 @@ kolotgrz,kolzatrz: single;
 priznz,godinsz,kodotgrz,edotgroz,kodzatrz,edzatroz,nameoz,namezz,ttypz,prixz,prixoz,proez,na: string;
 
 begin
-//ShowMessage(Edit1.Text);
-//Edit1.Text:='4011';
-//ShowMessage(Edit2.Text);
-//ShowMessage(Edit3.Text);
 
 tx:=' ';
 
@@ -105,6 +122,8 @@ tx:=tx+' and s.koded_koded_id=edo1.koded_id(+) and nvl(s.can_do_self,0)=0 and tm
 tx:=tx+' and tn.uzak_uzak_id=zk.nn and zk.id_project='+edit1.text;
 tx:=tx+' and pr.project_id=zk.id_project';
 tx:=tx+' and tn.user_date1 is not null and tn.date_ins is not null';
+tx:=tx+' and to_char(tn.date_ins, ''YYYYMMDD'' )>='+dn;
+tx:=tx+' and to_char(tn.date_ins, ''YYYYMMDD'' )<='+dk;
 tx:=tx+' and t.ttn_mat_id=tm.ttn_mat_ttn_mat_id and t.ttn_ttn_id=tp.ttn_id';
  
 tx:=tx+' union all';
@@ -133,6 +152,8 @@ tx:=tx+' and nvl(tm.kol_uchet,0)<>0 and tm.ttn_ttn_id=tn.ttn_id and tn.type_ttn_
 tx:=tx+' and tn.uzak_uzak_id=zk.nn and zk.id_project='+edit1.text;
 tx:=tx+' and pr.project_id=zk.id_project';
 tx:=tx+' and tn.user_date1 is not null and tn.date_ins is not null';
+tx:=tx+' and to_char(tn.date_ins, ''YYYYMMDD'' )>='+dn;
+tx:=tx+' and to_char(tn.date_ins, ''YYYYMMDD'' )<='+dk;
 tx:=tx+' and tm.koded_koded_id_uchet=ed.koded_id(+) and tm.koded_koded_id_zam_snab=ed1.koded_id(+)';
 tx:=tx+' and s1.koded_koded_id=edo.koded_id(+) and edo1.koded_id=s.koded_koded_id';
 tx:=tx+' and t.ttn_mat_id=tm.ttn_mat_ttn_mat_id and t.ttn_ttn_id=tp.ttn_id';
@@ -314,6 +335,18 @@ Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,14]].borders.linestyle:=xlContinuou
 FExcel.Visible:=True;
 FRasxod_proekt_years_zatr_otgr_ob.Close;
 end;    // procedure TFRasxod_proekt_years_zatr_otgr_ob.FormShow(Sender: TObject);
+
+
+procedure TFRasxod_proekt_years_zatr_otgr_ob.DateTimePicker1Change(Sender: TObject);
+begin
+dn:=FormatDateTime('yyyymmdd',DateTimePicker1.DateTime);
+end;
+
+procedure TFRasxod_proekt_years_zatr_otgr_ob.DateTimePicker2Change(Sender: TObject);
+begin
+dk:=FormatDateTime('yyyymmdd',DateTimePicker2.DateTime);
+end;
+
 
 procedure TFRasxod_proekt_years_zatr_otgr_ob.FormClose(Sender: TObject; var Action: TCloseAction);
 begin

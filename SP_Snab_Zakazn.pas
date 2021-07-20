@@ -24,6 +24,7 @@ type
     OraQuery1pozic: TStringField;
     OraQuery1podpoz: TStringField;
     OraQuery1namesp: TStringField;
+    OraQuery1vz: TStringField;
     OraQuery1kod: TStringField;
     OraQuery1namekod: TStringField;
     OraQuery1kol: TFloatField;
@@ -118,7 +119,7 @@ ShowMessage('Îòìåòüòå âåäîìîñòè,êîòîğûå íåîáõîäèìî âûãğóçèòü')
 else
 begin
 tx:=' ';
-tx:='Select d.ident sp,sp.poz pozic, sp.podpoz podpoz,replace(replace(sp.name, CHR(13)||CHR(10),'' ''),chr(39), '' '') namesp,';
+tx:='Select d.ident sp,sp.poz pozic, sp.podpoz podpoz,replace(replace(sp.name, CHR(13)||CHR(10),'' ''),chr(39), '' '') namesp,sp.vz vz,';
 tx:=tx+' decode(sp.id_sprav,null,'' '',(select kod from tronix.sprav s where sp.id_sprav=s.sprav_id)) kod,';
 tx:=tx+' decode(sp.id_sprav,null,'' '',(select replace(replace(tronix_sp_name(s.sprav_id),CHR(13)||CHR(10),'' ''),chr(39), '' '') from tronix.sprav s where sp.id_sprav=s.sprav_id)) namekod,';
 tx:=tx+' sp.kol kol,kd.namek edi,kd.koded kodedi,pr.name proe,tronix.sort_sp_poz_podpoz(sp.nn) spnn';
@@ -139,7 +140,8 @@ tx:=tx+' order by sp,spnn';
         FieldByName('pozic').DisplayLAbel:='ÏÎÇÈÖÈß ÑÏ ';
         FieldByName('podpoz').DisplayLAbel:='ÏÎÄÏÎÇÈÖ.ÑÏ ';
         FieldByName('namesp').DisplayLAbel:='ÍÀÈÌÅÍÎÂÀÍÈÅ ÑÏ ';
-        FieldByName('kod').DisplayLAbel:='ÊÎÄ ';
+        FieldByName('namesp').DisplayLAbel:='ÍÀÈÌÅÍÎÂÀÍÈÅ ÑÏ ';
+        FieldByName('vz').DisplayLAbel:='ÂÅÄ.ÇÀÊÀÇÀ ';
         FieldByName('namekod').DisplayLAbel:='ÍÀÈÌÅÍÎÂÀÍÈÅ ';
         FieldByName('kol').DisplayLAbel:='ÊÎËÈ×ÅÑÒÂÎ ';
         FieldByName('kodedi').DisplayLAbel:='ÊÎÄ ÅÄ.ÈÇÌ. ';
@@ -179,17 +181,18 @@ Sheet.Cells[nk,7].Value:=OraQuery1.FieldByName('kol').asString;
 Sheet.Cells[nk,8].Value:=OraQuery1.FieldByName('kodedi').asString;
 Sheet.Cells[nk,9].Value:=OraQuery1.FieldByName('edi').asString;
 Sheet.Cells[nk,10].Value:=OraQuery1.FieldByName('proe').asString;
+Sheet.Cells[nk,11].Value:=OraQuery1.FieldByName('vz').asString;
 
 oraQuery1.Next;
 
 End;
 
-Sheet.Range[Sheet.Cells[1,1],Sheet.Cells[nk+1,10]].RowHeight :=13;
-Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,10]].HorizontalAlignment:=xlGeneral;
-Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,10]].VerticalAlignment:=xlTop;
+Sheet.Range[Sheet.Cells[1,1],Sheet.Cells[nk+1,11]].RowHeight :=13;
+Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,11]].HorizontalAlignment:=xlGeneral;
+Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,11]].VerticalAlignment:=xlTop;
 //Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,8]].WrapText:=True;
-Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,10]].Rows.AutoFit;
-Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,10]].borders.linestyle:=xlContinuous;
+Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,11]].Rows.AutoFit;
+Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,11]].borders.linestyle:=xlContinuous;
 
 FExcel.Visible:=True;
 end; //  if idd='' then

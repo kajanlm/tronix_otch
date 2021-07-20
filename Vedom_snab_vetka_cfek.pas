@@ -25,6 +25,7 @@ type
     OraQuery1pozic: TStringField;
     OraQuery1podpoz: TStringField;
     OraQuery1namesp: TStringField;
+    OraQuery1vz: TStringField;
     OraQuery1kod: TStringField;
     OraQuery1namekod: TStringField;
     OraQuery1kol: TFloatField;
@@ -127,13 +128,13 @@ ShowMessage('Отметьте ведомости,которые необходимо выгрузить')
 else
 begin
 tx:=' ';
-tx:='select tt.zavn as zavn, tt.proe as proe, tt.sp as sp,tt.pozic as pozic,tt.podpoz as podpoz,tt.namesp as namesp,';
+tx:='select tt.zavn as zavn, tt.proe as proe, tt.sp as sp,tt.pozic as pozic,tt.podpoz as podpoz,tt.namesp as namesp,tt.vz as vz,';
 tx:=tx+' tt.kod as kod,tt.namekod as namekod,tt.kol as kol,tt.kodedi as kodedi,tt.edi as edi,';
 tx:=tx+' tt.vetka1 as vetka1,tt.vetka2 as vetka2,vetka3 as vetka3,vetka4 as vetka4,vetka5 as vetka5,vetka6 as vetka6,tt.vetka7 as vetka7,';
 tx:=tx+' tt.spsort as spsort';
 tx:=tx+' from (';
 
-tx:=tx+' select t.zavn zavn, t.proe proe, t.sp sp,t.pozic pozic,t.podpoz podpoz,t.namesp namesp,';
+tx:=tx+' select t.zavn zavn, t.proe proe, t.sp sp,t.pozic pozic,t.podpoz podpoz,t.namesp namesp,t.vz,';
 tx:=tx+' t.namekod namekod,t.kol kol,t.kodedi kodedi,';
 //t.kod kod,t.edi edi,
 tx:=tx+' decode(t.kodedi,null,'' '',(select namek from tronix.koded where koded=t.kodedi)) edi,';
@@ -149,7 +150,7 @@ tx:=tx+'t.spsort spsort';
 tx:=tx+' from (';
 
 tx:=tx+' select pr.zavn zavn, pr.project proe, d.ident sp,spi.poz pozic,spi.podpoz podpoz,';
-tx:=tx+' replace(replace(spi.name,CHR(13)||CHR(10),'' ''),chr(39), '' '') namesp,';
+tx:=tx+' replace(replace(spi.name,CHR(13)||CHR(10),'' ''),chr(39), '' '') namesp,spi.vz vz,';
 
 tx:=tx+' spi.kol kol,spi.kode kodedi,spi.id_sprav idsprav,';
 
@@ -178,6 +179,7 @@ tx:=tx+' order by tt.sp,tt.spsort';
         FieldByName('pozic').DisplayLAbel:='ПОЗИЦИЯ СП ';
         FieldByName('podpoz').DisplayLAbel:='ПОДПОЗИЦ.СП ';
         FieldByName('namesp').DisplayLAbel:='НАИМЕНОВАНИЕ СП ';
+        FieldByName('vz').DisplayLAbel:='ВЕД.ЗАКАЗА ';
         FieldByName('kod').DisplayLAbel:='КОД ';
         FieldByName('namekod').DisplayLAbel:='НАИМЕНОВАНИЕ ';
         FieldByName('kol').DisplayLAbel:='КОЛИЧЕСТВО ';
@@ -233,17 +235,18 @@ Sheet.Cells[nk,13].Value:=OraQuery1.FieldByName('vetka5').asString;
 Sheet.Cells[nk,14].Value:=OraQuery1.FieldByName('vetka6').asString;
 Sheet.Cells[nk,15].Value:=OraQuery1.FieldByName('spsort').asString;
 Sheet.Cells[nk,16].Value:='Ведомости '+OraQuery1.FieldByName('proe').asString+' Зав.№ '+OraQuery1.FieldByName('zavn').asString;
+Sheet.Cells[nk,17].Value:=OraQuery1.FieldByName('vz').asString;
 
 oraQuery1.Next;
 
 End;
 
-Sheet.Range[Sheet.Cells[1,1],Sheet.Cells[nk+1,16]].RowHeight :=13;
-Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,16]].HorizontalAlignment:=xlGeneral;
-Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,16]].VerticalAlignment:=xlTop;
+Sheet.Range[Sheet.Cells[1,1],Sheet.Cells[nk+1,17]].RowHeight :=13;
+Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,17]].HorizontalAlignment:=xlGeneral;
+Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,17]].VerticalAlignment:=xlTop;
 //Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,14]].WrapText:=True;
-Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,16]].Rows.AutoFit;
-Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,16]].borders.linestyle:=xlContinuous;
+Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,17]].Rows.AutoFit;
+Sheet.Range[Sheet.Cells[1,1], Sheet.Cells[nk,17]].borders.linestyle:=xlContinuous;
 
 FExcel.Visible:=True;
 end; //  if idd='' then

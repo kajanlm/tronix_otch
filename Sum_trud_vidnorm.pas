@@ -32,12 +32,17 @@ type
     Edit3: TEdit;
     DBGridEh1: TDBGridEh;
     DBGridEh2: TDBGridEh;
+    Button3: TButton;
+    RadioGroup1: TRadioGroup;
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure RadioGroup1Click(Sender: TObject);
  private
     { Private declarations }
+    procedure SelectZavn;
   public
     { Public declarations }
   end;
@@ -45,6 +50,7 @@ type
 var
   FSum_trud_vidnorm: TFSum_trud_vidnorm;
   MyBookmark: TBookMark;
+  tx,priznak: string;
 implementation
 
 uses Unit9;
@@ -52,14 +58,23 @@ uses Unit9;
 
 {$R *.dfm}
 
-procedure TFSum_trud_vidnorm.FormShow(Sender: TObject);
-var tx: string;
-begin
 
+procedure TFSum_trud_vidnorm.SelectZavn;
+//var tx: string;
+begin
 tx:=' ';
-tx:=tx+'select ''0'' as CHK_FLD, pr.zavn as zavn,pr.name as proekt,pr.project_id as idpr';
+tx:='select ''0'' as CHK_FLD,';
+if priznak='1' then
+tx:='select ''1'' as CHK_FLD,';
+
+tx:=tx+' pr.zavn as zavn,pr.name as proekt,pr.project_id as idpr';
 tx:=tx+' from tronix.project_list pr';
-// where pr.date_end is null';
+if RadioGroup1.ItemIndex=0 then
+tx:=tx+'  where pr.date_end is null';
+
+if RadioGroup1.ItemIndex=1 then
+tx:=tx+'  where pr.date_end is not null';
+
 tx:=tx+' order by pr.zavn';
 //ShowMEssage(tx);
    OraQuery2.Close;
@@ -70,10 +85,20 @@ tx:=tx+' order by pr.zavn';
         FieldByName('proekt').DisplayLAbel:='Проект';
         FieldByName('idpr').DisplayLAbel:='idpr';
     end;
+OraQuery2.SQL.Text:=tx;
 
-   OraQuery2.SQL.Text:=tx;
+OraQuery2.ExecSQL;
+end;  // procedure TFSum_trud_vidnorm.SelectZavn;
 
-  OraQuery2.ExecSQL;
+procedure TFSum_trud_vidnorm.FormShow(Sender: TObject);
+begin
+priznak:='0';
+RadioGroup1.ItemIndex:=0;
+SelectZavn;
+
+//OraQuery2.SQL.Text:=tx;
+
+//OraQuery2.ExecSQL;
 
 end;
 
@@ -172,4 +197,25 @@ ExcelWorksheet1.ConnectTo(ExcelApplication.ActiveWorkbook.ActiveSheet as ExcelWo
   end;
 end;
 end;
+procedure TFSum_trud_vidnorm.Button3Click(Sender: TObject);
+begin
+if priznak='0' then
+begin
+priznak:='1';
+Button3.Caption:='Снять отметку';
+end
+else
+begin
+priznak:='0';
+Button3.Caption:='Отметить все';
+end;
+SelectZavn;
+end;
+
+procedure TFSum_trud_vidnorm.RadioGroup1Click(Sender: TObject);
+begin
+ OraQuery1.Close;
+ SelectZavn;
+end;
+
 end.
