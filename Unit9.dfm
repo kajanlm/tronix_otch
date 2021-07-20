@@ -1,6 +1,6 @@
 object Form9: TForm9
-  Left = 414
-  Top = 183
+  Left = 568
+  Top = 237
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'KOD'
@@ -254,7 +254,9 @@ object Form9: TForm9
   object OraQuery1: TOraQuery
     Session = Form1.OraSession1
     SQL.Strings = (
-      'Select Zavn, name, project_id,proekt from Tronix.Project_list '
+      
+        'Select Zavn, name, project_id,proekt, to_char(BEG_TPP,'#39'dd.mm.yyy' +
+        'y'#39') as DATE_START from Tronix.Project_list '
       'where date_end is null'
       'order by zavn')
     ReadOnly = True
